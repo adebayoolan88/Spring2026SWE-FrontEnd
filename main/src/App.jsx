@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import NavBar from "./components/layout/NavBar";
+import NavBar from "./components/layout/navBar";
 import SearchBar from "./components/ui/SearchBar";
 import ItemCard from "./components/ui/ItemCard";
 import { ITEMS } from "./data/items";
