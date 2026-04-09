@@ -1,6 +1,6 @@
 import { LogIn, UserPlus } from "lucide-react";
 
-function NavBar() {
+function NavBar({ onOpenLogin, onOpenSignup }) {
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
@@ -20,11 +20,18 @@ function NavBar() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <button className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50">
+          <button
+            onClick={onOpenLogin}
+            className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50"
+          >
             <LogIn className="h-4 w-4" />
             Login
           </button>
-          <button className="inline-flex items-center gap-2 rounded-2xl bg-orange-500 px-4 py-2 text-sm font-medium text-white shadow-md transition hover:bg-orange-600">
+
+          <button
+            onClick={onOpenSignup}
+            className="inline-flex items-center gap-2 rounded-2xl bg-orange-500 px-4 py-2 text-sm font-medium text-white shadow-md transition hover:bg-orange-600"
+          >
             <UserPlus className="h-4 w-4" />
             Sign Up
           </button>
