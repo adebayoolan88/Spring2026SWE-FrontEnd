@@ -1,6 +1,6 @@
-import { LogIn, UserPlus } from "lucide-react";
+import { LogIn, ShoppingCart, UserPlus } from "lucide-react";
 
-function NavBar({ onOpenLogin, onOpenSignup }) {
+function NavBar({ onOpenLogin, onOpenSignup, onOpenCart }) {
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
@@ -34,6 +34,13 @@ function NavBar({ onOpenLogin, onOpenSignup }) {
           >
             <UserPlus className="h-4 w-4" />
             Sign Up
+          </button>
+
+          <button
+            onClick={onOpenCart}
+            className="inline-flex items-center justify-center rounded-2xl bg-orange-500 p-2.5 text-white shadow-md transition hover:bg-orange-600"
+          >
+            <ShoppingCart className="h-5 w-5" />
           </button>
         </div>
       </div>

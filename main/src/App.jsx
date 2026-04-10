@@ -3,11 +3,14 @@ import NavBar from "./components/layout/NavBar";
 import SearchBar from "./components/ui/SearchBar";
 import ItemCard from "./components/ui/ItemCard";
 import AuthModal from "./components/ui/AuthModal";
+import CartPanel from "./components/ui/CartPanel";
 import { ITEMS } from "./data/items";
 
 export default function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [authMode, setAuthMode] = useState(null);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [cartItems] = useState([]);
 
   const filteredItems = useMemo(() => {
     const query = searchTerm.toLowerCase().trim();
@@ -22,12 +25,15 @@ export default function App() {
     );
   }, [searchTerm]);
 
+  const isOverlayOpen = authMode || cartOpen;
+
   return (
     <div className="min-h-screen bg-[#f5f7fb] text-slate-900">
-      <div className={authMode ? "pointer-events-none select-none blur-[6px]" : ""}>
+      <div className={isOverlayOpen ? "pointer-events-none select-none blur-[4px]" : ""}>
         <NavBar
           onOpenLogin={() => setAuthMode("login")}
           onOpenSignup={() => setAuthMode("signup")}
+          onOpenCart={() => setCartOpen(true)}
         />
 
         <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
@@ -109,6 +115,12 @@ export default function App() {
           </section>
         </main>
       </div>
+
+      <CartPanel
+        isOpen={cartOpen}
+        onClose={() => setCartOpen(false)}
+        cartItems={cartItems}
+      />
 
       {authMode && (
         <AuthModal
