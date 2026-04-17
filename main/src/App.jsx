@@ -1,12 +1,17 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import NavBar from "./components/layout/NavBar";
 import CategoryNav from "./components/layout/CategoryNav";
 import ItemCard from "./components/ui/ItemCard";
 import AuthModal from "./components/ui/AuthModal";
 import CartPanel from "./components/ui/CartPanel";
-import { ITEMS } from "./data/items";
+
+const API_BASE_URL = "http://localhost:5001";
 
 export default function App() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   const [searchTerm, setSearchTerm] = useState("");
   const [authMode, setAuthMode] = useState(null);
   const [cartOpen, setCartOpen] = useState(false);
@@ -15,10 +20,47 @@ export default function App() {
   const [activeMenu, setActiveMenu] = useState(null);
   const [sortOption, setSortOption] = useState("default");
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const response = await fetch(`${API_BASE_URL}/database/products`);
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch products: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        const normalizedProducts = data.map((item) => ({
+          ...item,
+          price: Number(item.price) || 0,
+          image:
+            item.image ||
+            "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=900&q=80",
+          location: item.location || "San Antonio, TX",
+          condition: item.condition || "Unknown",
+          category: item.category || "Accessories",
+        }));
+
+        setProducts(normalizedProducts);
+      } catch (err) {
+        console.error("Error fetching products:", err);
+        setError("Could not load inventory from the database.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   const displayedItems = useMemo(() => {
     const query = searchTerm.toLowerCase().trim();
 
-    let results = ITEMS.filter((item) => {
+    let results = products.filter((item) => {
       const matchesSearch =
         !query ||
         [item.name, item.category, item.location, item.condition]
@@ -40,7 +82,7 @@ export default function App() {
     }
 
     return results;
-  }, [searchTerm, selectedCategory, sortOption]);
+  }, [products, searchTerm, selectedCategory, sortOption]);
 
   const isOverlayOpen = authMode || cartOpen;
 
@@ -56,7 +98,7 @@ export default function App() {
         />
 
         <CategoryNav
-          items={ITEMS}
+          items={products}
           activeMenu={activeMenu}
           setActiveMenu={setActiveMenu}
           onSelectCategory={setSelectedCategory}
@@ -98,7 +140,17 @@ export default function App() {
             </div>
           </section>
 
-          {displayedItems.length === 0 ? (
+          {loading ? (
+            <div className="rounded-[28px] bg-white p-12 text-center shadow-sm">
+              <h3 className="text-xl font-semibold text-slate-900">Loading inventory...</h3>
+              <p className="mt-2 text-slate-500">Please wait while products are fetched.</p>
+            </div>
+          ) : error ? (
+            <div className="rounded-[28px] border border-red-200 bg-red-50 p-12 text-center shadow-sm">
+              <h3 className="text-xl font-semibold text-red-700">Unable to load products</h3>
+              <p className="mt-2 text-red-600">{error}</p>
+            </div>
+          ) : displayedItems.length === 0 ? (
             <div className="rounded-[28px] border border-dashed border-slate-300 bg-white p-12 text-center shadow-sm">
               <h3 className="text-xl font-semibold text-slate-900">No items found</h3>
               <p className="mt-2 text-slate-500">

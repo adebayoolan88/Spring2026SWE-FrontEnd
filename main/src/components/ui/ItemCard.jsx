@@ -1,4 +1,4 @@
-import { Heart, MapPin, ShoppingCart } from "lucide-react";
+import { Heart, ShoppingCart } from "lucide-react";
 
 function ItemCard({ item }) {
   return (
@@ -28,11 +28,6 @@ function ItemCard({ item }) {
             <h3 className="mt-1 text-lg font-semibold text-slate-900">{item.name}</h3>
           </div>
           <p className="text-lg font-bold text-slate-900">${item.price}</p>
-        </div>
-
-        <div className="flex items-center gap-2 text-sm text-slate-500">
-          <MapPin className="h-4 w-4" />
-          <span>{item.location}</span>
         </div>
 
         <button className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800">
