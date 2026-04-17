@@ -22,7 +22,7 @@ export const ITEMS = [
   {
     id: 3,
     name: "Roland RD-2000 Keyboard",
-    category: "Keyboard",
+    category: "Piano",
     price: 1699,
     location: "Chicago, IL",
     condition: "Excellent",
@@ -42,7 +42,7 @@ export const ITEMS = [
   {
     id: 5,
     name: "Shure SM7B Microphone",
-    category: "Audio",
+    category: "Accessories",
     price: 399,
     location: "Los Angeles, CA",
     condition: "New",
@@ -52,7 +52,7 @@ export const ITEMS = [
   {
     id: 6,
     name: "Yamaha MODX8",
-    category: "Keyboard",
+    category: "Piano",
     price: 1099,
     location: "Seattle, WA",
     condition: "New",

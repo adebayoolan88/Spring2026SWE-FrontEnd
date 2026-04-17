@@ -1,10 +1,16 @@
-import { LogIn, ShoppingCart, UserPlus } from "lucide-react";
+import { LogIn, Search, ShoppingCart, UserPlus } from "lucide-react";
 
-function NavBar({ onOpenLogin, onOpenSignup, onOpenCart }) {
+function NavBar({
+  onOpenLogin,
+  onOpenSignup,
+  onOpenCart,
+  searchTerm,
+  setSearchTerm,
+}) {
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-3">
+    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white">
+      <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-4 sm:px-6 lg:px-8">
+        <div className="flex min-w-fit items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 text-lg font-bold text-white shadow-md">
             NS
           </div>
@@ -14,12 +20,20 @@ function NavBar({ onOpenLogin, onOpenSignup, onOpenCart }) {
           </div>
         </div>
 
-        <nav className="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
-          <a href="#" className="transition hover:text-slate-900">Browse</a>
-          <a href="#" className="transition hover:text-slate-900">Deals</a>
-        </nav>
+        <div className="flex-1">
+          <div className="flex items-center rounded-2xl border-2 border-slate-300 bg-white px-4 py-3 shadow-sm">
+            <Search className="mr-3 h-5 w-5 text-slate-400" />
+            <input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              type="text"
+              placeholder="Search for instruments, brands, and gear"
+              className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
+            />
+          </div>
+        </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-fit items-center gap-3">
           <button
             onClick={onOpenLogin}
             className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50"
