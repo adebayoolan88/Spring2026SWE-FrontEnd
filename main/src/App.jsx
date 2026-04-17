@@ -13,11 +13,12 @@ export default function App() {
   const [cartItems] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [activeMenu, setActiveMenu] = useState(null);
+  const [sortOption, setSortOption] = useState("default");
 
-  const filteredItems = useMemo(() => {
+  const displayedItems = useMemo(() => {
     const query = searchTerm.toLowerCase().trim();
 
-    return ITEMS.filter((item) => {
+    let results = ITEMS.filter((item) => {
       const matchesSearch =
         !query ||
         [item.name, item.category, item.location, item.condition]
@@ -31,7 +32,15 @@ export default function App() {
 
       return matchesSearch && matchesCategory;
     });
-  }, [searchTerm, selectedCategory]);
+
+    if (sortOption === "price-low-high") {
+      results = [...results].sort((a, b) => a.price - b.price);
+    } else if (sortOption === "price-high-low") {
+      results = [...results].sort((a, b) => b.price - a.price);
+    }
+
+    return results;
+  }, [searchTerm, selectedCategory, sortOption]);
 
   const isOverlayOpen = authMode || cartOpen;
 
@@ -72,12 +81,24 @@ export default function App() {
               </h1>
             </div>
 
-            <p className="text-sm text-slate-500">
-              Showing {filteredItems.length} item{filteredItems.length === 1 ? "" : "s"}
-            </p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <p className="text-sm text-slate-500">
+                Showing {displayedItems.length} item{displayedItems.length === 1 ? "" : "s"}
+              </p>
+
+              <select
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value)}
+                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm outline-none"
+              >
+                <option value="default">Featured</option>
+                <option value="price-low-high">Price: Low to High</option>
+                <option value="price-high-low">Price: High to Low</option>
+              </select>
+            </div>
           </section>
 
-          {filteredItems.length === 0 ? (
+          {displayedItems.length === 0 ? (
             <div className="rounded-[28px] border border-dashed border-slate-300 bg-white p-12 text-center shadow-sm">
               <h3 className="text-xl font-semibold text-slate-900">No items found</h3>
               <p className="mt-2 text-slate-500">
@@ -86,7 +107,7 @@ export default function App() {
             </div>
           ) : (
             <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {filteredItems.map((item) => (
+              {displayedItems.map((item) => (
                 <ItemCard key={item.id} item={item} />
               ))}
             </div>
