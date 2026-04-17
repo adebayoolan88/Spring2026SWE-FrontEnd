@@ -1,5 +1,6 @@
 import { ChevronDown, X } from "lucide-react";
 
+// Hardcoded category list used for the secondary navigation bar.
 const CATEGORIES = [
   "Accessories",
   "Brass",
@@ -18,18 +19,22 @@ function CategoryNav({
   onSelectListing,
   onClearCategory,
 }) {
+  // Returns only the products that belong to one category.
   const getItemsForCategory = (category) => {
     return items.filter(
       (item) => item.category.toLowerCase() === category.toLowerCase()
     );
   };
 
+  // If the user clicks the same category again, close it.
+  // If they click a different one, open that one instead.
   const toggleMenu = (category) => {
     setActiveMenu(activeMenu === category ? null : category);
   };
 
   return (
     <div className="border-b border-slate-200 bg-white">
+      {/* Category buttons laid out in a responsive grid */}
       <div className="mx-auto grid max-w-7xl grid-cols-2 gap-2 px-4 py-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 lg:px-8">
         {CATEGORIES.map((category) => {
           const isOpen = activeMenu === category;
@@ -37,6 +42,7 @@ function CategoryNav({
 
           return (
             <div key={category} className="relative">
+              {/* Category button */}
               <button
                 onClick={() => {
                   toggleMenu(category);
@@ -52,6 +58,7 @@ function CategoryNav({
                 <ChevronDown className="h-4 w-4" />
               </button>
 
+              {/* Dropdown for products in that category */}
               {isOpen && (
                 <div className="absolute left-0 top-full z-40 mt-2 w-80 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
                   <div className="flex items-center justify-between px-3 py-2">
@@ -59,6 +66,7 @@ function CategoryNav({
                       {category} Listings
                     </div>
 
+                    {/* X button clears filters and returns to full inventory */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -73,6 +81,7 @@ function CategoryNav({
                     </button>
                   </div>
 
+                  {/* Empty state vs listing buttons */}
                   {categoryItems.length === 0 ? (
                     <div className="px-3 py-3 text-sm text-slate-500">
                       No listings in this category yet.
@@ -82,6 +91,7 @@ function CategoryNav({
                       <button
                         key={item.id}
                         onClick={() => {
+                          // Selecting a listing usually updates category + search in the parent.
                           onSelectListing(item);
                           setActiveMenu(null);
                         }}

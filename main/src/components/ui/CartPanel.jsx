@@ -3,6 +3,8 @@ import { ShoppingCart, X } from "lucide-react";
 function CartPanel({ isOpen, onClose, cartItems = [] }) {
   return (
     <>
+      {/* Dark background overlay behind the side panel.
+          It only becomes clickable/visible when the cart is open. */}
       <div
         onClick={onClose}
         className={`fixed inset-0 z-40 bg-slate-950/30 transition ${
@@ -10,11 +12,14 @@ function CartPanel({ isOpen, onClose, cartItems = [] }) {
         }`}
       />
 
+      {/* Sliding side panel.
+          translate-x-full hides it off-screen when closed. */}
       <aside
         className={`fixed right-0 top-0 z-50 flex h-screen w-full max-w-md flex-col border-l border-slate-200 bg-white shadow-2xl transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
+        {/* Header of the cart panel */}
         <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
           <div className="flex items-center gap-3">
             <div className="rounded-2xl bg-slate-100 p-2 text-slate-700">
@@ -28,6 +33,7 @@ function CartPanel({ isOpen, onClose, cartItems = [] }) {
             </div>
           </div>
 
+          {/* Closes the cart panel */}
           <button
             onClick={onClose}
             className="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
@@ -36,6 +42,8 @@ function CartPanel({ isOpen, onClose, cartItems = [] }) {
           </button>
         </div>
 
+        {/* Main content area.
+            Right now this mostly shows the empty-cart state. */}
         <div className="flex flex-1 flex-col justify-center px-6 py-8">
           {cartItems.length === 0 ? (
             <div className="mx-auto max-w-sm text-center">
@@ -54,10 +62,13 @@ function CartPanel({ isOpen, onClose, cartItems = [] }) {
               </button>
             </div>
           ) : (
+            // Placeholder for future cart line items.
             <div>Cart items will go here.</div>
           )}
         </div>
 
+        {/* Footer area.
+            Checkout is disabled for now since cart logic is not finished. */}
         <div className="border-t border-slate-200 px-6 py-5">
           <button
             disabled
