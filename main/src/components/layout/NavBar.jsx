@@ -1,4 +1,6 @@
 import { LogIn, ShoppingCart, UserPlus } from "lucide-react";
+import { Link } from "react-router-dom";
+
 
 function NavBar({ onOpenLogin, onOpenSignup, onOpenCart }) {
   return (
@@ -15,9 +17,11 @@ function NavBar({ onOpenLogin, onOpenSignup, onOpenCart }) {
         </div>
 
         <nav className="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
-          <a href="#" className="transition hover:text-slate-900">Browse</a>
-          <a href="#" className="transition hover:text-slate-900">Deals</a>
+          <Link to="/" className="transition hover:text-slate-900">Home</Link>
+          <Link to="/browse" className="transition hover:text-slate-900">Browse</Link>
+          <Link to="/deals" className="transition hover:text-slate-900">Deals</Link>
         </nav>
+
 
         <div className="flex items-center gap-3">
           <button

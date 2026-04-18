@@ -7,7 +7,7 @@ export const ITEMS = [
     location: "New York, NY",
     condition: "Excellent",
     image:
-      "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?auto=format&fit=crop&w=900&q=80",
+      "https://cdn.ecommercedns.uk/files/6/248156/9/42049479/dsc01253.jpg",
   },
   {
     id: 2,
