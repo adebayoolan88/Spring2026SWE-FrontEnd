@@ -103,7 +103,7 @@ function CategoryNav({
                               {item.name}
                             </p>
                             <p className="mt-1 text-xs text-slate-500">
-                              {item.location} • {item.condition}
+                              Qty: {item.quantity}
                             </p>
                           </div>
                           <p className="text-sm font-bold text-slate-900">
