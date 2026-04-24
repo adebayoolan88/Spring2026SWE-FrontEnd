@@ -7,6 +7,9 @@ import CartPanel from "./components/ui/CartPanel";
 import ProductDetailsModal from "./components/ui/ProductDetailsModal";
 import CheckoutSuccessPage from "./pages/CheckoutSuccessPage";
 import CheckoutCancelPage from "./pages/CheckoutCancelPage";
+import MyProfilePage from "./pages/MyProfilePage";
+import MyOrdersPage from "./pages/MyOrdersPage";
+import OrderDetailsPage from "./pages/OrderDetailsPage";
 import {
   clearStoredToken,
   fetchCurrentUser,
@@ -360,6 +363,57 @@ export default function App() {
 
   if (currentPath === "/checkout/cancel") {
     return <CheckoutCancelPage />;
+  }
+
+  if (currentPath === "/profile") {
+    if (authChecking) {
+      return (
+        <div className="min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
+          <div className="mx-auto max-w-3xl rounded-[32px] border border-slate-200 bg-white p-8 text-center shadow-sm">
+            <h1 className="text-3xl font-bold text-slate-900">Loading...</h1>
+            <p className="mt-3 text-slate-500">
+              Please wait while we prepare your profile.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    return <MyProfilePage onProfileUpdated={setCurrentUser} />;
+  }
+
+  if (currentPath === "/orders") {
+    if (authChecking) {
+      return (
+        <div className="min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
+          <div className="mx-auto max-w-3xl rounded-[32px] border border-slate-200 bg-white p-8 text-center shadow-sm">
+            <h1 className="text-3xl font-bold text-slate-900">Loading...</h1>
+            <p className="mt-3 text-slate-500">
+              Please wait while we load your orders.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    return <MyOrdersPage />;
+  }
+
+  if (currentPath.startsWith("/orders/")) {
+    if (authChecking) {
+      return (
+        <div className="min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
+          <div className="mx-auto max-w-3xl rounded-[32px] border border-slate-200 bg-white p-8 text-center shadow-sm">
+            <h1 className="text-3xl font-bold text-slate-900">Loading...</h1>
+            <p className="mt-3 text-slate-500">
+              Please wait while we load your order details.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    return <OrderDetailsPage />;
   }
 
   const isOverlayOpen = authMode || cartOpen || selectedItem;

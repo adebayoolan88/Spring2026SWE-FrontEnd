@@ -1,4 +1,11 @@
-import { LogIn, Search, ShoppingCart, UserPlus } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  ChevronDown,
+  LogIn,
+  Search,
+  ShoppingCart,
+  UserPlus,
+} from "lucide-react";
 
 function NavBar({
   onOpenLogin,
@@ -10,6 +17,27 @@ function NavBar({
   setSearchTerm,
   cartCount,
 }) {
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const accountMenuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        accountMenuRef.current &&
+        !accountMenuRef.current.contains(event.target)
+      ) {
+        setAccountMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const displayName = currentUser?.firstName || currentUser?.username || "User";
+
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200 bg-white">
       <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-4 sm:px-6 lg:px-8">
@@ -39,13 +67,57 @@ function NavBar({
         <div className="flex min-w-fit items-center gap-3">
           {currentUser ? (
             <>
-              <div className="hidden rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-700 md:block">
-                Hi, <span className="font-semibold">{currentUser.firstName || currentUser.username}</span>
+              <div className="relative" ref={accountMenuRef}>
+                <button
+                  onClick={() => setAccountMenuOpen((prev) => !prev)}
+                  className="hidden items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-100 md:inline-flex"
+                >
+                  <span>
+                    Hi, <span className="font-semibold">{displayName}</span>
+                  </span>
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+
+                {accountMenuOpen && (
+                  <div className="absolute right-0 top-full z-50 mt-3 w-52 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
+                    <button
+                      onClick={() => {
+                        setAccountMenuOpen(false);
+                        window.location.href = "/profile";
+                      }}
+                      className="block w-full rounded-xl px-3 py-2 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+                    >
+                      My Profile
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setAccountMenuOpen(false);
+                        window.location.href = "/orders";
+                      }}
+                      className="block w-full rounded-xl px-3 py-2 text-left text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+                    >
+                      My Orders
+                    </button>
+
+                    <div className="my-2 border-t border-slate-100" />
+
+                    <button
+                      onClick={() => {
+                        setAccountMenuOpen(false);
+                        onLogout();
+                      }}
+                      className="block w-full rounded-xl px-3 py-2 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
               </div>
 
               <button
                 onClick={onLogout}
-                className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50"
+                className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 md:hidden"
               >
                 Logout
               </button>
