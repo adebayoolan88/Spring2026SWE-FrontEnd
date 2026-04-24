@@ -10,6 +10,9 @@ function CartPanel({
   onIncreaseQuantity,
   onDecreaseQuantity,
   onRemoveItem,
+  onCheckout,
+  checkoutLoading,
+  checkoutError,
 }) {
   const totalItems = cartItems.reduce((sum, item) => sum + item.cartQuantity, 0);
   const subtotal = cartItems.reduce(
@@ -170,6 +173,12 @@ function CartPanel({
                 ))}
               </div>
 
+              {checkoutError ? (
+                <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  {checkoutError}
+                </div>
+              ) : null}
+
               <div className="mt-6 border-t border-slate-200 pt-4">
                 <div className="mb-4 flex items-center justify-between text-sm">
                   <span className="text-slate-500">Subtotal</span>
@@ -178,8 +187,12 @@ function CartPanel({
                   </span>
                 </div>
 
-                <button className="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
-                  Checkout
+                <button
+                  onClick={onCheckout}
+                  disabled={checkoutLoading}
+                  className="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {checkoutLoading ? "Redirecting to Checkout..." : "Checkout"}
                 </button>
               </div>
             </>

@@ -5,12 +5,15 @@ import ItemCard from "./components/ui/ItemCard";
 import AuthModal from "./components/ui/AuthModal";
 import CartPanel from "./components/ui/CartPanel";
 import ProductDetailsModal from "./components/ui/ProductDetailsModal";
+import CheckoutSuccessPage from "./pages/CheckoutSuccessPage";
+import CheckoutCancelPage from "./pages/CheckoutCancelPage";
 import {
   clearStoredToken,
   fetchCurrentUser,
   getStoredToken,
   logoutUser,
 } from "./lib/auth";
+import { createCheckoutSession } from "./lib/payments";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
 const ITEMS_PER_PAGE = 10;
@@ -54,9 +57,13 @@ export default function App() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [authMode, setAuthMode] = useState(null);
+
   const [cartOpen, setCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [pendingCartItem, setPendingCartItem] = useState(null);
+
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
 
   const [selectedCategory, setSelectedCategory] = useState("");
   const [activeMenu, setActiveMenu] = useState(null);
@@ -223,6 +230,58 @@ export default function App() {
     setCartItems((prev) => prev.filter((item) => item.id !== productId));
   };
 
+  const handleCheckout = async () => {
+    try {
+      if (!currentUser) {
+        setCartOpen(false);
+        setAuthMode("login");
+        return;
+      }
+
+      if (!cartItems.length) {
+        return;
+      }
+
+      const token = getStoredToken();
+
+      if (!token) {
+        setCartOpen(false);
+        setAuthMode("login");
+        return;
+      }
+
+      setCheckoutLoading(true);
+      setCheckoutError("");
+
+      const payload = cartItems.map((item) => ({
+        id: item.id,
+        quantity: item.cartQuantity,
+      }));
+
+      const result = await createCheckoutSession(token, payload);
+
+      if (!result.url) {
+        throw new Error("Stripe checkout URL was not returned");
+      }
+
+      window.location.href = result.url;
+    } catch (err) {
+      console.error(err);
+      setCheckoutError(err.message || "Failed to start checkout");
+    } finally {
+      setCheckoutLoading(false);
+    }
+  };
+
+  const handleClearCartAfterSuccess = () => {
+    setCartItems([]);
+    setCartOpen(false);
+
+    if (currentUser?.userId) {
+      localStorage.removeItem(getCartStorageKey(currentUser.userId));
+    }
+  };
+
   const displayedItems = useMemo(() => {
     const query = searchTerm.toLowerCase().trim();
 
@@ -279,6 +338,29 @@ export default function App() {
     () => cartItems.reduce((sum, item) => sum + item.cartQuantity, 0),
     [cartItems]
   );
+
+  const currentPath = window.location.pathname;
+
+  if (currentPath === "/checkout/success") {
+    if (authChecking) {
+      return (
+        <div className="min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
+          <div className="mx-auto max-w-3xl rounded-[32px] border border-slate-200 bg-white p-8 text-center shadow-sm">
+            <h1 className="text-3xl font-bold text-slate-900">Loading...</h1>
+            <p className="mt-3 text-slate-500">
+              Please wait while we prepare your order confirmation.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    return <CheckoutSuccessPage onClearCart={handleClearCartAfterSuccess} />;
+  }
+
+  if (currentPath === "/checkout/cancel") {
+    return <CheckoutCancelPage />;
+  }
 
   const isOverlayOpen = authMode || cartOpen || selectedItem;
 
@@ -421,6 +503,9 @@ export default function App() {
         onIncreaseQuantity={handleIncreaseCartQuantity}
         onDecreaseQuantity={handleDecreaseCartQuantity}
         onRemoveItem={handleRemoveCartItem}
+        onCheckout={handleCheckout}
+        checkoutLoading={checkoutLoading}
+        checkoutError={checkoutError}
       />
 
       {authMode && (
