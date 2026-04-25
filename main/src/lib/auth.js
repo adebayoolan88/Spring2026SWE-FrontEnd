@@ -1,19 +1,10 @@
-// Base backend URL.
-// If VITE_API_BASE_URL exists in the frontend environment, use that.
-// Otherwise default to localhost.
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
 
-// Key used to store JWT in localStorage.
-const TOKEN_KEY = "noteswap_token";
+const ACCESS_TOKEN_KEY = "noteswap_token";
+const ID_TOKEN_KEY = "noteswap_id_token";
+const REFRESH_TOKEN_KEY = "noteswap_refresh_token";
 
-// Shared headers for JSON requests.
-const jsonHeaders = {
-  "Content-Type": "application/json",
-};
-
-// Central helper for handling API responses.
-// If the server returns an error, throw a readable message.
-async function handleResponse(response) {
+async function handleApiResponse(response) {
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
@@ -23,62 +14,122 @@ async function handleResponse(response) {
   return data;
 }
 
-// Sends signup data to the backend.
+function saveAuthTokensFromResponse(data) {
+  if (data?.token) {
+    localStorage.setItem(ACCESS_TOKEN_KEY, data.token);
+  }
+
+  if (data?.idToken) {
+    localStorage.setItem(ID_TOKEN_KEY, data.idToken);
+  }
+
+  if (data?.refreshToken) {
+    localStorage.setItem(REFRESH_TOKEN_KEY, data.refreshToken);
+  }
+}
+
+function clearAllAuthTokens() {
+  localStorage.removeItem(ACCESS_TOKEN_KEY);
+  localStorage.removeItem(ID_TOKEN_KEY);
+  localStorage.removeItem(REFRESH_TOKEN_KEY);
+}
+
+// Signup now goes to your backend.
+// Backend will talk to Cognito and decide whether confirmation is required.
 export async function signupUser(payload) {
   const response = await fetch(`${API_BASE_URL}/auth/signup`, {
     method: "POST",
-    headers: jsonHeaders,
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(payload),
   });
 
-  return handleResponse(response);
+  return handleApiResponse(response);
 }
 
-// Sends login data to the backend.
+// Confirm signup through your backend.
+export async function confirmSignup(username, code) {
+  const response = await fetch(`${API_BASE_URL}/auth/confirm-signup`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      username,
+      code,
+    }),
+  });
+
+  return handleApiResponse(response);
+}
+
+// Resend confirmation code through your backend.
+export async function resendSignupCode(username) {
+  const response = await fetch(`${API_BASE_URL}/auth/resend-signup-code`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ username }),
+  });
+
+  return handleApiResponse(response);
+}
+
+// Login through your backend.
+// Backend talks to Cognito, returns tokens, and returns the local app user.
 export async function loginUser(payload) {
   const response = await fetch(`${API_BASE_URL}/auth/login`, {
     method: "POST",
-    headers: jsonHeaders,
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(payload),
   });
 
-  return handleResponse(response);
+  const data = await handleApiResponse(response);
+  saveAuthTokensFromResponse(data);
+  return data;
 }
 
-// Uses the JWT to ask the backend who the current user is.
+// Keep this helper because the rest of your app already uses it.
 export async function fetchCurrentUser(token) {
-  const response = await fetch(`${API_BASE_URL}/auth/me`, {
+  const response = await fetch(`${API_BASE_URL}/users/me`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
 
-  return handleResponse(response);
+  return handleApiResponse(response);
 }
 
-// Tells the backend the user is logging out.
-// In this version, the frontend still clears the stored token manually too.
+// Client-side logout for now.
 export async function logoutUser() {
-  const response = await fetch(`${API_BASE_URL}/auth/logout`, {
-    method: "POST",
-    headers: jsonHeaders,
-  });
+  clearAllAuthTokens();
 
-  return handleResponse(response);
+  return {
+    message: "Logout successful",
+  };
 }
 
-// Save token after login/signup
 export function saveToken(token) {
-  localStorage.setItem(TOKEN_KEY, token);
+  localStorage.setItem(ACCESS_TOKEN_KEY, token);
 }
 
-// Read stored token on app startup
 export function getStoredToken() {
-  return localStorage.getItem(TOKEN_KEY);
+  return localStorage.getItem(ACCESS_TOKEN_KEY);
 }
 
-// Remove token on logout or auth failure
+export function getStoredIdToken() {
+  return localStorage.getItem(ID_TOKEN_KEY);
+}
+
+export function getStoredRefreshToken() {
+  return localStorage.getItem(REFRESH_TOKEN_KEY);
+}
+
 export function clearStoredToken() {
-  localStorage.removeItem(TOKEN_KEY);
+  clearAllAuthTokens();
 }

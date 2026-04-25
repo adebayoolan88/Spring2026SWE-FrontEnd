@@ -1,13 +1,12 @@
 import { useMemo, useState } from "react";
 import { X } from "lucide-react";
 import {
+  confirmSignup,
   loginUser,
-  saveToken,
+  resendSignupCode,
   signupUser,
 } from "../../lib/auth";
 
-// Starting shape for the signup form.
-// Keeping it in one object makes it easier to update fields by name.
 const initialSignupForm = {
   fullName: "",
   username: "",
@@ -18,62 +17,60 @@ const initialSignupForm = {
   address: "",
 };
 
-// Starting shape for the login form.
 const initialLoginForm = {
   identifier: "",
   password: "",
 };
 
 function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
-  // mode comes from the parent. It tells us whether to show login or signup UI.
   const isLogin = mode === "login";
 
-  // Local state for both forms.
-  // We keep them separate because login and signup need different fields.
   const [signupForm, setSignupForm] = useState(initialSignupForm);
   const [loginForm, setLoginForm] = useState(initialLoginForm);
 
-  // submitting helps disable buttons and show loading text while waiting on the backend.
   const [submitting, setSubmitting] = useState(false);
-
-  // error stores any message we want to show to the user.
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
-  // useMemo is used here just to derive a title from mode.
+  const [confirmationRequired, setConfirmationRequired] = useState(false);
+  const [confirmationUsername, setConfirmationUsername] = useState("");
+  const [confirmationCode, setConfirmationCode] = useState("");
+
   const title = useMemo(() => {
+    if (confirmationRequired) {
+      return "Confirm your NoteSwap account";
+    }
+
     return isLogin ? "Log in to NoteSwap" : "Create your NoteSwap account";
-  }, [isLogin]);
+  }, [isLogin, confirmationRequired]);
 
-  const resetErrors = () => setError("");
+  const resetMessages = () => {
+    setError("");
+    setSuccessMessage("");
+  };
 
-  // Generic change handler for signup inputs.
-  // It uses the input's "name" attribute to know which field to update.
   const handleSignupChange = (e) => {
     const { name, value } = e.target;
     setSignupForm((prev) => ({ ...prev, [name]: value }));
-    resetErrors();
+    resetMessages();
   };
 
-  // Generic change handler for login inputs.
   const handleLoginChange = (e) => {
     const { name, value } = e.target;
     setLoginForm((prev) => ({ ...prev, [name]: value }));
-    resetErrors();
+    resetMessages();
   };
 
-  // Runs when the signup form is submitted.
   const handleSignupSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    setError("");
+    resetMessages();
 
     try {
-      // Basic frontend validation before hitting the backend.
       if (signupForm.password !== signupForm.confirmPassword) {
         throw new Error("Passwords do not match");
       }
 
-      // Send signup data to the backend auth helper.
       const result = await signupUser({
         fullName: signupForm.fullName,
         username: signupForm.username,
@@ -83,26 +80,74 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
         address: signupForm.address,
       });
 
-      // Save the JWT so the user stays logged in across refreshes.
-      saveToken(result.token);
+      if (result.requiresConfirmation) {
+        setConfirmationRequired(true);
+        setConfirmationUsername(result.username || signupForm.username);
+        setSuccessMessage(
+          "Your account was created. Enter the confirmation code sent by Cognito."
+        );
+        return;
+      }
 
-      // Tell the parent app that auth succeeded.
-      onAuthSuccess(result.user);
-
-      // Close the modal after success.
-      onClose();
+      setSuccessMessage("Account created successfully. You can now log in.");
+      setLoginForm((prev) => ({
+        ...prev,
+        identifier: signupForm.username || signupForm.email,
+      }));
+      onSwitchMode("login");
     } catch (err) {
+      console.error(err);
       setError(err.message || "Signup failed");
     } finally {
       setSubmitting(false);
     }
   };
 
-  // Runs when the login form is submitted.
+  const handleConfirmSignup = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    resetMessages();
+
+    try {
+      await confirmSignup(confirmationUsername, confirmationCode);
+
+      setSuccessMessage("Account confirmed successfully. Please log in.");
+      setConfirmationRequired(false);
+      setConfirmationCode("");
+
+      setLoginForm((prev) => ({
+        ...prev,
+        identifier: confirmationUsername || signupForm.email,
+      }));
+
+      onSwitchMode("login");
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Failed to confirm account");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleResendCode = async () => {
+    setSubmitting(true);
+    resetMessages();
+
+    try {
+      await resendSignupCode(confirmationUsername);
+      setSuccessMessage("A new confirmation code has been sent.");
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Failed to resend confirmation code");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    setError("");
+    resetMessages();
 
     try {
       const result = await loginUser({
@@ -110,10 +155,10 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
         password: loginForm.password,
       });
 
-      saveToken(result.token);
       onAuthSuccess(result.user);
       onClose();
     } catch (err) {
+      console.error(err);
       setError(err.message || "Login failed");
     } finally {
       setSubmitting(false);
@@ -121,35 +166,35 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
   };
 
   return (
-    // Full-screen overlay.
-    // Clicking outside the modal closes it.
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 px-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 px-4 py-6 backdrop-blur-sm"
       onClick={onClose}
     >
-      {/* Modal body.
-          stopPropagation prevents clicks inside the modal from bubbling up and closing it. */}
       <div
-        className="w-full max-w-md rounded-[32px] border border-white/20 bg-white p-6 shadow-2xl"
+        className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-[32px] border border-white/20 bg-white p-5 shadow-2xl sm:p-6"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header area */}
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-orange-500">
-              {isLogin ? "Welcome back" : "Create account"}
+              {confirmationRequired
+                ? "Verify account"
+                : isLogin
+                ? "Welcome back"
+                : "Create account"}
             </p>
             <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
               {title}
             </h2>
             <p className="mt-2 text-sm text-slate-500">
-              {isLogin
+              {confirmationRequired
+                ? "Enter the confirmation code sent to finish creating your account."
+                : isLogin
                 ? "Access saved items, listings, and messages."
                 : "Start buying and selling instruments in a few steps."}
             </p>
           </div>
 
-          {/* Close button */}
           <button
             onClick={onClose}
             className="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
@@ -158,52 +203,115 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
           </button>
         </div>
 
-        {/* Login / Signup switcher */}
-        <div className="mb-5 grid grid-cols-2 rounded-2xl bg-slate-100 p-1">
-          <button
-            onClick={() => {
-              setError("");
-              onSwitchMode("login");
-            }}
-            className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
-              isLogin ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"
-            }`}
-          >
-            Login
-          </button>
-          <button
-            onClick={() => {
-              setError("");
-              onSwitchMode("signup");
-            }}
-            className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
-              !isLogin ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"
-            }`}
-          >
-            Sign Up
-          </button>
-        </div>
+        {!confirmationRequired && (
+          <div className="mb-5 grid grid-cols-2 rounded-2xl bg-slate-100 p-1">
+            <button
+              onClick={() => {
+                resetMessages();
+                onSwitchMode("login");
+              }}
+              className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
+                isLogin ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"
+              }`}
+            >
+              Login
+            </button>
+            <button
+              onClick={() => {
+                resetMessages();
+                onSwitchMode("signup");
+              }}
+              className={`rounded-xl px-4 py-2 text-sm font-medium transition ${
+                !isLogin ? "bg-white text-slate-900 shadow-sm" : "text-slate-500"
+              }`}
+            >
+              Sign Up
+            </button>
+          </div>
+        )}
 
-        {/* Error message box, only shown if there is an error */}
         {error ? (
           <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             {error}
           </div>
         ) : null}
 
-        {/* Conditionally render login or signup form */}
-        {isLogin ? (
+        {successMessage ? (
+          <div className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+            {successMessage}
+          </div>
+        ) : null}
+
+        {confirmationRequired ? (
+          <form className="space-y-4" onSubmit={handleConfirmSignup}>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
+                Username
+              </label>
+              <input
+                value={confirmationUsername}
+                readOnly
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-500 outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
+                Confirmation Code
+              </label>
+              <input
+                value={confirmationCode}
+                onChange={(e) => {
+                  setConfirmationCode(e.target.value);
+                  resetMessages();
+                }}
+                placeholder="Enter the code you received"
+                className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={submitting}
+              className="mt-2 inline-flex w-full items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {submitting ? "Confirming..." : "Confirm Account"}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleResendCode}
+              disabled={submitting}
+              className="inline-flex w-full items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Resend Code
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setConfirmationRequired(false);
+                setConfirmationCode("");
+                resetMessages();
+                onSwitchMode("login");
+              }}
+              className="inline-flex w-full items-center justify-center rounded-2xl text-sm font-semibold text-orange-500 transition hover:text-orange-600"
+            >
+              Back to Login
+            </button>
+          </form>
+        ) : isLogin ? (
           <form className="space-y-4" onSubmit={handleLoginSubmit}>
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-700">
-                Email or Username
+                Username
               </label>
               <input
                 name="identifier"
                 type="text"
                 value={loginForm.identifier}
                 onChange={handleLoginChange}
-                placeholder="Enter your email or username"
+                placeholder="Enter your username"
                 className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
               />
             </div>
@@ -276,6 +384,34 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
 
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-700">
+                Phone Number
+              </label>
+              <input
+                name="phoneNumber"
+                type="text"
+                value={signupForm.phoneNumber}
+                onChange={handleSignupChange}
+                placeholder="Enter your phone number"
+                className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
+                Address
+              </label>
+              <input
+                name="address"
+                type="text"
+                value={signupForm.address}
+                onChange={handleSignupChange}
+                placeholder="Enter your address"
+                className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+              />
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
                 Password
               </label>
               <input
@@ -312,19 +448,20 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
           </form>
         )}
 
-        {/* Bottom helper link to switch between modes */}
-        <p className="mt-5 text-center text-sm text-slate-500">
-          {isLogin ? "Need an account?" : "Already have an account?"}{" "}
-          <button
-            onClick={() => {
-              setError("");
-              onSwitchMode(isLogin ? "signup" : "login");
-            }}
-            className="font-semibold text-orange-500 transition hover:text-orange-600"
-          >
-            {isLogin ? "Sign up" : "Log in"}
-          </button>
-        </p>
+        {!confirmationRequired && (
+          <p className="mt-5 text-center text-sm text-slate-500">
+            {isLogin ? "Need an account?" : "Already have an account?"}{" "}
+            <button
+              onClick={() => {
+                resetMessages();
+                onSwitchMode(isLogin ? "signup" : "login");
+              }}
+              className="font-semibold text-orange-500 transition hover:text-orange-600"
+            >
+              {isLogin ? "Sign up" : "Log in"}
+            </button>
+          </p>
+        )}
       </div>
     </div>
   );
