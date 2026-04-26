@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { X } from "lucide-react";
+import { X, CheckCircle2, AlertCircle } from "lucide-react";
 import {
   confirmSignup,
   loginUser,
@@ -13,6 +13,7 @@ const initialSignupForm = {
   email: "",
   password: "",
   confirmPassword: "",
+  countryCode: "+1",
   phoneNumber: "",
   address: "",
 };
@@ -20,6 +21,43 @@ const initialSignupForm = {
 const initialLoginForm = {
   identifier: "",
   password: "",
+};
+
+const formatPhoneForCognito = (countryCode, phoneNumber) => {
+  const digitsOnly = phoneNumber.replace(/\D/g, "");
+
+  if (!digitsOnly) {
+    return "";
+  }
+
+  return `${countryCode}${digitsOnly}`;
+};
+
+const getPasswordRequirements = (password) => [
+  {
+    label: "At least 8 characters",
+    isValid: password.length >= 8,
+  },
+  {
+    label: "At least 1 uppercase letter",
+    isValid: /[A-Z]/.test(password),
+  },
+  {
+    label: "At least 1 lowercase letter",
+    isValid: /[a-z]/.test(password),
+  },
+  {
+    label: "At least 1 number",
+    isValid: /\d/.test(password),
+  },
+  {
+    label: "At least 1 special character",
+    isValid: /[^A-Za-z0-9]/.test(password),
+  },
+];
+
+const isPasswordValid = (password) => {
+  return getPasswordRequirements(password).every((requirement) => requirement.isValid);
 };
 
 function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
@@ -35,6 +73,13 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
   const [confirmationRequired, setConfirmationRequired] = useState(false);
   const [confirmationUsername, setConfirmationUsername] = useState("");
   const [confirmationCode, setConfirmationCode] = useState("");
+
+  const passwordRequirements = useMemo(
+    () => getPasswordRequirements(signupForm.password),
+    [signupForm.password]
+  );
+
+  const passwordHasInput = signupForm.password.length > 0;
 
   const title = useMemo(() => {
     if (confirmationRequired) {
@@ -71,12 +116,29 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
         throw new Error("Passwords do not match");
       }
 
+      if (!isPasswordValid(signupForm.password)) {
+        throw new Error(
+          "Password does not meet the requirements. Please include at least 8 characters, uppercase and lowercase letters, a number, and a special character."
+        );
+      }
+
+      const digitsOnlyPhone = signupForm.phoneNumber.replace(/\D/g, "");
+
+      if (digitsOnlyPhone && digitsOnlyPhone.length !== 10) {
+        throw new Error("Phone number must be exactly 10 digits.");
+      }
+
+      const formattedPhoneNumber = formatPhoneForCognito(
+        signupForm.countryCode,
+        signupForm.phoneNumber
+      );
+
       const result = await signupUser({
         fullName: signupForm.fullName,
         username: signupForm.username,
         email: signupForm.email,
         password: signupForm.password,
-        phoneNumber: signupForm.phoneNumber,
+        phoneNumber: formattedPhoneNumber || undefined,
         address: signupForm.address,
       });
 
@@ -196,6 +258,7 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
           </div>
 
           <button
+            type="button"
             onClick={onClose}
             className="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
           >
@@ -206,6 +269,7 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
         {!confirmationRequired && (
           <div className="mb-5 grid grid-cols-2 rounded-2xl bg-slate-100 p-1">
             <button
+              type="button"
               onClick={() => {
                 resetMessages();
                 onSwitchMode("login");
@@ -217,6 +281,7 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
               Login
             </button>
             <button
+              type="button"
               onClick={() => {
                 resetMessages();
                 onSwitchMode("signup");
@@ -231,14 +296,16 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
         )}
 
         {error ? (
-          <div className="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {error}
+          <div className="mb-4 flex gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>{error}</span>
           </div>
         ) : null}
 
         {successMessage ? (
-          <div className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-            {successMessage}
+          <div className="mb-4 flex gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>{successMessage}</span>
           </div>
         ) : null}
 
@@ -386,14 +453,43 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
               <label className="mb-2 block text-sm font-medium text-slate-700">
                 Phone Number
               </label>
-              <input
-                name="phoneNumber"
-                type="text"
-                value={signupForm.phoneNumber}
-                onChange={handleSignupChange}
-                placeholder="Enter your phone number"
-                className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
-              />
+
+              <div className="flex gap-2">
+                <select
+                  name="countryCode"
+                  value={signupForm.countryCode}
+                  onChange={handleSignupChange}
+                  className="w-28 rounded-2xl border border-slate-200 px-3 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                >
+                  <option value="+1">US +1</option>
+                  <option value="+44">UK +44</option>
+                  <option value="+52">MX +52</option>
+                  <option value="+234">NG +234</option>
+                  <option value="+91">IN +91</option>
+                </select>
+
+                <input
+                  name="phoneNumber"
+                  type="tel"
+                  value={signupForm.phoneNumber}
+                  onChange={(e) => {
+                    const digitsOnly = e.target.value
+                      .replace(/\D/g, "")
+                      .slice(0, 10);
+
+                    setSignupForm((prev) => ({
+                      ...prev,
+                      phoneNumber: digitsOnly,
+                    }));
+
+                    resetMessages();
+                  }}
+                  
+                  className="flex-1 rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                />
+              </div>
+
+              
             </div>
 
             <div>
@@ -422,6 +518,41 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
                 placeholder="At least 8 characters"
                 className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
               />
+
+              <div
+                className={`mt-3 rounded-2xl border px-4 py-3 text-sm transition ${
+                  passwordHasInput
+                    ? "border-orange-200 bg-orange-50"
+                    : "border-slate-200 bg-slate-50"
+                }`}
+              >
+                <div className="mb-2 flex items-center gap-2 font-medium text-slate-700">
+                  <AlertCircle className="h-4 w-4 text-orange-500" />
+                  Password requirements
+                </div>
+
+                <div className="space-y-1.5">
+                  {passwordRequirements.map((requirement) => (
+                    <div
+                      key={requirement.label}
+                      className={`flex items-center gap-2 text-xs ${
+                        requirement.isValid
+                          ? "text-emerald-700"
+                          : "text-slate-500"
+                      }`}
+                    >
+                      <CheckCircle2
+                        className={`h-3.5 w-3.5 ${
+                          requirement.isValid
+                            ? "text-emerald-600"
+                            : "text-slate-300"
+                        }`}
+                      />
+                      <span>{requirement.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
 
             <div>
@@ -436,6 +567,20 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
                 placeholder="Confirm your password"
                 className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
               />
+
+              {signupForm.confirmPassword && (
+                <p
+                  className={`mt-2 text-xs ${
+                    signupForm.password === signupForm.confirmPassword
+                      ? "text-emerald-600"
+                      : "text-red-600"
+                  }`}
+                >
+                  {signupForm.password === signupForm.confirmPassword
+                    ? "Passwords match."
+                    : "Passwords do not match."}
+                </p>
+              )}
             </div>
 
             <button
@@ -452,6 +597,7 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
           <p className="mt-5 text-center text-sm text-slate-500">
             {isLogin ? "Need an account?" : "Already have an account?"}{" "}
             <button
+              type="button"
               onClick={() => {
                 resetMessages();
                 onSwitchMode(isLogin ? "signup" : "login");
