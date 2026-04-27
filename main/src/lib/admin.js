@@ -43,6 +43,19 @@ export async function getAdminProducts(token) {
   return handleResponse(response);
 }
 
+export async function createAdminProduct(token, payload) {
+  const response = await fetch(`${API_BASE_URL}/admin/products`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  return handleResponse(response);
+}
+
 export async function updateAdminProduct(token, productId, payload) {
   const response = await fetch(`${API_BASE_URL}/admin/products/${productId}`, {
     method: "PATCH",
@@ -51,6 +64,17 @@ export async function updateAdminProduct(token, productId, payload) {
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(payload),
+  });
+
+  return handleResponse(response);
+}
+
+export async function deleteAdminProduct(token, productId) {
+  const response = await fetch(`${API_BASE_URL}/admin/products/${productId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
 
   return handleResponse(response);

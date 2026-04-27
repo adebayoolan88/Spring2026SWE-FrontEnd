@@ -2,15 +2,23 @@ import { useEffect, useMemo, useState } from "react";
 import {
   Boxes,
   Edit,
+  Plus,
   Search,
   SlidersHorizontal,
   Star,
   Tag,
+  Trash2,
 } from "lucide-react";
 import AdminLayout from "../../components/layout/AdminLayout";
 import AdminProductEditModal from "../../components/admin/AdminProductEditModal";
+import AdminProductCreateModal from "../../components/admin/AdminProductCreateModal";
 import { getStoredToken } from "../../lib/auth";
-import { getAdminProducts, updateAdminProduct } from "../../lib/admin";
+import {
+  createAdminProduct,
+  deleteAdminProduct,
+  getAdminProducts,
+  updateAdminProduct,
+} from "../../lib/admin";
 
 const ITEMS_PER_PAGE = 10;
 const MAX_PAGE_COUNT = 5;
@@ -38,6 +46,10 @@ function statusClass(status) {
     return "border-slate-200 bg-slate-100 text-slate-600";
   }
 
+  if (status === "removed") {
+    return "border-red-200 bg-red-50 text-red-700";
+  }
+
   return "border-orange-200 bg-orange-50 text-orange-700";
 }
 
@@ -55,6 +67,12 @@ function AdminProductsPage() {
   const [modalError, setModalError] = useState("");
   const [modalSuccess, setModalSuccess] = useState("");
   const [saving, setSaving] = useState(false);
+
+  const [creatingProduct, setCreatingProduct] = useState(false);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [createModalError, setCreateModalError] = useState("");
+  const [createModalSuccess, setCreateModalSuccess] = useState("");
+  const [deletingProductId, setDeletingProductId] = useState(null);
 
   const loadProducts = async () => {
     try {
@@ -143,6 +161,21 @@ function AdminProductsPage() {
     };
   }, [products]);
 
+  const categories = useMemo(() => {
+    const map = new Map();
+
+    products.forEach((product) => {
+      if (product.category?.categoryId && product.category?.name) {
+        map.set(product.category.categoryId, product.category.name);
+      }
+    });
+
+    return Array.from(map.entries()).map(([categoryId, name]) => ({
+      categoryId,
+      name,
+    }));
+  }, [products]);
+
   const handleOpenEdit = (product) => {
     setEditingProduct(product);
     setModalError("");
@@ -189,6 +222,73 @@ function AdminProductsPage() {
       setModalError(err.message || "Failed to update product.");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleCreateProduct = async (payload, resetForm) => {
+    try {
+      const token = getStoredToken();
+
+      if (!token) {
+        throw new Error("You must be logged in as an admin.");
+      }
+
+      if (payload.isOnSale && payload.salePrice === null) {
+        throw new Error("Sale price is required when a product is marked on sale.");
+      }
+
+      if (payload.salePrice !== null && payload.salePrice > payload.price) {
+        throw new Error("Sale price should not be higher than the regular price.");
+      }
+
+      setCreatingProduct(true);
+      setCreateModalError("");
+      setCreateModalSuccess("");
+
+      await createAdminProduct(token, payload);
+
+      setCreateModalSuccess("Product created successfully.");
+      resetForm?.();
+
+      await loadProducts();
+
+      setTimeout(() => {
+        setCreateModalOpen(false);
+        setCreateModalSuccess("");
+      }, 600);
+    } catch (err) {
+      console.error(err);
+      setCreateModalError(err.message || "Failed to create product.");
+    } finally {
+      setCreatingProduct(false);
+    }
+  };
+
+  const handleDeleteProduct = async (product) => {
+    const confirmed = window.confirm(
+      `Remove "${product.name}" from the storefront? This will not delete old order history.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const token = getStoredToken();
+
+      if (!token) {
+        throw new Error("You must be logged in as an admin.");
+      }
+
+      setDeletingProductId(product.productId);
+      setPageError("");
+
+      await deleteAdminProduct(token, product.productId);
+
+      await loadProducts();
+    } catch (err) {
+      console.error(err);
+      setPageError(err.message || "Failed to remove product.");
+    } finally {
+      setDeletingProductId(null);
     }
   };
 
@@ -284,6 +384,7 @@ function AdminProductsPage() {
                 <option value="all">All statuses</option>
                 <option value="available">Available</option>
                 <option value="sold">Sold</option>
+                <option value="removed">Removed</option>
               </select>
             </div>
 
@@ -300,6 +401,18 @@ function AdminProductsPage() {
                 <option value="featured">Featured</option>
               </select>
             </div>
+
+            <button
+              onClick={() => {
+                setCreateModalOpen(true);
+                setCreateModalError("");
+                setCreateModalSuccess("");
+              }}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+            >
+              <Plus className="h-4 w-4" />
+              Add Product
+            </button>
           </div>
         </div>
       </div>
@@ -429,13 +542,31 @@ function AdminProductsPage() {
                       </td>
 
                       <td className="px-5 py-4 text-right">
-                        <button
-                          onClick={() => handleOpenEdit(product)}
-                          className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
-                        >
-                          <Edit className="h-4 w-4" />
-                          Edit
-                        </button>
+                        <div className="flex justify-end gap-2">
+                          <button
+                            onClick={() => handleOpenEdit(product)}
+                            className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
+                          >
+                            <Edit className="h-4 w-4" />
+                            Edit
+                          </button>
+
+                          <button
+                            onClick={() => handleDeleteProduct(product)}
+                            disabled={
+                              deletingProductId === product.productId ||
+                              product.availabilityStatus === "removed"
+                            }
+                            className="inline-flex items-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            {deletingProductId === product.productId
+                              ? "Removing..."
+                              : product.availabilityStatus === "removed"
+                              ? "Removed"
+                              : "Remove"}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -492,6 +623,20 @@ function AdminProductsPage() {
           </div>
         </>
       )}
+
+      <AdminProductCreateModal
+        isOpen={createModalOpen}
+        onClose={() => {
+          setCreateModalOpen(false);
+          setCreateModalError("");
+          setCreateModalSuccess("");
+        }}
+        onSave={handleCreateProduct}
+        saving={creatingProduct}
+        error={createModalError}
+        successMessage={createModalSuccess}
+        categories={categories}
+      />
 
       <AdminProductEditModal
         product={editingProduct}
