@@ -10,13 +10,23 @@ import CheckoutCancelPage from "./pages/CheckoutCancelPage";
 import MyProfilePage from "./pages/MyProfilePage";
 import MyOrdersPage from "./pages/MyOrdersPage";
 import OrderDetailsPage from "./pages/OrderDetailsPage";
+import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
+import AdminProductsPage from "./pages/admin/AdminProductsPage";
+import AdminDiscountCodesPage from "./pages/admin/AdminDiscountCodesPage";
+import AdminSalesPage from "./pages/admin/AdminSalesPage";
+import AdminOrdersPage from "./pages/admin/AdminOrdersPage";
+import AdminUsersPage from "./pages/admin/AdminUsersPage";
 import {
   clearStoredToken,
   fetchCurrentUser,
   getStoredToken,
   logoutUser,
 } from "./lib/auth";
-import { createCheckoutSession } from "./lib/payments";
+import {
+  createCheckoutSession,
+  previewCheckoutPricing,
+} from "./lib/payments";
+import { checkAdminAccess } from "./lib/admin";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
 const ITEMS_PER_PAGE = 10;
@@ -26,7 +36,9 @@ const getCartStorageKey = (userId) => `noteswap_cart_${userId}`;
 
 const addItemToCartList = (currentCart, product) => {
   const stockLimit =
-    Number(product.quantity) > 0 ? Number(product.quantity) : Number.POSITIVE_INFINITY;
+    Number(product.quantity) > 0
+      ? Number(product.quantity)
+      : Number.POSITIVE_INFINITY;
 
   const existingItem = currentCart.find((item) => item.id === product.id);
 
@@ -57,6 +69,8 @@ export default function App() {
 
   const [currentUser, setCurrentUser] = useState(null);
   const [authChecking, setAuthChecking] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminChecking, setAdminChecking] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [authMode, setAuthMode] = useState(null);
@@ -64,6 +78,11 @@ export default function App() {
   const [cartOpen, setCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [pendingCartItem, setPendingCartItem] = useState(null);
+
+  const [discountCode, setDiscountCode] = useState("");
+  const [discountPreview, setDiscountPreview] = useState(null);
+  const [discountApplying, setDiscountApplying] = useState(false);
+  const [discountApplyError, setDiscountApplyError] = useState("");
 
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
@@ -82,6 +101,7 @@ export default function App() {
         setProductsError("");
 
         const response = await fetch(`${API_BASE_URL}/database/products`);
+
         if (!response.ok) {
           throw new Error(`Failed to fetch products: ${response.status}`);
         }
@@ -96,12 +116,18 @@ export default function App() {
             item.image ||
             "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=900&q=80",
           category: item.category || "Accessories",
-          condition: "New",
+          condition: item.condition || "N/A",
           description: item.description || "",
           brand: item.brand || "",
           availabilityStatus: item.availabilityStatus || "",
           sku: item.sku || "",
           listingDate: item.listingDate || "",
+          salePrice:
+            item.salePrice === null || item.salePrice === undefined
+              ? null
+              : Number(item.salePrice),
+          isOnSale: Boolean(item.isOnSale),
+          isFeatured: Boolean(item.isFeatured),
         }));
 
         setProducts(normalizedProducts);
@@ -140,8 +166,34 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    const verifyAdminAccess = async () => {
+      const token = getStoredToken();
+
+      if (!token || !currentUser) {
+        setIsAdmin(false);
+        return;
+      }
+
+      try {
+        setAdminChecking(true);
+        await checkAdminAccess(token);
+        setIsAdmin(true);
+      } catch (err) {
+        setIsAdmin(false);
+      } finally {
+        setAdminChecking(false);
+      }
+    };
+
+    verifyAdminAccess();
+  }, [currentUser]);
+
+  useEffect(() => {
     if (!currentUser?.userId) {
       setCartItems([]);
+      setDiscountCode("");
+      setDiscountPreview(null);
+      setDiscountApplyError("");
       return;
     }
 
@@ -175,6 +227,11 @@ export default function App() {
     setCartOpen(true);
   }, [currentUser, pendingCartItem]);
 
+  useEffect(() => {
+    setDiscountPreview(null);
+    setDiscountApplyError("");
+  }, [cartItems]);
+
   const handleLogout = async () => {
     try {
       await logoutUser();
@@ -183,8 +240,12 @@ export default function App() {
     } finally {
       clearStoredToken();
       setCurrentUser(null);
+      setIsAdmin(false);
       setCartItems([]);
       setPendingCartItem(null);
+      setDiscountCode("");
+      setDiscountPreview(null);
+      setDiscountApplyError("");
     }
   };
 
@@ -207,7 +268,9 @@ export default function App() {
         if (item.id !== productId) return item;
 
         const stockLimit =
-          Number(item.quantity) > 0 ? Number(item.quantity) : Number.POSITIVE_INFINITY;
+          Number(item.quantity) > 0
+            ? Number(item.quantity)
+            : Number.POSITIVE_INFINITY;
 
         return {
           ...item,
@@ -231,6 +294,70 @@ export default function App() {
 
   const handleRemoveCartItem = (productId) => {
     setCartItems((prev) => prev.filter((item) => item.id !== productId));
+  };
+
+  const handleDiscountCodeChange = (value) => {
+    setDiscountCode(value.toUpperCase());
+    setDiscountPreview(null);
+    setDiscountApplyError("");
+    setCheckoutError("");
+  };
+
+  const handleApplyDiscountCode = async () => {
+    try {
+      if (!currentUser) {
+        setCartOpen(false);
+        setAuthMode("login");
+        return;
+      }
+
+      if (!cartItems.length) {
+        return;
+      }
+
+      const token = getStoredToken();
+
+      if (!token) {
+        setCartOpen(false);
+        setAuthMode("login");
+        return;
+      }
+
+      if (!discountCode.trim()) {
+        setDiscountApplyError("Enter a discount code first.");
+        return;
+      }
+
+      setDiscountApplying(true);
+      setDiscountApplyError("");
+      setCheckoutError("");
+
+      const payload = cartItems.map((item) => ({
+        id: item.id,
+        quantity: item.cartQuantity,
+      }));
+
+      const result = await previewCheckoutPricing(
+        token,
+        payload,
+        discountCode.trim()
+      );
+
+      setDiscountPreview(result.pricing || result);
+    } catch (err) {
+      console.error(err);
+      setDiscountPreview(null);
+      setDiscountApplyError(err.message || "Failed to apply discount code.");
+    } finally {
+      setDiscountApplying(false);
+    }
+  };
+
+  const handleRemoveDiscountCode = () => {
+    setDiscountCode("");
+    setDiscountPreview(null);
+    setDiscountApplyError("");
+    setCheckoutError("");
   };
 
   const handleCheckout = async () => {
@@ -261,7 +388,11 @@ export default function App() {
         quantity: item.cartQuantity,
       }));
 
-      const result = await createCheckoutSession(token, payload);
+      const result = await createCheckoutSession(
+        token,
+        payload,
+        discountCode.trim()
+      );
 
       if (!result.url) {
         throw new Error("Stripe checkout URL was not returned");
@@ -279,6 +410,9 @@ export default function App() {
   const handleClearCartAfterSuccess = () => {
     setCartItems([]);
     setCartOpen(false);
+    setDiscountCode("");
+    setDiscountPreview(null);
+    setDiscountApplyError("");
 
     if (currentUser?.userId) {
       localStorage.removeItem(getCartStorageKey(currentUser.userId));
@@ -304,9 +438,17 @@ export default function App() {
     });
 
     if (sortOption === "price-low-high") {
-      results = [...results].sort((a, b) => a.price - b.price);
+      results = [...results].sort((a, b) => {
+        const aPrice = a.isOnSale && a.salePrice !== null ? a.salePrice : a.price;
+        const bPrice = b.isOnSale && b.salePrice !== null ? b.salePrice : b.price;
+        return aPrice - bPrice;
+      });
     } else if (sortOption === "price-high-low") {
-      results = [...results].sort((a, b) => b.price - a.price);
+      results = [...results].sort((a, b) => {
+        const aPrice = a.isOnSale && a.salePrice !== null ? a.salePrice : a.price;
+        const bPrice = b.isOnSale && b.salePrice !== null ? b.salePrice : b.price;
+        return bPrice - aPrice;
+      });
     } else if (sortOption === "quantity-low-high") {
       results = [...results].sort((a, b) => a.quantity - b.quantity);
     } else if (sortOption === "quantity-high-low") {
@@ -416,6 +558,99 @@ export default function App() {
     return <OrderDetailsPage />;
   }
 
+  if (currentPath === "/admin" || currentPath.startsWith("/admin/")) {
+    if (authChecking || adminChecking) {
+      return (
+        <div className="min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
+          <div className="mx-auto max-w-3xl rounded-[32px] border border-slate-200 bg-white p-8 text-center shadow-sm">
+            <h1 className="text-3xl font-bold text-slate-900">Loading...</h1>
+            <p className="mt-3 text-slate-500">
+              Please wait while we verify admin access.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    if (!currentUser) {
+      return (
+        <div className="min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
+          <div className="mx-auto max-w-3xl rounded-[32px] border border-slate-200 bg-white p-8 text-center shadow-sm">
+            <p className="text-sm font-semibold uppercase tracking-wide text-orange-500">
+              Login Required
+            </p>
+            <h1 className="mt-2 text-3xl font-bold text-slate-900">
+              Admin access requires login
+            </h1>
+            <p className="mt-3 text-slate-500">
+              Please log in with an admin account to continue.
+            </p>
+
+            <div className="mt-8 flex justify-center gap-3">
+              <button
+                onClick={() => {
+                  window.location.href = "/";
+                }}
+                className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              >
+                Return Home
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (!isAdmin) {
+      return (
+        <div className="min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
+          <div className="mx-auto max-w-3xl rounded-[32px] border border-red-200 bg-white p-8 text-center shadow-sm">
+            <p className="text-sm font-semibold uppercase tracking-wide text-red-500">
+              Access Denied
+            </p>
+            <h1 className="mt-2 text-3xl font-bold text-slate-900">
+              You are not an admin
+            </h1>
+            <p className="mt-3 text-slate-500">
+              This area is only available to users in the Cognito admin group.
+            </p>
+
+            <button
+              onClick={() => {
+                window.location.href = "/";
+              }}
+              className="mt-8 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+            >
+              Return Home
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    if (currentPath === "/admin/products") {
+      return <AdminProductsPage />;
+    }
+
+    if (currentPath === "/admin/discount-codes") {
+      return <AdminDiscountCodesPage />;
+    }
+
+    if (currentPath === "/admin/sales") {
+      return <AdminSalesPage />;
+    }
+
+    if (currentPath === "/admin/orders") {
+      return <AdminOrdersPage />;
+    }
+
+    if (currentPath === "/admin/users") {
+      return <AdminUsersPage />;
+    }
+
+    return <AdminDashboardPage />;
+  }
+
   const isOverlayOpen = authMode || cartOpen || selectedItem;
 
   return (
@@ -427,6 +662,7 @@ export default function App() {
           onOpenCart={() => setCartOpen(true)}
           onLogout={handleLogout}
           currentUser={currentUser}
+          isAdmin={isAdmin}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           cartCount={cartCount}
@@ -454,13 +690,16 @@ export default function App() {
                 Items on sale
               </p>
               <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-900">
-                {selectedCategory ? `${selectedCategory} Listings` : "Browse current listings"}
+                {selectedCategory
+                  ? `${selectedCategory} Listings`
+                  : "Browse current listings"}
               </h1>
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <p className="text-sm text-slate-500">
-                Showing {displayedItems.length} item{displayedItems.length === 1 ? "" : "s"}
+                Showing {displayedItems.length} item
+                {displayedItems.length === 1 ? "" : "s"}
               </p>
 
               <select
@@ -480,11 +719,15 @@ export default function App() {
           {productsLoading || authChecking ? (
             <div className="rounded-[28px] bg-white p-12 text-center shadow-sm">
               <h3 className="text-xl font-semibold text-slate-900">Loading...</h3>
-              <p className="mt-2 text-slate-500">Please wait while the page finishes loading.</p>
+              <p className="mt-2 text-slate-500">
+                Please wait while the page finishes loading.
+              </p>
             </div>
           ) : productsError ? (
             <div className="rounded-[28px] border border-red-200 bg-red-50 p-12 text-center shadow-sm">
-              <h3 className="text-xl font-semibold text-red-700">Unable to load products</h3>
+              <h3 className="text-xl font-semibold text-red-700">
+                Unable to load products
+              </h3>
               <p className="mt-2 text-red-600">{productsError}</p>
             </div>
           ) : displayedItems.length === 0 ? (
@@ -535,7 +778,9 @@ export default function App() {
                 })}
 
                 <button
-                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
                   disabled={currentPage === totalPages}
                   className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
@@ -560,6 +805,13 @@ export default function App() {
         onCheckout={handleCheckout}
         checkoutLoading={checkoutLoading}
         checkoutError={checkoutError}
+        discountCode={discountCode}
+        onDiscountCodeChange={handleDiscountCodeChange}
+        discountPreview={discountPreview}
+        discountApplying={discountApplying}
+        discountApplyError={discountApplyError}
+        onApplyDiscountCode={handleApplyDiscountCode}
+        onRemoveDiscountCode={handleRemoveDiscountCode}
       />
 
       {authMode && (

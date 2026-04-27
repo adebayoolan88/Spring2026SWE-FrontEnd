@@ -13,6 +13,7 @@ function NavBar({
   onOpenCart,
   onLogout,
   currentUser,
+  isAdmin,
   searchTerm,
   setSearchTerm,
   cartCount,
@@ -41,15 +42,20 @@ function NavBar({
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200 bg-white">
       <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-4 sm:px-6 lg:px-8">
-        <div className="flex min-w-fit items-center gap-3">
+        <button
+          onClick={() => {
+            window.location.href = "/";
+          }}
+          className="flex min-w-fit items-center gap-3"
+        >
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 text-lg font-bold text-white shadow-md">
             NS
           </div>
-          <div>
+          <div className="text-left">
             <p className="text-xl font-bold tracking-tight text-slate-900">NoteSwap</p>
             <p className="text-xs text-slate-500">Buy. Sell. Play.</p>
           </div>
-        </div>
+        </button>
 
         <div className="flex-1">
           <div className="flex items-center rounded-2xl border-2 border-slate-300 bg-white px-4 py-3 shadow-sm">
@@ -79,7 +85,7 @@ function NavBar({
                 </button>
 
                 {accountMenuOpen && (
-                  <div className="absolute right-0 top-full z-50 mt-3 w-52 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
+                  <div className="absolute right-0 top-full z-50 mt-3 w-56 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
                     <button
                       onClick={() => {
                         setAccountMenuOpen(false);
@@ -100,6 +106,18 @@ function NavBar({
                       My Orders
                     </button>
 
+                    {isAdmin ? (
+                      <button
+                        onClick={() => {
+                          setAccountMenuOpen(false);
+                          window.location.href = "/admin";
+                        }}
+                        className="block w-full rounded-xl px-3 py-2 text-left text-sm font-medium text-orange-600 transition hover:bg-orange-50"
+                      >
+                        Admin Panel
+                      </button>
+                    ) : null}
+
                     <div className="my-2 border-t border-slate-100" />
 
                     <button
@@ -114,6 +132,17 @@ function NavBar({
                   </div>
                 )}
               </div>
+
+              {isAdmin ? (
+                <button
+                  onClick={() => {
+                    window.location.href = "/admin";
+                  }}
+                  className="hidden rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800 lg:inline-flex"
+                >
+                  Admin
+                </button>
+              ) : null}
 
               <button
                 onClick={onLogout}
