@@ -1,0 +1,12 @@
+.admin-product-create-modal {
+  position: relative;
+}
+
+.admin-product-create-modal button:focus-visible,
+.admin-product-create-modal a:focus-visible,
+.admin-product-create-modal input:focus-visible,
+.admin-product-create-modal select:focus-visible,
+.admin-product-create-modal textarea:focus-visible {
+  outline: 2px solid #fb923c;
+  outline-offset: 2px;
+}

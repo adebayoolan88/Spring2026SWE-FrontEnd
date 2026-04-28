@@ -40,7 +40,7 @@ function NavBar({
   const displayName = currentUser?.firstName || currentUser?.username || "User";
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white">
+    <header className="nav-bar sticky top-0 z-30 border-b border-slate-200 bg-white">
       <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-4 sm:px-6 lg:px-8">
         <button
           onClick={() => {

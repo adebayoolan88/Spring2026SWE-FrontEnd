@@ -1,0 +1,12 @@
+.nav-bar {
+  position: relative;
+}
+
+.nav-bar button:focus-visible,
+.nav-bar a:focus-visible,
+.nav-bar input:focus-visible,
+.nav-bar select:focus-visible,
+.nav-bar textarea:focus-visible {
+  outline: 2px solid #fb923c;
+  outline-offset: 2px;
+}
