@@ -35,7 +35,7 @@ function CategoryNav({
   return (
     <div className="category-nav border-b border-slate-200 bg-white">
       {/* Category buttons laid out in a responsive grid */}
-      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-2 px-4 py-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 lg:px-8">
+      <div className="category-nav-grid">
         {CATEGORIES.map((category) => {
           const isOpen = activeMenu === category;
           const categoryItems = getItemsForCategory(category);

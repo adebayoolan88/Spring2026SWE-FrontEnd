@@ -138,7 +138,7 @@ function AdminDashboardPage() {
                 onClick={() => {
                   window.location.href = "/admin/products";
                 }}
-                className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                className="btn-primary"
               >
                 Manage Products
               </button>
@@ -147,7 +147,7 @@ function AdminDashboardPage() {
                 onClick={() => {
                   window.location.href = "/admin/discount-codes";
                 }}
-                className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                className="btn-secondary"
               >
                 Create Discount Code
               </button>
@@ -156,7 +156,7 @@ function AdminDashboardPage() {
                 onClick={() => {
                   window.location.href = "/admin/sales";
                 }}
-                className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                className="btn-secondary"
               >
                 Create Sale
               </button>
@@ -165,7 +165,7 @@ function AdminDashboardPage() {
                 onClick={() => {
                   window.location.href = "/admin/orders";
                 }}
-                className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                className="btn-secondary"
               >
                 View Orders
               </button>

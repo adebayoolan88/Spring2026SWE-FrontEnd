@@ -126,7 +126,7 @@ function CartPanel({
                       onClose();
                       onOpenLogin();
                     }}
-                    className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                    className="btn-secondary"
                   >
                     Log In
                   </button>
