@@ -1,25 +1,27 @@
 @import "./tokens.css";
 @import "tailwindcss";
-
-html,
-body,
-#root {
-  min-height: 100%;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  margin: 0;
-  background: linear-gradient(180deg, var(--color-bg-page-start) 0%, var(--color-bg-page-end) 100%);
-  font-family: Arial, Helvetica, sans-serif;
-  color: var(--color-text-base);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
+@import "./styles/base.css";
+@import "./styles/layout.css";
+@import "./styles/utilities.css";
+@import "./styles/components/AdminLayout.css";
+@import "./styles/components/AdminProductCreateModal.css";
+@import "./styles/components/AdminProductEditModal.css";
+@import "./styles/components/AdminUserEditModal.css";
+@import "./styles/components/AuthModal.css";
+@import "./styles/components/CartPanel.css";
+@import "./styles/components/CategoryNav.css";
+@import "./styles/components/ItemCard.css";
+@import "./styles/components/NavBar.css";
+@import "./styles/components/ProductDetailsModal.css";
+@import "./styles/components/SearchBar.css";
+@import "./styles/pages/CheckoutCancelPage.css";
+@import "./styles/pages/CheckoutSuccessPage.css";
+@import "./styles/pages/MyOrdersPage.css";
+@import "./styles/pages/MyProfilePage.css";
+@import "./styles/pages/OrderDetailsPage.css";
+@import "./styles/pages/admin/AdminDashboardPage.css";
+@import "./styles/pages/admin/AdminDiscountCodesPage.css";
+@import "./styles/pages/admin/AdminOrdersPage.css";
+@import "./styles/pages/admin/AdminProductsPage.css";
+@import "./styles/pages/admin/AdminSalesPage.css";
+@import "./styles/pages/admin/AdminUsersPage.css";

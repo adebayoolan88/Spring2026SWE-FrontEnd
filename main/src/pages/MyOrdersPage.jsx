@@ -44,7 +44,7 @@ function MyOrdersPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
+    <div className="page-my-orders min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
       <div className="mx-auto max-w-5xl rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm">
         <div className="mb-8">
           <p className="text-sm font-semibold uppercase tracking-wide text-orange-500">
@@ -78,7 +78,7 @@ function MyOrdersPage() {
               onClick={() => {
                 window.location.href = "/";
               }}
-              className="mt-6 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+              className="mt-6 btn-primary"
             >
               Start Shopping
             </button>
@@ -152,7 +152,7 @@ function MyOrdersPage() {
                 onClick={() => {
                   window.location.href = "/";
                 }}
-                className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                className="btn-secondary"
               >
                 Return Home
               </button>

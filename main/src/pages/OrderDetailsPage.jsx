@@ -53,7 +53,7 @@ function OrderDetailsPage() {
   }, [orderId]);
 
   return (
-    <div className="min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
+    <div className="page-order-details min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
       <div className="mx-auto max-w-5xl rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm">
         {loading ? (
           <div className="text-center">
@@ -219,7 +219,7 @@ function OrderDetailsPage() {
                 onClick={() => {
                   window.location.href = "/orders";
                 }}
-                className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                className="btn-primary"
               >
                 Back to Orders
               </button>
@@ -228,7 +228,7 @@ function OrderDetailsPage() {
                 onClick={() => {
                   window.location.href = "/";
                 }}
-                className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                className="btn-secondary"
               >
                 Return Home
               </button>

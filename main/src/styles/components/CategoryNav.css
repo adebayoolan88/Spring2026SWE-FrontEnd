@@ -1,0 +1,12 @@
+.category-nav {
+  position: relative;
+}
+
+.category-nav button:focus-visible,
+.category-nav a:focus-visible,
+.category-nav input:focus-visible,
+.category-nav select:focus-visible,
+.category-nav textarea:focus-visible {
+  outline: 2px solid #fb923c;
+  outline-offset: 2px;
+}

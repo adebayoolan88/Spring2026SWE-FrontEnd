@@ -201,7 +201,7 @@ function AdminUsersPage() {
       title="Users"
       subtitle="View and manage marketplace users, account status, and app-level roles."
     >
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="page-admin-users grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
@@ -218,7 +218,7 @@ function AdminUsersPage() {
           </div>
         </div>
 
-        <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="admin-stat-card">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
@@ -234,7 +234,7 @@ function AdminUsersPage() {
           </div>
         </div>
 
-        <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="admin-stat-card">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
@@ -250,7 +250,7 @@ function AdminUsersPage() {
           </div>
         </div>
 
-        <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="admin-stat-card">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
@@ -267,7 +267,7 @@ function AdminUsersPage() {
         </div>
       </div>
 
-      <div className="mt-6 rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="mt-6 admin-stat-card">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex flex-1 items-center rounded-2xl border border-slate-200 bg-white px-4 py-3">
             <Search className="mr-3 h-5 w-5 text-slate-400" />

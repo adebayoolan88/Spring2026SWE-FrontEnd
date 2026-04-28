@@ -169,7 +169,7 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
 
   return (
     <div
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/40 px-4 py-6 backdrop-blur-sm"
+      className="admin-product-edit-modal fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/40 px-4 py-6 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
