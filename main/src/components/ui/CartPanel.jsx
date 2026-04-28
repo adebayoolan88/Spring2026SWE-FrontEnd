@@ -85,7 +85,7 @@ function CartPanel({
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="shrink-0 flex items-center justify-between border-b border-slate-200 px-6 py-5">
+        <div className="cart-panel shrink-0 flex items-center justify-between border-b border-slate-200 px-6 py-5">
           <div className="flex items-center gap-3">
             <div className="rounded-2xl bg-slate-100 p-2 text-slate-700">
               <ShoppingCart className="h-5 w-5" />

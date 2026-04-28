@@ -1,0 +1,7 @@
+/* Minimal utility layer for repeated patterns */
+.u-flex { display: flex; }
+.u-flex-center { display: flex; align-items: center; justify-content: center; }
+.u-gap-sm { gap: 0.5rem; }
+.u-gap-md { gap: 1rem; }
+.u-shadow-card { box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04); }
+.u-card { border: 1px solid #e2e8f0; border-radius: 1rem; background: #fff; }

@@ -229,7 +229,7 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 px-4 py-6 backdrop-blur-sm"
+      className="auth-modal fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 px-4 py-6 backdrop-blur-sm"
       onClick={onClose}
     >
       <div

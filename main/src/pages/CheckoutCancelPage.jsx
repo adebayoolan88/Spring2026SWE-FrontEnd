@@ -1,6 +1,6 @@
 function CheckoutCancelPage() {
   return (
-    <div className="min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
+    <div className="page-checkout-cancel min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
       <div className="mx-auto max-w-3xl rounded-[32px] border border-slate-200 bg-white p-8 text-center shadow-sm">
         <p className="text-sm font-semibold uppercase tracking-wide text-orange-500">
           Checkout Canceled

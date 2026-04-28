@@ -254,7 +254,7 @@ function AdminDiscountCodesPage() {
       title="Discount Codes"
       subtitle="Create and review discount codes that can be applied during checkout."
     >
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="page-admin-discount-codes grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
             Total Codes
