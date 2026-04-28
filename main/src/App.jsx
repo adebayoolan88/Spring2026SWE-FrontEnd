@@ -489,8 +489,8 @@ export default function App() {
   if (currentPath === "/checkout/success") {
     if (authChecking) {
       return (
-        <div className="min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
-          <div className="mx-auto max-w-3xl rounded-[32px] border border-slate-200 bg-white p-8 text-center shadow-sm">
+        <div className="page-shell">
+          <div className="status-card">
             <h1 className="text-3xl font-bold text-slate-900">Loading...</h1>
             <p className="mt-3 text-slate-500">
               Please wait while we prepare your order confirmation.
@@ -510,8 +510,8 @@ export default function App() {
   if (currentPath === "/profile") {
     if (authChecking) {
       return (
-        <div className="min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
-          <div className="mx-auto max-w-3xl rounded-[32px] border border-slate-200 bg-white p-8 text-center shadow-sm">
+        <div className="page-shell">
+          <div className="status-card">
             <h1 className="text-3xl font-bold text-slate-900">Loading...</h1>
             <p className="mt-3 text-slate-500">
               Please wait while we prepare your profile.
@@ -527,8 +527,8 @@ export default function App() {
   if (currentPath === "/orders") {
     if (authChecking) {
       return (
-        <div className="min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
-          <div className="mx-auto max-w-3xl rounded-[32px] border border-slate-200 bg-white p-8 text-center shadow-sm">
+        <div className="page-shell">
+          <div className="status-card">
             <h1 className="text-3xl font-bold text-slate-900">Loading...</h1>
             <p className="mt-3 text-slate-500">
               Please wait while we load your orders.
@@ -544,8 +544,8 @@ export default function App() {
   if (currentPath.startsWith("/orders/")) {
     if (authChecking) {
       return (
-        <div className="min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
-          <div className="mx-auto max-w-3xl rounded-[32px] border border-slate-200 bg-white p-8 text-center shadow-sm">
+        <div className="page-shell">
+          <div className="status-card">
             <h1 className="text-3xl font-bold text-slate-900">Loading...</h1>
             <p className="mt-3 text-slate-500">
               Please wait while we load your order details.
@@ -561,8 +561,8 @@ export default function App() {
   if (currentPath === "/admin" || currentPath.startsWith("/admin/")) {
     if (authChecking || adminChecking) {
       return (
-        <div className="min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
-          <div className="mx-auto max-w-3xl rounded-[32px] border border-slate-200 bg-white p-8 text-center shadow-sm">
+        <div className="page-shell">
+          <div className="status-card">
             <h1 className="text-3xl font-bold text-slate-900">Loading...</h1>
             <p className="mt-3 text-slate-500">
               Please wait while we verify admin access.
@@ -574,8 +574,8 @@ export default function App() {
 
     if (!currentUser) {
       return (
-        <div className="min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
-          <div className="mx-auto max-w-3xl rounded-[32px] border border-slate-200 bg-white p-8 text-center shadow-sm">
+        <div className="page-shell">
+          <div className="status-card">
             <p className="text-sm font-semibold uppercase tracking-wide text-orange-500">
               Login Required
             </p>
@@ -591,7 +591,7 @@ export default function App() {
                 onClick={() => {
                   window.location.href = "/";
                 }}
-                className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                className="btn-secondary"
               >
                 Return Home
               </button>
@@ -603,8 +603,8 @@ export default function App() {
 
     if (!isAdmin) {
       return (
-        <div className="min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
-          <div className="mx-auto max-w-3xl rounded-[32px] border border-red-200 bg-white p-8 text-center shadow-sm">
+        <div className="page-shell">
+          <div className="status-card status-card-error">
             <p className="text-sm font-semibold uppercase tracking-wide text-red-500">
               Access Denied
             </p>
@@ -619,7 +619,7 @@ export default function App() {
               onClick={() => {
                 window.location.href = "/";
               }}
-              className="mt-8 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+              className="mt-8 btn-primary"
             >
               Return Home
             </button>
@@ -654,7 +654,7 @@ export default function App() {
   const isOverlayOpen = authMode || cartOpen || selectedItem;
 
   return (
-    <div className="min-h-screen bg-[#f7f8fa] text-slate-900">
+    <div className="app-shell">
       <div className={isOverlayOpen ? "pointer-events-none select-none blur-[4px]" : ""}>
         <NavBar
           onOpenLogin={() => setAuthMode("login")}

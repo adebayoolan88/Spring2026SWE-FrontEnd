@@ -45,8 +45,8 @@ function AdminLayout({ children, title = "Admin Panel", subtitle = "" }) {
   const currentPath = window.location.pathname;
 
   return (
-    <div className="min-h-screen bg-[#f7f8fa] text-slate-900">
-      <div className="border-b border-slate-200 bg-white">
+    <div className="app-shell">
+      <div className="admin-layout-topbar">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <button
             onClick={() => {
