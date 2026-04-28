@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-import { LogIn, ShoppingCart, UserPlus } from "lucide-react";
-import { Link } from "react-router-dom";
-
-=======
 import { LogIn, Search, ShoppingCart, UserPlus } from "lucide-react";
->>>>>>> e6d7f25c1492a6636432e940d4b098e926f62a9e
+import { Link } from "react-router-dom";
 
 function NavBar({
   onOpenLogin,
@@ -16,7 +11,6 @@ function NavBar({
   setSearchTerm,
 }) {
   return (
-    // Main top header of the site.
     <header className="sticky top-0 z-30 border-b border-slate-200 bg-white">
       <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-4 sm:px-6 lg:px-8">
         {/* Brand/logo section */}
@@ -30,24 +24,14 @@ function NavBar({
           </div>
         </div>
 
-<<<<<<< HEAD
+        {/* Navigation links */}
         <nav className="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
           <Link to="/" className="transition hover:text-slate-900">Home</Link>
           <Link to="/browse" className="transition hover:text-slate-900">Browse</Link>
           <Link to="/deals" className="transition hover:text-slate-900">Deals</Link>
         </nav>
 
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={onOpenLogin}
-            className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50"
-          >
-            <LogIn className="h-4 w-4" />
-            Login
-          </button>
-=======
-        {/* Search bar built directly into the navbar */}
+        {/* Search bar */}
         <div className="flex-1">
           <div className="flex items-center rounded-2xl border-2 border-slate-300 bg-white px-4 py-3 shadow-sm">
             <Search className="mr-3 h-5 w-5 text-slate-400" />
@@ -69,7 +53,6 @@ function NavBar({
               <div className="hidden rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-700 md:block">
                 Hi, <span className="font-semibold">{currentUser.firstName || currentUser.username}</span>
               </div>
->>>>>>> e6d7f25c1492a6636432e940d4b098e926f62a9e
 
               <button
                 onClick={onLogout}

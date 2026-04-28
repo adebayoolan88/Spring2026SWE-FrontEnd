@@ -1,12 +1,12 @@
-<<<<<<< HEAD
-import { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Routes, Route } from "react-router-dom";
-
 import NavBar from "./components/layout/NavBar";
 import Footer from "./components/layout/Footer";
-
+import CategoryNav from "./components/layout/CategoryNav";
+import ItemCard from "./components/ui/ItemCard";
 import CartPanel from "./components/ui/CartPanel";
 import AuthModal from "./components/ui/AuthModal";
+import ProductDetailsModal from "./components/ui/ProductDetailsModal";
 
 // Pages
 import Home from "./pages/Home";
@@ -19,18 +19,6 @@ import Contact from "./pages/Contact";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 
-
-
-
-export default function App() {
-=======
-import React, { useEffect, useMemo, useState } from "react";
-import NavBar from "./components/layout/NavBar";
-import CategoryNav from "./components/layout/CategoryNav";
-import ItemCard from "./components/ui/ItemCard";
-import AuthModal from "./components/ui/AuthModal";
-import CartPanel from "./components/ui/CartPanel";
-import ProductDetailsModal from "./components/ui/ProductDetailsModal";
 import {
   clearStoredToken,
   fetchCurrentUser,
@@ -55,22 +43,13 @@ export default function App() {
 
   // UI/filter state.
   const [searchTerm, setSearchTerm] = useState("");
->>>>>>> e6d7f25c1492a6636432e940d4b098e926f62a9e
   const [authMode, setAuthMode] = useState(null);
   const [cartOpen, setCartOpen] = useState(false);
   const [cartItems] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [activeMenu, setActiveMenu] = useState(null);
   const [sortOption, setSortOption] = useState("default");
-
-<<<<<<< HEAD
-  const isOverlayOpen = authMode || cartOpen;
-
-  return (
-    <div className="min-h-screen bg-[#f5f7fb] text-slate-900">
-      
-      {/* Blur wrapper for main content */}
-=======
+  
   // Which product is currently open in the product details modal.
   const [selectedItem, setSelectedItem] = useState(null);
 
@@ -187,11 +166,21 @@ export default function App() {
   // If any overlay is open, blur the main page behind it.
   const isOverlayOpen = authMode || cartOpen || selectedItem;
 
+  // Loading state while checking auth
+  if (authChecking) {
+    return (
+      <div className="min-h-screen bg-[#f7f8fa] flex items-center justify-center">
+        <div className="text-center">
+          <h3 className="text-xl font-semibold text-slate-900">Loading...</h3>
+          <p className="mt-2 text-slate-500">Please wait while the page finishes loading.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#f7f8fa] text-slate-900">
->>>>>>> e6d7f25c1492a6636432e940d4b098e926f62a9e
       <div className={isOverlayOpen ? "pointer-events-none select-none blur-[4px]" : ""}>
-        
         <NavBar
           onOpenLogin={() => setAuthMode("login")}
           onOpenSignup={() => setAuthMode("signup")}
@@ -202,26 +191,6 @@ export default function App() {
           setSearchTerm={setSearchTerm}
         />
 
-<<<<<<< HEAD
-        {/* ROUTES */}
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/browse" element={<Browse />} />
-          <Route path="/deals" element={<Deals />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/helpcenter" element={<HelpCenter />} />
-          <Route path="/careers" element={<Careers />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/terms" element={<Terms />} />
-
-        </Routes>
-
-        <Footer />
-      </div>
-
-      {/* Cart Panel Overlay */}
-=======
         <CategoryNav
           items={products}
           activeMenu={activeMenu}
@@ -270,7 +239,7 @@ export default function App() {
           </section>
 
           {/* Main content switches between loading, error, empty state, and actual product grid */}
-          {productsLoading || authChecking ? (
+          {productsLoading ? (
             <div className="rounded-[28px] bg-white p-12 text-center shadow-sm">
               <h3 className="text-xl font-semibold text-slate-900">Loading...</h3>
               <p className="mt-2 text-slate-500">Please wait while the page finishes loading.</p>
@@ -299,21 +268,30 @@ export default function App() {
             </div>
           )}
         </main>
+
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/browse" element={<Browse />} />
+          <Route path="/deals" element={<Deals />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/helpcenter" element={<HelpCenter />} />
+          <Route path="/careers" element={<Careers />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+        </Routes>
+
+        <Footer />
       </div>
 
       {/* Right-side shopping cart panel */}
->>>>>>> e6d7f25c1492a6636432e940d4b098e926f62a9e
       <CartPanel
         isOpen={cartOpen}
         onClose={() => setCartOpen(false)}
         cartItems={cartItems}
       />
 
-<<<<<<< HEAD
-      {/* Auth Modal Overlay */}
-=======
       {/* Auth modal for login/signup */}
->>>>>>> e6d7f25c1492a6636432e940d4b098e926f62a9e
       {authMode && (
         <AuthModal
           mode={authMode}
