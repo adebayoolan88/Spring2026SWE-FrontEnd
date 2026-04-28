@@ -1,3 +1,4 @@
+@import "./tokens.css";
 @import "tailwindcss";
 
 html,
@@ -16,9 +17,9 @@ html {
 
 body {
   margin: 0;
-  background: linear-gradient(180deg, #f8fafc 0%, #f5f7fb 100%);
+  background: linear-gradient(180deg, var(--color-bg-page-start) 0%, var(--color-bg-page-end) 100%);
   font-family: Arial, Helvetica, sans-serif;
-  color: #0f172a;
+  color: var(--color-text-base);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
