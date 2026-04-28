@@ -201,8 +201,8 @@ function AdminUsersPage() {
       title="Users"
       subtitle="View and manage marketplace users, account status, and app-level roles."
     >
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="admin-stat-card">
+      <div className="page-admin-users grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">

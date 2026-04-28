@@ -53,7 +53,7 @@ function OrderDetailsPage() {
   }, [orderId]);
 
   return (
-    <div className="page-shell">
+    <div className="page-order-details min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
       <div className="mx-auto max-w-5xl rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm">
         {loading ? (
           <div className="text-center">

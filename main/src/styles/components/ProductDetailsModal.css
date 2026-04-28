@@ -1,0 +1,12 @@
+.product-details-modal {
+  position: relative;
+}
+
+.product-details-modal button:focus-visible,
+.product-details-modal a:focus-visible,
+.product-details-modal input:focus-visible,
+.product-details-modal select:focus-visible,
+.product-details-modal textarea:focus-visible {
+  outline: 2px solid #fb923c;
+  outline-offset: 2px;
+}

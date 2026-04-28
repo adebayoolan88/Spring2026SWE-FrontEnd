@@ -33,7 +33,7 @@ function CategoryNav({
   };
 
   return (
-    <div className="category-nav">
+    <div className="category-nav border-b border-slate-200 bg-white">
       {/* Category buttons laid out in a responsive grid */}
       <div className="category-nav-grid">
         {CATEGORIES.map((category) => {

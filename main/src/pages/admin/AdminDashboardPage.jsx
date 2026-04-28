@@ -17,7 +17,7 @@ function formatMoney(amount) {
 
 function StatCard({ label, value, icon: Icon }) {
   return (
-    <div className="admin-stat-card">
+    <div className="page-admin-dashboard rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
       <div className="flex items-center justify-between gap-4">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">

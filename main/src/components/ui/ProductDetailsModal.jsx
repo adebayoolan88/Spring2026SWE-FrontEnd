@@ -40,7 +40,7 @@ function ProductDetailsModal({ item, onClose, onAddToCart }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 px-4 backdrop-blur-sm"
+      className="product-details-modal fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 px-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <div

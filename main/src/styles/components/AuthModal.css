@@ -1,0 +1,12 @@
+.auth-modal {
+  position: relative;
+}
+
+.auth-modal button:focus-visible,
+.auth-modal a:focus-visible,
+.auth-modal input:focus-visible,
+.auth-modal select:focus-visible,
+.auth-modal textarea:focus-visible {
+  outline: 2px solid #fb923c;
+  outline-offset: 2px;
+}

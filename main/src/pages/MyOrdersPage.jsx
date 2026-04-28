@@ -44,7 +44,7 @@ function MyOrdersPage() {
   }, []);
 
   return (
-    <div className="page-shell">
+    <div className="page-my-orders min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
       <div className="mx-auto max-w-5xl rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm">
         <div className="mb-8">
           <p className="text-sm font-semibold uppercase tracking-wide text-orange-500">

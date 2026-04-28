@@ -313,8 +313,8 @@ function AdminSalesPage() {
       title="Sales"
       subtitle="Create and review sale campaigns for products, categories, or the full marketplace."
     >
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="admin-stat-card">
+      <div className="page-admin-sales grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
             Total Sales
           </p>

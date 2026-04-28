@@ -1,0 +1,12 @@
+.admin-user-edit-modal {
+  position: relative;
+}
+
+.admin-user-edit-modal button:focus-visible,
+.admin-user-edit-modal a:focus-visible,
+.admin-user-edit-modal input:focus-visible,
+.admin-user-edit-modal select:focus-visible,
+.admin-user-edit-modal textarea:focus-visible {
+  outline: 2px solid #fb923c;
+  outline-offset: 2px;
+}
