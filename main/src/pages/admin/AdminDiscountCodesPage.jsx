@@ -254,7 +254,7 @@ function AdminDiscountCodesPage() {
       title="Discount Codes"
       subtitle="Create and review discount codes that can be applied during checkout."
     >
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="page-admin-discount-codes grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
             Total Codes
@@ -262,21 +262,21 @@ function AdminDiscountCodesPage() {
           <p className="mt-2 text-2xl font-bold text-slate-900">{totals.all}</p>
         </div>
 
-        <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="admin-stat-card">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
             Active
           </p>
           <p className="mt-2 text-2xl font-bold text-emerald-700">{totals.active}</p>
         </div>
 
-        <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="admin-stat-card">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
             Inactive
           </p>
           <p className="mt-2 text-2xl font-bold text-slate-700">{totals.inactive}</p>
         </div>
 
-        <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+        <div className="admin-stat-card">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
             Expired
           </p>
@@ -284,7 +284,7 @@ function AdminDiscountCodesPage() {
         </div>
       </div>
 
-      <div className="mt-6 rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+      <div className="mt-6 admin-stat-card">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex flex-1 items-center rounded-2xl border border-slate-200 bg-white px-4 py-3">
             <Search className="mr-3 h-5 w-5 text-slate-400" />
@@ -302,7 +302,7 @@ function AdminDiscountCodesPage() {
               setFormError("");
               setSuccessMessage("");
             }}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+            className="inline-flex items-center justify-center gap-2 btn-primary"
           >
             <Plus className="h-4 w-4" />
             {showCreateForm ? "Close Form" : "Create Code"}
@@ -481,7 +481,7 @@ function AdminDiscountCodesPage() {
                   setFormError("");
                   setSuccessMessage("");
                 }}
-                className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+                className="btn-secondary"
               >
                 Cancel
               </button>
@@ -489,7 +489,7 @@ function AdminDiscountCodesPage() {
               <button
                 type="submit"
                 disabled={creating}
-                className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+                className="btn-primary disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {creating ? "Creating..." : "Create Discount Code"}
               </button>

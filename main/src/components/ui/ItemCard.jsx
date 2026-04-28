@@ -27,7 +27,7 @@ function ItemCard({ item, onViewItem }) {
     getDisplayPricing(item);
 
   return (
-    <div className="group overflow-hidden rounded-[28px] border border-slate-200/80 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(15,23,42,0.12)]">
+    <div className="item-card group overflow-hidden rounded-[28px] border border-slate-200/80 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(15,23,42,0.12)]">
       <div className="relative h-56 overflow-hidden bg-slate-100">
         <img
           src={item.image}

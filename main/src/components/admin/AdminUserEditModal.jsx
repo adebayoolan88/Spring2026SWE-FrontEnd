@@ -68,7 +68,7 @@ function AdminUserEditModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 px-4 py-6 backdrop-blur-sm"
+      className="admin-user-edit-modal fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 px-4 py-6 backdrop-blur-sm"
       onClick={onClose}
     >
       <div

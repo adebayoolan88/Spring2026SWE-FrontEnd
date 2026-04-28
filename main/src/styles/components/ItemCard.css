@@ -1,0 +1,12 @@
+.item-card {
+  position: relative;
+}
+
+.item-card button:focus-visible,
+.item-card a:focus-visible,
+.item-card input:focus-visible,
+.item-card select:focus-visible,
+.item-card textarea:focus-visible {
+  outline: 2px solid #fb923c;
+  outline-offset: 2px;
+}

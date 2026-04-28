@@ -1,0 +1,12 @@
+.search-bar {
+  position: relative;
+}
+
+.search-bar button:focus-visible,
+.search-bar a:focus-visible,
+.search-bar input:focus-visible,
+.search-bar select:focus-visible,
+.search-bar textarea:focus-visible {
+  outline: 2px solid #fb923c;
+  outline-offset: 2px;
+}

@@ -40,7 +40,7 @@ function ProductDetailsModal({ item, onClose, onAddToCart }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 px-4 backdrop-blur-sm"
+      className="product-details-modal fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 px-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
@@ -119,7 +119,7 @@ function ProductDetailsModal({ item, onClose, onAddToCart }) {
           </div>
 
           <div className="space-y-5">
-            <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="admin-stat-card">
               <p
                 className={`text-3xl font-bold ${
                   hasValidSalePrice ? "text-emerald-700" : "text-slate-900"
@@ -141,7 +141,7 @@ function ProductDetailsModal({ item, onClose, onAddToCart }) {
               ) : null}
             </div>
 
-            <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="admin-stat-card">
               <h3 className="text-lg font-semibold text-slate-900">
                 Item Details
               </h3>
