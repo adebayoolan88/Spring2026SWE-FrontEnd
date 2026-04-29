@@ -75,24 +75,24 @@ function CartPanel({
     <>
       <div
         onClick={onClose}
-        className={`fixed inset-0 z-40 bg-slate-950/30 transition ${
-          isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+        className={`cart-panel__backdrop ${
+          isOpen ? "cart-panel__backdrop--open" : "cart-panel__backdrop--closed"
         }`}
       />
 
       <aside
-        className={`fixed right-0 top-0 z-50 flex h-dvh w-full max-w-md flex-col border-l border-slate-200 bg-white shadow-2xl transition-transform duration-300 ${
-          isOpen ? "translate-x-0" : "translate-x-full"
+        className={`cart-panel__drawer ${
+          isOpen ? "cart-panel__drawer--open" : "cart-panel__drawer--closed"
         }`}
       >
-        <div className="cart-panel shrink-0 flex items-center justify-between border-b border-slate-200 px-6 py-5">
-          <div className="flex items-center gap-3">
-            <div className="rounded-2xl bg-slate-100 p-2 text-slate-700">
-              <ShoppingCart className="h-5 w-5" />
+        <div className="cart-panel__header">
+          <div className="cart-panel__header-group">
+            <div className="cart-panel__header-icon-wrap">
+              <ShoppingCart className="cart-panel__icon" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900">Shopping Cart</h2>
-              <p className="text-sm text-slate-500">
+              <h2 className="cart-panel__title">Shopping Cart</h2>
+              <p className="cart-panel__subtitle">
                 {totalItems} item{totalItems === 1 ? "" : "s"}
               </p>
             </div>
@@ -100,27 +100,27 @@ function CartPanel({
 
           <button
             onClick={onClose}
-            className="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
+            className="cart-panel__close-btn"
           >
-            <X className="h-4 w-4" />
+            <X className="cart-panel__tiny-icon" />
           </button>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+        <div className="cart-panel__body">
           {!currentUser ? (
-            <div className="flex min-h-full items-center justify-center">
-              <div className="max-w-sm text-center">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-slate-600">
-                  <ShoppingCart className="h-7 w-7" />
+            <div className="cart-panel__empty-wrap">
+              <div className="cart-panel__empty-card">
+                <div className="cart-panel__empty-icon-wrap">
+                  <ShoppingCart className="cart-panel__empty-icon" />
                 </div>
-                <h3 className="text-xl font-semibold text-slate-900">
+                <h3 className="cart-panel__empty-title">
                   Log in to use your cart
                 </h3>
-                <p className="mt-2 text-sm leading-6 text-slate-500">
+                <p className="cart-panel__empty-text">
                   Sign in or create an account to save items in your cart.
                 </p>
 
-                <div className="mt-6 flex items-center justify-center gap-3">
+                <div className="cart-panel__empty-actions">
                   <button
                     onClick={() => {
                       onClose();
@@ -136,7 +136,7 @@ function CartPanel({
                       onClose();
                       onOpenSignup();
                     }}
-                    className="rounded-2xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-600"
+                    className="cart-panel__btn cart-panel__btn--primary"
                   >
                     Sign Up
                   </button>
@@ -144,28 +144,28 @@ function CartPanel({
               </div>
             </div>
           ) : cartItems.length === 0 ? (
-            <div className="flex min-h-full items-center justify-center">
-              <div className="max-w-sm text-center">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-slate-600">
-                  <ShoppingCart className="h-7 w-7" />
+            <div className="cart-panel__empty-wrap">
+              <div className="cart-panel__empty-card">
+                <div className="cart-panel__empty-icon-wrap">
+                  <ShoppingCart className="cart-panel__empty-icon" />
                 </div>
-                <h3 className="text-xl font-semibold text-slate-900">
+                <h3 className="cart-panel__empty-title">
                   Your cart is empty
                 </h3>
-                <p className="mt-2 text-sm leading-6 text-slate-500">
+                <p className="cart-panel__empty-text">
                   Add instruments to your cart to see them here.
                 </p>
                 <button
                   onClick={onClose}
-                  className="mt-6 rounded-2xl bg-orange-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-600"
+                  className="mt-6 cart-panel__btn cart-panel__btn--primary"
                 >
                   Continue Shopping
                 </button>
               </div>
             </div>
           ) : (
-            <div className="flex min-h-full flex-col">
-              <div className="space-y-4">
+            <div className="cart-panel__content">
+              <div className="cart-panel__list">
                 {cartItems.map((item) => {
                   const {
                     price,
@@ -178,41 +178,41 @@ function CartPanel({
                   return (
                     <div
                       key={item.id}
-                      className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+                      className="cart-panel__item"
                     >
-                      <div className="flex gap-4">
+                      <div className="cart-panel__item-row">
                         <img
                           src={item.image}
                           alt={item.name}
-                          className="h-20 w-20 rounded-xl object-cover"
+                          className="cart-panel__item-image"
                         />
 
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-start justify-between gap-3">
+                        <div className="cart-panel__item-main">
+                          <div className="cart-panel__item-top">
                             <div>
-                              <div className="flex flex-wrap items-center gap-2">
-                                <p className="text-xs font-semibold uppercase tracking-wide text-orange-500">
+                              <div className="cart-panel__chips">
+                                <p className="cart-panel__category">
                                   {item.category}
                                 </p>
 
                                 {hasValidSalePrice ? (
-                                  <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 text-[11px] font-semibold text-orange-700">
-                                    <Tag className="h-3 w-3" />
+                                  <span className="cart-panel__sale-chip">
+                                    <Tag className="cart-panel__chip-icon" />
                                     Sale
                                   </span>
                                 ) : null}
                               </div>
 
-                              <h3 className="mt-1 truncate text-sm font-semibold text-slate-900">
+                              <h3 className="cart-panel__item-name">
                                 {item.name}
                               </h3>
 
-                              <div className="mt-1 flex flex-wrap items-center gap-2">
+                              <div className="mt-1 cart-panel__chips">
                                 <p
                                   className={`text-sm font-semibold ${
                                     hasValidSalePrice
                                       ? "text-emerald-700"
-                                      : "text-slate-500"
+                                      : "cart-panel__muted"
                                   }`}
                                 >
                                   {formatMoney(displayPrice)}
@@ -233,36 +233,36 @@ function CartPanel({
 
                             <button
                               onClick={() => onRemoveItem(item.id)}
-                              className="rounded-full p-2 text-slate-400 transition hover:bg-slate-100 hover:text-red-500"
+                              className="cart-panel__remove-btn"
                               title="Remove item"
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="cart-panel__tiny-icon" />
                             </button>
                           </div>
 
-                          <div className="mt-4 flex items-center justify-between">
-                            <div className="inline-flex items-center rounded-xl border border-slate-200">
+                          <div className="cart-panel__qty-row">
+                            <div className="cart-panel__qty-controls">
                               <button
                                 onClick={() => onDecreaseQuantity(item.id)}
-                                className="p-2 text-slate-600 transition hover:bg-slate-50"
+                                className="cart-panel__qty-btn"
                               >
-                                <Minus className="h-4 w-4" />
+                                <Minus className="cart-panel__tiny-icon" />
                               </button>
 
-                              <span className="min-w-10 text-center text-sm font-medium text-slate-900">
+                              <span className="cart-panel__qty-value">
                                 {item.cartQuantity}
                               </span>
 
                               <button
                                 onClick={() => onIncreaseQuantity(item.id)}
-                                className="p-2 text-slate-600 transition hover:bg-slate-50"
+                                className="cart-panel__qty-btn"
                               >
-                                <Plus className="h-4 w-4" />
+                                <Plus className="cart-panel__tiny-icon" />
                               </button>
                             </div>
 
-                            <div className="text-right">
-                              <p className="text-sm font-semibold text-slate-900">
+                            <div className="cart-panel__item-total">
+                              <p className="text-sm cart-panel__value">
                                 {formatMoney(displayPrice * item.cartQuantity)}
                               </p>
 
@@ -281,45 +281,45 @@ function CartPanel({
               </div>
 
               {checkoutError ? (
-                <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                <div className="cart-panel__error">
                   {checkoutError}
                 </div>
               ) : null}
 
-              <div className="mt-6 border-t border-slate-200 pt-4">
-                <div className="mb-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-700">
-                    <TicketPercent className="h-4 w-4 text-orange-500" />
+              <div className="cart-panel__summary">
+                <div className="cart-panel__discount-box">
+                  <label className="cart-panel__discount-label">
+                    <TicketPercent className="cart-panel__tiny-icon text-orange-500" />
                     Discount Code
                   </label>
 
-                  <div className="flex gap-2">
+                  <div className="cart-panel__discount-row">
                     <input
                       value={discountCode}
                       onChange={(e) => onDiscountCodeChange(e.target.value)}
                       placeholder="WELCOME10"
-                      className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm uppercase text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                      className="cart-panel__discount-input"
                     />
 
                     <button
                       type="button"
                       onClick={onApplyDiscountCode}
                       disabled={discountApplying || !discountCode?.trim()}
-                      className="rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="cart-panel__apply-btn"
                     >
                       {discountApplying ? "Applying..." : "Apply"}
                     </button>
                   </div>
 
                   {discountApplyError ? (
-                    <div className="mt-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    <div className="cart-panel__discount-msg cart-panel__discount-msg--error">
                       {discountApplyError}
                     </div>
                   ) : null}
 
                   {discountPreview?.discountCode ? (
-                    <div className="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-                      <div className="flex items-center justify-between gap-3">
+                    <div className="cart-panel__discount-msg cart-panel__discount-msg--success">
+                      <div className="cart-panel__discount-actions">
                         <span>
                           Code applied:{" "}
                           <strong>{discountPreview.discountCode}</strong>
@@ -328,7 +328,7 @@ function CartPanel({
                         <button
                           type="button"
                           onClick={onRemoveDiscountCode}
-                          className="text-xs font-bold underline"
+                          className="cart-panel__remove-discount"
                         >
                           Remove
                         </button>
@@ -338,33 +338,33 @@ function CartPanel({
                 </div>
 
                 {totalSavings > 0 ? (
-                  <div className="mb-3 flex items-center justify-between text-sm">
-                    <span className="text-slate-500">Sale savings</span>
-                    <span className="font-semibold text-emerald-700">
+                  <div className="cart-panel__line">
+                    <span className="cart-panel__muted">Sale savings</span>
+                    <span className="cart-panel__value--good">
                       -{formatMoney(totalSavings)}
                     </span>
                   </div>
                 ) : null}
 
-                <div className="mb-3 flex items-center justify-between text-sm">
-                  <span className="text-slate-500">Subtotal</span>
-                  <span className="font-semibold text-slate-900">
+                <div className="cart-panel__line">
+                  <span className="cart-panel__muted">Subtotal</span>
+                  <span className="cart-panel__value">
                     {formatMoney(subtotal)}
                   </span>
                 </div>
 
                 {discountAmount > 0 ? (
-                  <div className="mb-3 flex items-center justify-between text-sm">
-                    <span className="text-slate-500">Discount code</span>
-                    <span className="font-semibold text-emerald-700">
+                  <div className="cart-panel__line">
+                    <span className="cart-panel__muted">Discount code</span>
+                    <span className="cart-panel__value--good">
                       -{formatMoney(discountAmount)}
                     </span>
                   </div>
                 ) : null}
 
-                <div className="mb-4 flex items-center justify-between text-sm">
-                  <span className="text-slate-500">Estimated Total</span>
-                  <span className="text-lg font-bold text-slate-900">
+                <div className="cart-panel__line cart-panel__line--total">
+                  <span className="cart-panel__muted">Estimated Total</span>
+                  <span className="cart-panel__title">
                     {formatMoney(estimatedTotal)}
                   </span>
                 </div>
@@ -372,7 +372,7 @@ function CartPanel({
                 <button
                   onClick={onCheckout}
                   disabled={checkoutLoading}
-                  className="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="w-full cart-panel__apply-btn"
                 >
                   {checkoutLoading ? "Redirecting to Checkout..." : "Checkout"}
                 </button>

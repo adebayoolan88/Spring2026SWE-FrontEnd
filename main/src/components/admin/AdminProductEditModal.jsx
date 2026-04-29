@@ -169,22 +169,22 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
 
   return (
     <div
-      className="admin-product-edit-modal fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/40 px-4 py-6 backdrop-blur-sm"
+      className="admin-product-edit-modal admin-product-edit-modal--overlay"
       onClick={onClose}
     >
       <div
-        className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-[32px] border border-white/20 bg-white shadow-2xl"
+        className="admin-product-edit-modal__panel"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-6 py-5">
+        <div className="admin-product-edit-modal__header">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-orange-500">
+            <p className="admin-product-edit-modal__eyebrow">
               Edit Product
             </p>
-            <h2 className="mt-1 text-2xl font-bold text-slate-900">
+            <h2 className="admin-product-edit-modal__title">
               {product.name}
             </h2>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="admin-product-edit-modal__subtitle">
               SKU: {product.sku || "N/A"} • Seller:{" "}
               {product.seller?.name || product.seller?.username || "Unknown"}
             </p>
@@ -193,42 +193,42 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
+            className="admin-product-edit-modal__close-btn"
           >
-            <X className="h-4 w-4" />
+            <X className="admin-product-edit-modal__icon" />
           </button>
         </div>
 
-        <form className="space-y-5 px-6 py-6" onSubmit={handleSave}>
+        <form className="admin-product-edit-modal__form" onSubmit={handleSave}>
           {error ? (
-            <div className="flex gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            <div className="admin-product-edit-modal__alert admin-product-edit-modal__alert--error">
+              <AlertCircle className="mt-0.5 admin-product-edit-modal__icon shrink-0" />
               <span>{error}</span>
             </div>
           ) : null}
 
           {successMessage ? (
-            <div className="flex gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+            <div className="admin-product-edit-modal__alert admin-product-edit-modal__alert--success">
+              <CheckCircle2 className="mt-0.5 admin-product-edit-modal__icon shrink-0" />
               <span>{successMessage}</span>
             </div>
           ) : null}
 
-          <div className="grid gap-5 md:grid-cols-2">
+          <div className="admin-product-edit-modal__grid admin-product-edit-modal__grid--2">
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
+              <label className="admin-product-edit-modal__label">
                 Product Name
               </label>
               <input
                 name="productName"
                 value={form.productName}
                 onChange={handleChange}
-                className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                className="admin-product-edit-modal__input"
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
+              <label className="admin-product-edit-modal__label">
                 Brand
               </label>
               <input
@@ -236,14 +236,14 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
                 value={form.brand}
                 onChange={handleChange}
                 placeholder="Yamaha, Fender, etc."
-                className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                className="admin-product-edit-modal__input"
               />
             </div>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-3">
+          <div className="admin-product-edit-modal__grid admin-product-edit-modal__grid--3">
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
+              <label className="admin-product-edit-modal__label">
                 Regular Price
               </label>
               <input
@@ -253,12 +253,12 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
                 step="0.01"
                 value={form.price}
                 onChange={handleChange}
-                className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                className="admin-product-edit-modal__input"
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
+              <label className="admin-product-edit-modal__label">
                 Sale Price
               </label>
               <input
@@ -270,12 +270,12 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
                 onChange={handleChange}
                 disabled={!form.isOnSale}
                 placeholder="Optional"
-                className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
+                className="admin-product-edit-modal__input disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
               />
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
+              <label className="admin-product-edit-modal__label">
                 Quantity
               </label>
               <input
@@ -285,13 +285,13 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
                 step="1"
                 value={form.quantity}
                 onChange={handleChange}
-                className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                className="admin-product-edit-modal__input"
               />
             </div>
           </div>
 
-          <div className="grid gap-5 md:grid-cols-3">
-            <label className="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+          <div className="admin-product-edit-modal__grid admin-product-edit-modal__grid--3">
+            <label className="flex cursor-pointer items-center justify-between gap-4 admin-product-edit-modal__toggles">
               <span>
                 <span className="block text-sm font-semibold text-slate-800">
                   On Sale
@@ -309,7 +309,7 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
               />
             </label>
 
-            <label className="flex cursor-pointer items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+            <label className="flex cursor-pointer items-center justify-between gap-4 admin-product-edit-modal__toggles">
               <span>
                 <span className="block text-sm font-semibold text-slate-800">
                   Featured
@@ -328,7 +328,7 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
             </label>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
+              <label className="admin-product-edit-modal__label">
                 Availability
               </label>
               <select
@@ -347,14 +347,14 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
           </div>
 
           {salePreview ? (
-            <div className="rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm text-orange-800">
+            <div className="admin-product-edit-modal__sale-preview">
               Sale preview: customers save ${salePreview.savings.toFixed(2)} (
               {salePreview.percentage.toFixed(0)}% off).
             </div>
           ) : null}
 
           <div>
-            <label className="mb-2 block text-sm font-medium text-slate-700">
+            <label className="admin-product-edit-modal__label">
               Product Description
             </label>
             <textarea
@@ -371,7 +371,7 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
               type="button"
               onClick={onClose}
               disabled={saving}
-              className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+              className="admin-product-edit-modal__btn admin-product-edit-modal__btn--secondary disabled:cursor-not-allowed disabled:opacity-60"
             >
               Cancel
             </button>
@@ -379,9 +379,9 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+              className="admin-product-edit-modal__btn admin-product-edit-modal__btn--primary"
             >
-              <Save className="h-4 w-4" />
+              <Save className="admin-product-edit-modal__icon" />
               {saving ? "Saving..." : "Save Changes"}
             </button>
           </div>
