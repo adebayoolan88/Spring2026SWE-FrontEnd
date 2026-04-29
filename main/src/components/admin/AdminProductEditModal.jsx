@@ -362,16 +362,16 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
               rows={5}
               value={form.productDescription}
               onChange={handleChange}
-              className="w-full resize-none rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+              className="admin-product-edit-modal__input admin-product-edit-modal__input--textarea"
             />
           </div>
 
-          <div className="flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
+          <div className="admin-product-edit-modal__actions">
             <button
               type="button"
               onClick={onClose}
               disabled={saving}
-              className="admin-product-edit-modal__btn admin-product-edit-modal__btn--secondary disabled:cursor-not-allowed disabled:opacity-60"
+              className="admin-product-edit-modal__btn admin-product-edit-modal__btn--secondary"
             >
               Cancel
             </button>
