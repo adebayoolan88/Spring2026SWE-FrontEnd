@@ -240,7 +240,7 @@ function AdminUserEditModal({
             <button
               type="submit"
               disabled={saving}
-              className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+              className="admin-user-edit-modal__btn admin-user-edit-modal__btn--primary"
             >
               {saving ? "Saving..." : "Save User"}
             </button>

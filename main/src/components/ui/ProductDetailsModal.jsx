@@ -56,14 +56,14 @@ function ProductDetailsModal({ item, onClose, onAddToCart }) {
 
               {hasValidSalePrice ? (
                 <span className="product-details-modal__chip product-details-modal__chip--sale">
-                  <Tag className="h-3 w-3" />
+                  <Tag className="product-details-modal__chip-icon" />
                   Sale
                 </span>
               ) : null}
 
               {item.isFeatured ? (
                 <span className="product-details-modal__chip product-details-modal__chip--featured">
-                  <Star className="h-3 w-3" />
+                  <Star className="product-details-modal__chip-icon" />
                   Featured
                 </span>
               ) : null}
@@ -94,14 +94,14 @@ function ProductDetailsModal({ item, onClose, onAddToCart }) {
               <div className="product-details-modal__floating-chips">
                 {hasValidSalePrice ? (
                   <span className="product-details-modal__chip product-details-modal__chip--sale-solid">
-                    <Tag className="h-3 w-3" />
+                    <Tag className="product-details-modal__chip-icon" />
                     Sale
                   </span>
                 ) : null}
 
                 {item.isFeatured ? (
-                  <span className="product-details-modal__chip product-details-modal__chip--featured shadow-sm">
-                    <Star className="h-3 w-3" />
+                  <span className="product-details-modal__chip product-details-modal__chip--featured">
+                    <Star className="product-details-modal__chip-icon" />
                     Featured
                   </span>
                 ) : null}
@@ -129,12 +129,12 @@ function ProductDetailsModal({ item, onClose, onAddToCart }) {
               </p>
 
               {hasValidSalePrice ? (
-                <div className="mt-2 product-details-modal__chips">
+                <div className="product-details-modal__price-row">
                   <p className="product-details-modal__price-original">
                     {formatMoney(price)}
                   </p>
 
-                  <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold product-details-modal__price--sale">
+                  <span className="product-details-modal__savings">
                     Save {formatMoney(price - salePrice)}
                   </span>
                 </div>
@@ -149,58 +149,58 @@ function ProductDetailsModal({ item, onClose, onAddToCart }) {
               <div className="product-details-modal__details">
                 <div className="product-details-modal__detail-row">
                   <span className="product-details-modal__detail-label">
-                    <Tag className="h-4 w-4" />
+                    <Tag className="product-details-modal__detail-icon" />
                     Brand
                   </span>
-                  <span className="font-medium product-details-modal__price--default">
+                  <span className="product-details-modal__detail-value">
                     {item.brand || "N/A"}
                   </span>
                 </div>
 
                 <div className="product-details-modal__detail-row">
                   <span className="product-details-modal__detail-label">
-                    <Package className="h-4 w-4" />
+                    <Package className="product-details-modal__detail-icon" />
                     SKU
                   </span>
-                  <span className="font-medium product-details-modal__price--default">
+                  <span className="product-details-modal__detail-value">
                     {item.sku || "N/A"}
                   </span>
                 </div>
 
                 <div className="product-details-modal__detail-row">
                   <span>Category</span>
-                  <span className="font-medium product-details-modal__price--default">
+                  <span className="product-details-modal__detail-value">
                     {item.category || "N/A"}
                   </span>
                 </div>
 
                 <div className="product-details-modal__detail-row">
                   <span>Condition</span>
-                  <span className="font-medium product-details-modal__price--default">
+                  <span className="product-details-modal__detail-value">
                     {item.condition || "N/A"}
                   </span>
                 </div>
 
                 <div className="product-details-modal__detail-row">
                   <span>Quantity</span>
-                  <span className="font-medium product-details-modal__price--default">
+                  <span className="product-details-modal__detail-value">
                     {item.quantity ?? "N/A"}
                   </span>
                 </div>
 
                 <div className="product-details-modal__detail-row">
                   <span>Status</span>
-                  <span className="font-medium product-details-modal__price--default">
+                  <span className="product-details-modal__detail-value">
                     {item.availabilityStatus || "N/A"}
                   </span>
                 </div>
 
                 <div className="product-details-modal__detail-row product-details-modal__detail-row--last">
                   <span className="product-details-modal__detail-label">
-                    <CalendarDays className="h-4 w-4" />
+                    <CalendarDays className="product-details-modal__detail-icon" />
                     Listed
                   </span>
-                  <span className="font-medium product-details-modal__price--default">
+                  <span className="product-details-modal__detail-value">
                     {formatDate(item.listingDate)}
                   </span>
                 </div>
