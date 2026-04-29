@@ -386,7 +386,7 @@ function AdminOrdersPage() {
 
                 <tbody className="admin-orders__tbody">
                   {paginatedOrders.map((order) => (
-                    <tr key={order.orderId} className="hover:admin-orders__thead">
+                    <tr key={order.orderId} className="admin-orders__tr">
                       <td className="admin-orders__td">
                         <p className="admin-orders__text-strong">
                           {order.orderNumber}
@@ -475,7 +475,7 @@ function AdminOrdersPage() {
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="admin-orders__btn admin-orders__btn--secondary admin-orders__btn--disabled"
+                className="admin-orders__btn admin-orders__page-btn admin-orders__page-btn--secondary"
               >
                 Previous
               </button>
@@ -488,10 +488,10 @@ function AdminOrdersPage() {
                   <button
                     key={pageNumber}
                     onClick={() => setCurrentPage(pageNumber)}
-                    className={`admin-orders__btn admin-orders__btn--page ${
+                    className={`admin-orders__btn admin-orders__page-btn ${
                       isActive
-                        ? "admin-orders__btn--primary"
-                        : "admin-orders__btn--secondary"
+                        ? "admin-orders__page-btn--primary"
+                        : "admin-orders__page-btn--secondary"
                     }`}
                   >
                     {pageNumber}
@@ -504,7 +504,7 @@ function AdminOrdersPage() {
                   setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
                 disabled={currentPage === totalPages}
-                className="admin-orders__btn admin-orders__btn--secondary admin-orders__btn--disabled"
+                className="admin-orders__btn admin-orders__page-btn admin-orders__page-btn--secondary"
               >
                 Next
               </button>
