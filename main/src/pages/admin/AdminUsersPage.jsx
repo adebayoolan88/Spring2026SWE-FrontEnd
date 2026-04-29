@@ -31,14 +31,14 @@ function formatDate(dateValue) {
 
 function statusClass(isActive) {
   return isActive
-    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-    : "border-red-200 bg-red-50 text-red-700";
+    ? "admin-users__badge admin-users__badge--active"
+    : "admin-users__badge admin-users__badge--inactive";
 }
 
 function roleClass(role) {
   return String(role || "").toLowerCase() === "admin"
-    ? "border-orange-200 bg-orange-50 text-orange-700"
-    : "border-slate-200 bg-slate-100 text-slate-600";
+    ? "admin-users__badge admin-users__badge--admin"
+    : "admin-users__badge admin-users__badge--customer";
 }
 
 function AdminUsersPage() {
@@ -201,89 +201,79 @@ function AdminUsersPage() {
       title="Users"
       subtitle="View and manage marketplace users, account status, and app-level roles."
     >
-      <div className="page-admin-users grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
+      <div className="admin-users__stats-grid">
+        <div className="admin-users__stat-card">
+          <div className="admin-users__stat-row">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                Total Users
-              </p>
-              <p className="mt-2 text-2xl font-bold text-slate-900">
-                {totals.all}
-              </p>
+              <p className="admin-users__stat-label">Total Users</p>
+              <p className="admin-users__stat-value">{totals.all}</p>
             </div>
-            <div className="rounded-2xl bg-orange-50 p-3 text-orange-600">
-              <Users className="h-5 w-5" />
+            <div className="admin-users__stat-icon-wrap admin-users__stat-icon-wrap--orange">
+              <Users className="admin-users__icon" />
             </div>
           </div>
         </div>
 
-        <div className="admin-stat-card">
-          <div className="flex items-center justify-between">
+        <div className="admin-users__stat-card">
+          <div className="admin-users__stat-row">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                Active
-              </p>
-              <p className="mt-2 text-2xl font-bold text-emerald-700">
+              <p className="admin-users__stat-label">Active</p>
+              <p className="admin-users__stat-value admin-users__stat-value--green">
                 {totals.active}
               </p>
             </div>
-            <div className="rounded-2xl bg-emerald-50 p-3 text-emerald-600">
-              <UserCheck className="h-5 w-5" />
+            <div className="admin-users__stat-icon-wrap admin-users__stat-icon-wrap--green">
+              <UserCheck className="admin-users__icon" />
             </div>
           </div>
         </div>
 
-        <div className="admin-stat-card">
-          <div className="flex items-center justify-between">
+        <div className="admin-users__stat-card">
+          <div className="admin-users__stat-row">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                Inactive
-              </p>
-              <p className="mt-2 text-2xl font-bold text-red-700">
+              <p className="admin-users__stat-label">Inactive</p>
+              <p className="admin-users__stat-value admin-users__stat-value--red">
                 {totals.inactive}
               </p>
             </div>
-            <div className="rounded-2xl bg-red-50 p-3 text-red-600">
-              <UserX className="h-5 w-5" />
+            <div className="admin-users__stat-icon-wrap admin-users__stat-icon-wrap--red">
+              <UserX className="admin-users__icon" />
             </div>
           </div>
         </div>
 
-        <div className="admin-stat-card">
-          <div className="flex items-center justify-between">
+        <div className="admin-users__stat-card">
+          <div className="admin-users__stat-row">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                Admin Role
-              </p>
-              <p className="mt-2 text-2xl font-bold text-orange-700">
+              <p className="admin-users__stat-label">Admin Role</p>
+              <p className="admin-users__stat-value admin-users__stat-value--orange">
                 {totals.admins}
               </p>
             </div>
-            <div className="rounded-2xl bg-orange-50 p-3 text-orange-600">
-              <ShieldCheck className="h-5 w-5" />
+            <div className="admin-users__stat-icon-wrap admin-users__stat-icon-wrap--orange">
+              <ShieldCheck className="admin-users__icon" />
             </div>
           </div>
         </div>
       </div>
 
-      <div className="mt-6 admin-stat-card">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-          <div className="flex flex-1 items-center rounded-2xl border border-slate-200 bg-white px-4 py-3">
-            <Search className="mr-3 h-5 w-5 text-slate-400" />
+      <div className="admin-users__filters">
+        <div className="admin-users__filters-row">
+          <div className="admin-users__search">
+            <Search className="admin-users__search-icon" />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by name, username, email, phone, role, or address..."
-              className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
+              className="admin-users__search-input"
             />
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="admin-users__filter-controls">
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+              className="admin-users__select"
             >
               <option value="all">All statuses</option>
               <option value="active">Active users</option>
@@ -293,7 +283,7 @@ function AdminUsersPage() {
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+              className="admin-users__select"
             >
               <option value="all">All roles</option>
               <option value="customer">Customer</option>
@@ -304,124 +294,88 @@ function AdminUsersPage() {
       </div>
 
       {loading ? (
-        <div className="mt-6 rounded-[28px] bg-white p-12 text-center shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-900">
-            Loading users...
-          </h2>
-          <p className="mt-2 text-slate-500">Fetching marketplace users.</p>
+        <div className="admin-users__state-card">
+          <h2 className="admin-users__state-title">Loading users...</h2>
+          <p className="admin-users__state-message">Fetching marketplace users.</p>
         </div>
       ) : pageError ? (
-        <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          {pageError}
-        </div>
+        <div className="admin-users__error">{pageError}</div>
       ) : filteredUsers.length === 0 ? (
-        <div className="mt-6 rounded-[28px] border border-dashed border-slate-300 bg-white p-12 text-center shadow-sm">
-          <Users className="mx-auto h-10 w-10 text-slate-400" />
-          <h2 className="mt-4 text-xl font-semibold text-slate-900">
+        <div className="admin-users__state-card admin-users__state-card--empty">
+          <Users className="admin-users__empty-icon" />
+          <h2 className="admin-users__state-title admin-users__state-title--spaced">
             No users found
           </h2>
-          <p className="mt-2 text-slate-500">
+          <p className="admin-users__state-message">
             Try adjusting your search or filters.
           </p>
         </div>
       ) : (
         <>
-          <div className="mt-6 overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-slate-200">
-                <thead className="bg-slate-50">
+          <div className="admin-users__table-card">
+            <div className="admin-users__table-wrap">
+              <table className="admin-users__table">
+                <thead className="admin-users__thead">
                   <tr>
-                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      User
-                    </th>
-                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Contact
-                    </th>
-                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Role
-                    </th>
-                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Orders
-                    </th>
-                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Total Spent
-                    </th>
-                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Status
-                    </th>
-                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Joined
-                    </th>
-                    <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
-                      Actions
-                    </th>
+                    <th className="admin-users__th">User</th>
+                    <th className="admin-users__th">Contact</th>
+                    <th className="admin-users__th">Role</th>
+                    <th className="admin-users__th">Orders</th>
+                    <th className="admin-users__th">Total Spent</th>
+                    <th className="admin-users__th">Status</th>
+                    <th className="admin-users__th">Joined</th>
+                    <th className="admin-users__th admin-users__th--right">Actions</th>
                   </tr>
                 </thead>
 
-                <tbody className="divide-y divide-slate-100 bg-white">
+                <tbody className="admin-users__tbody">
                   {paginatedUsers.map((user) => (
-                    <tr key={user.userId} className="hover:bg-slate-50">
-                      <td className="px-5 py-4">
-                        <p className="font-bold text-slate-900">
+                    <tr key={user.userId} className="admin-users__row">
+                      <td className="admin-users__td">
+                        <p className="admin-users__text-strong">
                           {user.firstName || user.lastName
                             ? `${user.firstName || ""} ${user.lastName || ""}`.trim()
                             : user.username}
                         </p>
-                        <p className="mt-1 text-xs text-slate-500">
-                          @{user.username}
-                        </p>
-                        <p className="mt-1 text-xs text-slate-400">
-                          ID: {user.userId}
-                        </p>
+                        <p className="admin-users__text-sub">@{user.username}</p>
+                        <p className="admin-users__text-muted">ID: {user.userId}</p>
                       </td>
 
-                      <td className="px-5 py-4">
-                        <p className="text-sm font-semibold text-slate-900">
-                          {user.email}
-                        </p>
-                        <p className="mt-1 text-xs text-slate-500">
+                      <td className="admin-users__td">
+                        <p className="admin-users__text-sm-strong">{user.email}</p>
+                        <p className="admin-users__text-sub">
                           {user.phoneNumber || "No phone"}
                         </p>
                       </td>
 
-                      <td className="px-5 py-4">
-                        <span
-                          className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${roleClass(
-                            user.role
-                          )}`}
-                        >
-                          {user.role || "customer"}
-                        </span>
+                      <td className="admin-users__td">
+                        <span className={roleClass(user.role)}>{user.role || "customer"}</span>
                       </td>
 
-                      <td className="px-5 py-4 text-sm font-semibold text-slate-900">
+                      <td className="admin-users__td admin-users__text-sm-strong">
                         {user.orderCount || 0}
                       </td>
 
-                      <td className="px-5 py-4 text-sm font-bold text-slate-900">
+                      <td className="admin-users__td admin-users__text-strong">
                         {formatMoney(user.totalSpent)}
                       </td>
 
-                      <td className="px-5 py-4">
-                        <span
-                          className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${statusClass(
-                            user.isActive
-                          )}`}
-                        >
+                      <td className="admin-users__td">
+                        <span className={statusClass(user.isActive)}>
                           {user.isActive ? "Active" : "Inactive"}
                         </span>
                       </td>
 
-                      <td className="px-5 py-4 text-sm text-slate-600">
+                      <td className="admin-users__td admin-users__text-sm">
                         {formatDate(user.createdAt)}
                       </td>
 
-                      <td className="px-5 py-4 text-right">
+                      <td className="admin-users__td admin-users__td--right">
                         <button
                           onClick={() => handleOpenEdit(user)}
-                          className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
+                          className="admin-users__action-btn"
                         >
-                          <Edit className="h-4 w-4" />
+                          <Edit className="admin-users__action-icon" />
                           Edit
                         </button>
                       </td>
@@ -432,18 +386,17 @@ function AdminUsersPage() {
             </div>
           </div>
 
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-slate-500">
-              Showing page {currentPage} of {totalPages} •{" "}
-              {filteredUsers.length} matching user
-              {filteredUsers.length === 1 ? "" : "s"}
+          <div className="admin-users__pagination-row">
+            <p className="admin-users__pagination-text">
+              Showing page {currentPage} of {totalPages} • {filteredUsers.length} matching
+              user{filteredUsers.length === 1 ? "" : "s"}
             </p>
 
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="admin-users__pagination-controls">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                className="admin-users__page-btn"
               >
                 Previous
               </button>
@@ -456,10 +409,8 @@ function AdminUsersPage() {
                   <button
                     key={pageNumber}
                     onClick={() => setCurrentPage(pageNumber)}
-                    className={`rounded-xl px-4 py-2 text-sm font-medium shadow-sm transition ${
-                      isActive
-                        ? "bg-orange-500 text-white"
-                        : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                    className={`admin-users__page-btn ${
+                      isActive ? "admin-users__page-btn--active" : ""
                     }`}
                   >
                     {pageNumber}
@@ -472,7 +423,7 @@ function AdminUsersPage() {
                   setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
                 disabled={currentPage === totalPages}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                className="admin-users__page-btn"
               >
                 Next
               </button>
