@@ -18,6 +18,8 @@ function CategoryNav({
   onSelectListing,
   onClearCategory,
 }) {
+  const navRef = useRef(null);
+
   const getItemsForCategory = (category) => {
     return items.filter(
       (item) => item.category?.toLowerCase() === category.toLowerCase()
@@ -34,11 +36,10 @@ function CategoryNav({
   };
 
   return (
-    <div className="category-nav">
-      <div className="category-nav__grid">
+    <div className="category-nav" ref={navRef}>
+      <div className="category-nav__tabs" role="menubar" aria-label="Categories">
         {CATEGORIES.map((category) => {
           const isOpen = activeMenu === category;
-          const categoryItems = getItemsForCategory(category);
 
           return (
             <div key={category} className="category-nav__menu">
@@ -108,6 +109,69 @@ function CategoryNav({
           );
         })}
       </div>
+
+      {activeMenu && (
+        <div className="category-nav__mega" id="category-nav-mega-panel" role="region">
+          <div className="category-nav__mega-header">
+            <h3 className="category-nav__mega-title">{activeMenu}</h3>
+            <div className="category-nav__mega-actions">
+              <button
+                type="button"
+                className="category-nav__shop-all"
+                onClick={() => {
+                  onSelectCategory(activeMenu);
+                  setActiveMenu(null);
+                }}
+              >
+                Shop All {activeMenu}
+              </button>
+
+              <button
+                type="button"
+                className="category-nav__clear-btn"
+                aria-label="Show full inventory"
+                title="Show full inventory"
+                onClick={() => {
+                  onClearCategory();
+                  setActiveMenu(null);
+                }}
+              >
+                <X className="category-nav__clear-icon" />
+              </button>
+            </div>
+          </div>
+
+          {activeSections.length === 0 ? (
+            <div className="category-nav__empty">No listings in this category yet.</div>
+          ) : (
+            <div className="category-nav__mega-grid">
+              {activeSections.map((section) => (
+                <div key={section.key} className="category-nav__section">
+                  <h4 className="category-nav__section-title">{section.title}</h4>
+                  <div className="category-nav__section-list">
+                    {section.items.map((item) => (
+                      <button
+                        type="button"
+                        key={item.id}
+                        className="category-nav__mega-link"
+                        onClick={() => {
+                          onSelectListing(item);
+                          setActiveMenu(null);
+                        }}
+                      >
+                        <span className="category-nav__item-name">{item.name}</span>
+                        <span className="category-nav__item-meta">
+                          Qty: {item.quantity} • ${item.price}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
