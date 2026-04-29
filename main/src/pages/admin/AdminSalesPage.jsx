@@ -506,11 +506,11 @@ function AdminSalesPage() {
 
             {form.saleScope === "category" ? (
               <div>
-                <label className="mb-3 block text-sm font-medium text-slate-700">
+                <label className="admin-sales__label admin-sales__label--spaced">
                   Select Categories
                 </label>
 
-                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="admin-sales__selection-grid">
                   {categories.map((category) => {
                     const selected = form.categoryIds.includes(category.categoryId);
 
@@ -519,10 +519,10 @@ function AdminSalesPage() {
                         key={category.categoryId}
                         type="button"
                         onClick={() => handleCategorySelection(category.categoryId)}
-                        className={`rounded-2xl border px-4 py-3 text-left text-sm font-semibold transition ${
+                        className={`admin-sales__selection-btn ${
                           selected
-                            ? "border-orange-300 bg-orange-50 text-orange-700"
-                            : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                            ? "admin-sales__selection-btn--selected"
+                            : ""
                         }`}
                       >
                         {category.name}
@@ -535,11 +535,11 @@ function AdminSalesPage() {
 
             {form.saleScope === "product" ? (
               <div>
-                <label className="mb-3 block text-sm font-medium text-slate-700">
+                <label className="admin-sales__label admin-sales__label--spaced">
                   Select Products
                 </label>
 
-                <div className="max-h-72 space-y-2 overflow-y-auto rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                <div className="admin-sales__selection-list">
                   {products.map((product) => {
                     const selected = form.productIds.includes(product.productId);
 
@@ -548,20 +548,20 @@ function AdminSalesPage() {
                         key={product.productId}
                         type="button"
                         onClick={() => handleProductSelection(product.productId)}
-                        className={`flex w-full items-center justify-between gap-4 rounded-2xl border px-4 py-3 text-left text-sm transition ${
+                        className={`admin-sales__selection-row ${
                           selected
-                            ? "border-orange-300 bg-orange-50 text-orange-700"
-                            : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                            ? "admin-sales__selection-btn--selected"
+                            : ""
                         }`}
                       >
                         <span>
                           <span className="font-semibold">{product.name}</span>
-                          <span className="block text-xs text-slate-500">
+                          <span className="admin-sales__selection-sub">
                             {product.brand || "No brand"} • {product.category?.name || "N/A"}
                           </span>
                         </span>
 
-                        <span className="text-xs font-semibold">
+                        <span className="admin-sales__selection-meta">
                           {selected ? "Selected" : formatMoney(product.price)}
                         </span>
                       </button>
@@ -630,7 +630,7 @@ function AdminSalesPage() {
           <h2 className="text-xl font-semibold text-slate-900">
             Loading sales...
           </h2>
-          <p className="mt-2 text-slate-500">Fetching admin sale data.</p>
+          <p className="admin-sales__state-message">Fetching admin sale data.</p>
         </div>
       ) : pageError ? (
         <div className="admin-sales__error">
@@ -642,35 +642,35 @@ function AdminSalesPage() {
           <h2 className="admin-sales__state-title admin-sales__state-title--spaced">
             No sales found
           </h2>
-          <p className="mt-2 text-slate-500">
+          <p className="admin-sales__state-message">
             Create a sale campaign to start testing promotional pricing.
           </p>
         </div>
       ) : (
-        <div className="mt-6 overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-200">
-              <thead className="bg-slate-50">
+        <div className="admin-sales__table-card">
+          <div className="admin-sales__table-wrap">
+            <table className="admin-sales__table">
+              <thead className="admin-sales__thead">
                 <tr>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <th className="admin-sales__th">
                     Sale
                   </th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <th className="admin-sales__th">
                     Scope
                   </th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <th className="admin-sales__th">
                     Discount
                   </th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <th className="admin-sales__th">
                     Dates
                   </th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <th className="admin-sales__th">
                     Status
                   </th>
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-slate-100 bg-white">
+              <tbody className="admin-sales__tbody">
                 {filteredSales.map((sale) => (
                   <tr key={sale.sale_id} className="hover:bg-slate-50">
                     <td className="px-5 py-4">
@@ -680,39 +680,39 @@ function AdminSalesPage() {
                         </div>
 
                         <div>
-                          <p className="font-bold text-slate-900">
+                          <p className="admin-sales__text-strong">
                             {sale.sale_name}
                           </p>
-                          <p className="mt-1 text-xs text-slate-500">
+                          <p className="admin-sales__text-sub">
                             {sale.description || "No description"}
                           </p>
                         </div>
                       </div>
                     </td>
 
-                    <td className="px-5 py-4">
-                      <p className="text-sm font-semibold text-slate-900">
+                    <td className="admin-sales__td">
+                      <p className="admin-sales__text-sm-strong">
                         {scopeLabel(sale.sale_scope)}
                       </p>
                     </td>
 
-                    <td className="px-5 py-4">
-                      <p className="text-sm font-semibold text-slate-900">
+                    <td className="admin-sales__td">
+                      <p className="admin-sales__text-sm-strong">
                         {saleDiscountLabel(sale)}
                       </p>
-                      <p className="mt-1 text-xs text-slate-500">
+                      <p className="admin-sales__text-sub">
                         {sale.discount_type}
                       </p>
                     </td>
 
-                    <td className="px-5 py-4">
-                      <p className="text-xs text-slate-500">
+                    <td className="admin-sales__td">
+                      <p className="admin-sales__text-xs">
                         Starts:{" "}
                         <span className="admin-sales__meta-value">
                           {formatDate(sale.starts_at)}
                         </span>
                       </p>
-                      <p className="mt-1 text-xs text-slate-500">
+                      <p className="admin-sales__text-sub">
                         Ends:{" "}
                         <span className="admin-sales__meta-value">
                           {formatDate(sale.ends_at)}
@@ -720,9 +720,9 @@ function AdminSalesPage() {
                       </p>
                     </td>
 
-                    <td className="px-5 py-4">
+                    <td className="admin-sales__td">
                       <span
-                        className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${statusClass(
+                        className={`admin-sales__badge ${statusClass(
                           sale
                         )}`}
                       >
