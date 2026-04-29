@@ -1,6 +1,5 @@
 import { ChevronDown, X } from "lucide-react";
 
-// Hardcoded category list used for the secondary navigation bar.
 const CATEGORIES = [
   "Accessories",
   "Brass",
@@ -19,96 +18,75 @@ function CategoryNav({
   onSelectListing,
   onClearCategory,
 }) {
-  // Returns only the products that belong to one category.
   const getItemsForCategory = (category) => {
     return items.filter(
       (item) => item.category.toLowerCase() === category.toLowerCase()
     );
   };
 
-  // If the user clicks the same category again, close it.
-  // If they click a different one, open that one instead.
   const toggleMenu = (category) => {
     setActiveMenu(activeMenu === category ? null : category);
   };
 
   return (
-    <div className="category-nav border-b border-slate-200 bg-white">
-      {/* Category buttons laid out in a responsive grid */}
-      <div className="category-nav-grid">
+    <div className="category-nav">
+      <div className="category-nav__grid">
         {CATEGORIES.map((category) => {
           const isOpen = activeMenu === category;
           const categoryItems = getItemsForCategory(category);
 
           return (
-            <div key={category} className="relative">
-              {/* Category button */}
+            <div key={category} className="category-nav__menu">
               <button
                 onClick={() => {
                   toggleMenu(category);
                   onSelectCategory(category);
                 }}
-                className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition ${
-                  isOpen
-                    ? "bg-slate-900 text-white"
-                    : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                className={`category-nav__trigger ${
+                  isOpen ? "category-nav__trigger--active" : ""
                 }`}
               >
                 {category}
-                <ChevronDown className="h-4 w-4" />
+                <ChevronDown className="category-nav__trigger-icon" />
               </button>
 
-              {/* Dropdown for products in that category */}
               {isOpen && (
-                <div className="absolute left-0 top-full z-40 mt-2 w-80 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
-                  <div className="flex items-center justify-between px-3 py-2">
-                    <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                      {category} Listings
-                    </div>
+                <div className="category-nav__panel">
+                  <div className="category-nav__panel-header">
+                    <div className="category-nav__panel-title">{category} Listings</div>
 
-                    {/* X button clears filters and returns to full inventory */}
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         setActiveMenu(null);
                         onClearCategory();
                       }}
-                      className="rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                      className="category-nav__clear-btn"
                       aria-label="Show full inventory"
                       title="Show full inventory"
                     >
-                      <X className="h-4 w-4" />
+                      <X className="category-nav__clear-icon" />
                     </button>
                   </div>
 
-                  {/* Empty state vs listing buttons */}
                   {categoryItems.length === 0 ? (
-                    <div className="px-3 py-3 text-sm text-slate-500">
-                      No listings in this category yet.
-                    </div>
+                    <div className="category-nav__empty">No listings in this category yet.</div>
                   ) : (
                     categoryItems.map((item) => (
                       <button
                         key={item.id}
                         onClick={() => {
-                          // Selecting a listing usually updates category + search in the parent.
                           onSelectListing(item);
                           setActiveMenu(null);
                         }}
-                        className="block w-full rounded-xl px-3 py-3 text-left transition hover:bg-slate-50"
+                        className="category-nav__item"
                       >
-                        <div className="flex items-start justify-between gap-3">
+                        <div className="category-nav__item-row">
                           <div>
-                            <p className="text-sm font-semibold text-slate-900">
-                              {item.name}
-                            </p>
-                            <p className="mt-1 text-xs text-slate-500">
-                              Qty: {item.quantity}
-                            </p>
+                            <p className="category-nav__item-name">{item.name}</p>
+                            <p className="category-nav__item-meta">Qty: {item.quantity}</p>
                           </div>
-                          <p className="text-sm font-bold text-slate-900">
-                            ${item.price}
-                          </p>
+                          <p className="category-nav__item-price">${item.price}</p>
                         </div>
                       </button>
                     ))
