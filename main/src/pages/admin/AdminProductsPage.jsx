@@ -39,18 +39,18 @@ function formatDate(dateValue) {
 
 function statusClass(status) {
   if (status === "available") {
-    return "border-emerald-200 bg-emerald-50 text-emerald-700";
+    return "admin-products__status-badge admin-products__status-badge--available";
   }
 
   if (status === "sold") {
-    return "border-slate-200 bg-slate-100 text-slate-600";
+    return "admin-products__status-badge admin-products__status-badge--sold";
   }
 
   if (status === "removed") {
-    return "border-red-200 bg-red-50 text-red-700";
+    return "admin-products__status-badge admin-products__status-badge--removed";
   }
 
-  return "border-orange-200 bg-orange-50 text-orange-700";
+  return "admin-products__status-badge admin-products__status-badge--pending";
 }
 
 function AdminProductsPage() {
@@ -410,7 +410,7 @@ function AdminProductsPage() {
               }}
               className="admin-products__create-btn btn-primary"
             >
-              <Plus className="h-4 w-4" />
+              <Plus className="admin-products__action-icon" />
               Add Product
             </button>
           </div>
@@ -509,9 +509,9 @@ function AdminProductsPage() {
 
                       <td className="admin-products__td">
                         <span
-                          className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${statusClass(
+                          className={statusClass(
                             product.availabilityStatus
-                          )}`}
+                          )}
                         >
                           {product.availabilityStatus}
                         </span>
@@ -547,7 +547,7 @@ function AdminProductsPage() {
                             onClick={() => handleOpenEdit(product)}
                             className="admin-products__action-btn admin-products__action-btn--edit"
                           >
-                            <Edit className="h-4 w-4" />
+                            <Edit className="admin-products__action-icon" />
                             Edit
                           </button>
 
@@ -559,7 +559,7 @@ function AdminProductsPage() {
                             }
                             className="admin-products__action-btn admin-products__action-btn--delete"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="admin-products__action-icon" />
                             {deletingProductId === product.productId
                               ? "Removing..."
                               : product.availabilityStatus === "removed"
@@ -599,7 +599,7 @@ function AdminProductsPage() {
                   <button
                     key={pageNumber}
                     onClick={() => setCurrentPage(pageNumber)}
-                    className={`rounded-xl px-4 py-2 text-sm font-medium shadow-sm transition ${
+                    className={`admin-products__page-btn ${
                       isActive
                         ? "bg-orange-500 text-white"
                         : "border border-slate-200 bg-white text-slate-700 hover:admin-products__thead"
