@@ -37,11 +37,11 @@ function statusClass(status) {
     normalized === "paid" ||
     normalized === "delivered"
   ) {
-    return "border-emerald-200 bg-emerald-50 text-emerald-700";
+    return "admin-orders__badge admin-orders__badge--completed";
   }
 
   if (normalized === "pending" || normalized === "processing") {
-    return "border-orange-200 bg-orange-50 text-orange-700";
+    return "admin-orders__badge admin-orders__badge--pending";
   }
 
   if (
@@ -49,10 +49,10 @@ function statusClass(status) {
     normalized === "refunded" ||
     normalized === "unpaid"
   ) {
-    return "border-red-200 bg-red-50 text-red-700";
+    return "admin-orders__badge admin-orders__badge--cancelled";
   }
 
-  return "border-slate-200 bg-slate-100 text-slate-600";
+  return "admin-orders__badge admin-orders__badge--default";
 }
 
 function AdminOrdersPage() {
@@ -205,89 +205,89 @@ function AdminOrdersPage() {
       title="Orders"
       subtitle="View placed orders, order history, customer details, and order totals."
     >
-      <div className="page-admin-orders grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
+      <div className="admin-orders__stats-grid">
+        <div className="admin-orders__stat-card">
+          <div className="admin-orders__stat-row">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+              <p className="admin-orders__stat-label">
                 Total Orders
               </p>
-              <p className="mt-2 text-2xl font-bold text-slate-900">
+              <p className="admin-orders__stat-value">
                 {totals.all}
               </p>
             </div>
-            <div className="rounded-2xl bg-orange-50 p-3 text-orange-600">
-              <ReceiptText className="h-5 w-5" />
+            <div className="admin-orders__stat-icon-wrap admin-orders__stat-icon-wrap--orange">
+              <ReceiptText className="admin-orders__icon" />
             </div>
           </div>
         </div>
 
-        <div className="admin-stat-card">
-          <div className="flex items-center justify-between">
+        <div className="admin-orders__stat-card">
+          <div className="admin-orders__stat-row">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+              <p className="admin-orders__stat-label">
                 Completed
               </p>
-              <p className="mt-2 text-2xl font-bold text-emerald-700">
+              <p className="admin-orders__stat-value admin-orders__stat-value--green">
                 {totals.completed}
               </p>
             </div>
-            <div className="rounded-2xl bg-emerald-50 p-3 text-emerald-600">
-              <ShoppingBag className="h-5 w-5" />
+            <div className="admin-orders__stat-icon-wrap admin-orders__stat-icon-wrap--green">
+              <ShoppingBag className="admin-orders__icon" />
             </div>
           </div>
         </div>
 
-        <div className="admin-stat-card">
-          <div className="flex items-center justify-between">
+        <div className="admin-orders__stat-card">
+          <div className="admin-orders__stat-row">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+              <p className="admin-orders__stat-label">
                 Pending
               </p>
-              <p className="mt-2 text-2xl font-bold text-orange-700">
+              <p className="admin-orders__stat-value admin-orders__stat-value--orange">
                 {totals.pending}
               </p>
             </div>
-            <div className="rounded-2xl bg-orange-50 p-3 text-orange-600">
-              <RefreshCw className="h-5 w-5" />
+            <div className="admin-orders__stat-icon-wrap admin-orders__stat-icon-wrap--orange">
+              <RefreshCw className="admin-orders__icon" />
             </div>
           </div>
         </div>
 
-        <div className="admin-stat-card">
-          <div className="flex items-center justify-between">
+        <div className="admin-orders__stat-card">
+          <div className="admin-orders__stat-row">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+              <p className="admin-orders__stat-label">
                 Revenue
               </p>
-              <p className="mt-2 text-2xl font-bold text-slate-900">
+              <p className="admin-orders__stat-value">
                 {formatMoney(totals.revenue)}
               </p>
             </div>
-            <div className="rounded-2xl bg-slate-100 p-3 text-slate-700">
-              <DollarSign className="h-5 w-5" />
+            <div className="admin-orders__stat-icon-wrap admin-orders__stat-icon-wrap--muted">
+              <DollarSign className="admin-orders__icon" />
             </div>
           </div>
         </div>
       </div>
 
-      <div className="mt-6 admin-stat-card">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-          <div className="flex flex-1 items-center rounded-2xl border border-slate-200 bg-white px-4 py-3">
-            <Search className="mr-3 h-5 w-5 text-slate-400" />
+      <div className="mt-6 admin-orders__stat-card">
+        <div className="admin-orders__filters-row">
+          <div className="admin-orders__search">
+            <Search className="mr-3 admin-orders__icon text-slate-400" />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by order number, customer, email, status, or amount..."
-              className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
+              className="admin-orders__search-input"
             />
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row">
+          <div className="admin-orders__filter-controls">
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+              className="admin-orders__select"
             >
               <option value="all">All statuses</option>
               <option value="pending">Pending</option>
@@ -301,7 +301,7 @@ function AdminOrdersPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+              className="admin-orders__select"
             >
               <option value="date">Sort by order date</option>
               <option value="customer">Sort by customer</option>
@@ -311,16 +311,16 @@ function AdminOrdersPage() {
 
             <button
               onClick={toggleDirection}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
+              className="admin-orders__direction-btn"
             >
               {direction === "asc" ? (
                 <>
-                  <ArrowUpAZ className="h-4 w-4" />
+                  <ArrowUpAZ className="admin-orders__tiny-icon" />
                   Asc
                 </>
               ) : (
                 <>
-                  <ArrowDownAZ className="h-4 w-4" />
+                  <ArrowDownAZ className="admin-orders__tiny-icon" />
                   Desc
                 </>
               )}
@@ -330,107 +330,107 @@ function AdminOrdersPage() {
       </div>
 
       {statusMessage ? (
-        <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
+        <div className="admin-orders__success">
           {statusMessage}
         </div>
       ) : null}
 
       {loading ? (
-        <div className="mt-6 rounded-[28px] bg-white p-12 text-center shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-900">
+        <div className="admin-orders__state-card">
+          <h2 className="admin-orders__state-title">
             Loading orders...
           </h2>
-          <p className="mt-2 text-slate-500">Fetching marketplace orders.</p>
+          <p className="admin-orders__state-message">Fetching marketplace orders.</p>
         </div>
       ) : pageError ? (
-        <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="admin-orders__error">
           {pageError}
         </div>
       ) : filteredOrders.length === 0 ? (
-        <div className="mt-6 rounded-[28px] border border-dashed border-slate-300 bg-white p-12 text-center shadow-sm">
-          <ReceiptText className="mx-auto h-10 w-10 text-slate-400" />
-          <h2 className="mt-4 text-xl font-semibold text-slate-900">
+        <div className="admin-orders__state-card admin-orders__state-card--empty">
+          <ReceiptText className="admin-orders__empty-icon" />
+          <h2 className="mt-4 admin-orders__state-title">
             No orders found
           </h2>
-          <p className="mt-2 text-slate-500">
+          <p className="admin-orders__state-message">
             Orders will appear here after customers complete checkout.
           </p>
         </div>
       ) : (
         <>
-          <div className="mt-6 overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-slate-200">
-                <thead className="bg-slate-50">
+          <div className="admin-orders__table-card">
+            <div className="admin-orders__table-wrap">
+              <table className="admin-orders__table">
+                <thead className="admin-orders__thead">
                   <tr>
-                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="admin-orders__th">
                       Order
                     </th>
-                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="admin-orders__th">
                       Customer
                     </th>
-                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="admin-orders__th">
                       Date
                     </th>
-                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="admin-orders__th">
                       Items
                     </th>
-                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="admin-orders__th">
                       Amounts
                     </th>
-                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="admin-orders__th">
                       Status
                     </th>
                   </tr>
                 </thead>
 
-                <tbody className="divide-y divide-slate-100 bg-white">
+                <tbody className="admin-orders__tbody">
                   {paginatedOrders.map((order) => (
-                    <tr key={order.orderId} className="hover:bg-slate-50">
-                      <td className="px-5 py-4">
-                        <p className="font-bold text-slate-900">
+                    <tr key={order.orderId} className="hover:admin-orders__thead">
+                      <td className="admin-orders__td">
+                        <p className="admin-orders__text-strong">
                           {order.orderNumber}
                         </p>
-                        <p className="mt-1 text-xs text-slate-500">
+                        <p className="admin-orders__text-sub">
                           ID: {order.orderId}
                         </p>
                       </td>
 
-                      <td className="px-5 py-4">
-                        <p className="text-sm font-semibold text-slate-900">
+                      <td className="admin-orders__td">
+                        <p className="admin-orders__text-sm-strong">
                           {order.customer?.name ||
                             order.customer?.username ||
                             "Unknown"}
                         </p>
-                        <p className="mt-1 text-xs text-slate-500">
+                        <p className="admin-orders__text-sub">
                           {order.customer?.email || "No email"}
                         </p>
                       </td>
 
-                      <td className="px-5 py-4 text-sm text-slate-700">
+                      <td className="admin-orders__td admin-orders__text-sm">
                         {formatDate(order.orderDate)}
                       </td>
 
-                      <td className="px-5 py-4">
-                        <p className="text-sm font-semibold text-slate-900">
+                      <td className="admin-orders__td">
+                        <p className="admin-orders__text-sm-strong">
                           {order.itemCount || 0}
                         </p>
                       </td>
 
-                      <td className="px-5 py-4">
-                        <p className="text-sm font-bold text-slate-900">
+                      <td className="admin-orders__td">
+                        <p className="text-sm admin-orders__text-strong">
                           {formatMoney(order.totalAmount)}
                         </p>
 
-                        <div className="mt-1 space-y-0.5 text-xs text-slate-500">
+                        <div className="admin-orders__meta-lines">
                           <p>Subtotal: {formatMoney(order.subtotalAmount)}</p>
                           <p>Tax: {formatMoney(order.taxAmount)}</p>
                           <p>Discount: -{formatMoney(order.discountAmount)}</p>
                         </div>
                       </td>
 
-                      <td className="px-5 py-4">
-                        <div className="flex flex-col items-start gap-2">
+                      <td className="admin-orders__td">
+                        <div className="admin-orders__status-stack">
                           <span
                             className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${statusClass(
                               order.orderStatus
@@ -453,7 +453,7 @@ function AdminOrdersPage() {
                             onChange={(e) =>
                               handleUpdateOrderStatus(order.orderId, e.target.value)
                             }
-                            className="mt-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100 disabled:cursor-not-allowed disabled:opacity-60"
+                            className="admin-orders__inline-select"
                           >
                             <option value="pending">Pending</option>
                             <option value="completed">Completed</option>
@@ -468,18 +468,18 @@ function AdminOrdersPage() {
             </div>
           </div>
 
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-slate-500">
+          <div className="mt-6 admin-orders__filter-controls sm:items-center sm:justify-between">
+            <p className="admin-orders__pagination-text">
               Showing page {currentPage} of {totalPages} •{" "}
               {filteredOrders.length} matching order
               {filteredOrders.length === 1 ? "" : "s"}
             </p>
 
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="admin-orders__pagination-controls">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:admin-orders__thead disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Previous
               </button>
@@ -495,7 +495,7 @@ function AdminOrdersPage() {
                     className={`rounded-xl px-4 py-2 text-sm font-medium shadow-sm transition ${
                       isActive
                         ? "bg-orange-500 text-white"
-                        : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                        : "border border-slate-200 bg-white text-slate-700 hover:admin-orders__thead"
                     }`}
                   >
                     {pageNumber}
@@ -508,7 +508,7 @@ function AdminOrdersPage() {
                   setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
                 disabled={currentPage === totalPages}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:admin-orders__thead disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
               </button>
