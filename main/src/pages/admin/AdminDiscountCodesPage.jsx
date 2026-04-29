@@ -284,7 +284,7 @@ function AdminDiscountCodesPage() {
         </div>
       </div>
 
-      <div className="admin-discount-codes__filters">
+      <div className="mt-6 admin-discount-codes__stat-card">
         <div className="admin-discount-codes__filters-row">
           <div className="admin-discount-codes__search">
             <Search className="admin-discount-codes__search-icon" />
@@ -325,15 +325,15 @@ function AdminDiscountCodesPage() {
           </div>
 
           {formError ? (
-            <div className="admin-discount-codes__alert admin-discount-codes__alert--error">
-              <AlertCircle className="admin-discount-codes__alert-icon" />
+            <div className="admin-discount-codes__create-header flex gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              <AlertCircle className="mt-0.5 admin-discount-codes__icon shrink-0" />
               <span>{formError}</span>
             </div>
           ) : null}
 
           {successMessage ? (
-            <div className="admin-discount-codes__alert admin-discount-codes__alert--success">
-              <CheckCircle2 className="admin-discount-codes__alert-icon" />
+            <div className="admin-discount-codes__create-header flex gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+              <CheckCircle2 className="mt-0.5 admin-discount-codes__icon shrink-0" />
               <span>{successMessage}</span>
             </div>
           ) : null}
@@ -467,7 +467,7 @@ function AdminDiscountCodesPage() {
                 type="checkbox"
                 checked={form.isActive}
                 onChange={handleChange}
-                className="admin-discount-codes__checkbox"
+                className="admin-discount-codes__icon rounded border-slate-300 text-orange-500"
               />
               Active immediately
             </label>
@@ -500,7 +500,7 @@ function AdminDiscountCodesPage() {
 
       {loading ? (
         <div className="admin-discount-codes__state-card">
-          <h2 className="admin-discount-codes__state-title">
+          <h2 className="text-xl font-semibold text-slate-900">
             Loading discount codes...
           </h2>
           <p className="admin-discount-codes__state-message">Fetching admin discount data.</p>
@@ -548,10 +548,10 @@ function AdminDiscountCodesPage() {
 
               <tbody className="admin-discount-codes__tbody">
                 {filteredCodes.map((code) => (
-                  <tr key={code.discount_code_id} className="admin-discount-codes__row">
-                    <td className="admin-discount-codes__td">
-                      <div className="admin-discount-codes__code-cell">
-                        <div className="admin-discount-codes__code-icon-wrap">
+                  <tr key={code.discount_code_id} className="hover:bg-slate-50">
+                    <td className="px-5 py-4">
+                      <div className="flex items-start gap-3">
+                        <div className="rounded-2xl bg-orange-50 p-2 text-orange-600">
                           <Percent className="admin-discount-codes__icon" />
                         </div>
 

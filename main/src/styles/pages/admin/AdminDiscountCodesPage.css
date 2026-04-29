@@ -21,13 +21,3 @@
 @media (min-width:640px){.admin-discount-codes__stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-discount-codes__actions{flex-direction:row;justify-content:flex-end}}
 @media (min-width:768px){.admin-discount-codes__grid--2{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-discount-codes__grid--4{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media (min-width:1280px){.admin-discount-codes__stats-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.admin-discount-codes__filters-row{flex-direction:row;align-items:center;justify-content:space-between}}
-.admin-discount-codes__checkbox{width:1rem;height:1rem;border:1px solid #cbd5e1;border-radius:.25rem;accent-color:#f97316}
-.admin-discount-codes__state-message{margin:.5rem 0 0;color:#64748b}
-.admin-discount-codes__table-card{margin-top:1.5rem;overflow:hidden;border:1px solid #e2e8f0;border-radius:1.75rem;background:#fff;box-shadow:0 1px 3px rgba(15,23,42,.08),0 1px 2px rgba(15,23,42,.04)}
-.admin-discount-codes__table-wrap{overflow-x:auto}.admin-discount-codes__table{width:100%;border-collapse:collapse}.admin-discount-codes__thead{background:#f8fafc}
-.admin-discount-codes__th{padding:1rem 1.25rem;text-align:left;font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#64748b}
-.admin-discount-codes__tbody .admin-discount-codes__row{border-top:1px solid #f1f5f9}.admin-discount-codes__row:hover{background:#f8fafc}
-.admin-discount-codes__td{padding:1rem 1.25rem;vertical-align:top}
-.admin-discount-codes__code-cell{display:flex;align-items:flex-start;gap:.75rem}.admin-discount-codes__code-icon-wrap{border-radius:1rem;background:#fff7ed;color:#ea580c;padding:.5rem}
-.admin-discount-codes__text-strong{margin:0;font-weight:700;color:#0f172a}.admin-discount-codes__text-sub{margin:.25rem 0 0;font-size:.75rem;color:#64748b}.admin-discount-codes__text-sm-strong{margin:0;font-size:.875rem;font-weight:600;color:#0f172a}.admin-discount-codes__text-xs{font-size:.75rem;color:#64748b}
-.admin-discount-codes__meta-value{font-weight:500;color:#0f172a}

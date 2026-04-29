@@ -271,10 +271,10 @@ function AdminOrdersPage() {
         </div>
       </div>
 
-      <div className="admin-orders__filters">
+      <div className="mt-6 admin-orders__stat-card">
         <div className="admin-orders__filters-row">
           <div className="admin-orders__search">
-            <Search className="admin-orders__search-icon" />
+            <Search className="mr-3 admin-orders__icon text-slate-400" />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -349,7 +349,7 @@ function AdminOrdersPage() {
       ) : filteredOrders.length === 0 ? (
         <div className="admin-orders__state-card admin-orders__state-card--empty">
           <ReceiptText className="admin-orders__empty-icon" />
-          <h2 className="admin-orders__state-title admin-orders__state-title--spaced">
+          <h2 className="mt-4 admin-orders__state-title">
             No orders found
           </h2>
           <p className="admin-orders__state-message">
@@ -386,7 +386,7 @@ function AdminOrdersPage() {
 
                 <tbody className="admin-orders__tbody">
                   {paginatedOrders.map((order) => (
-                    <tr key={order.orderId} className="admin-orders__row">
+                    <tr key={order.orderId} className="hover:admin-orders__thead">
                       <td className="admin-orders__td">
                         <p className="admin-orders__text-strong">
                           {order.orderNumber}
@@ -418,7 +418,7 @@ function AdminOrdersPage() {
                       </td>
 
                       <td className="admin-orders__td">
-                        <p className="admin-orders__text-sm admin-orders__text-strong">
+                        <p className="text-sm admin-orders__text-strong">
                           {formatMoney(order.totalAmount)}
                         </p>
 
@@ -431,7 +431,11 @@ function AdminOrdersPage() {
 
                       <td className="admin-orders__td">
                         <div className="admin-orders__status-stack">
-                          <span className={statusClass(order.orderStatus)}>
+                          <span
+                            className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${statusClass(
+                              order.orderStatus
+                            )}`}
+                          >
                             Order: {order.orderStatus || "N/A"}
                           </span>
 
@@ -460,7 +464,7 @@ function AdminOrdersPage() {
             </div>
           </div>
 
-          <div className="admin-orders__pagination-row">
+          <div className="mt-6 admin-orders__filter-controls sm:items-center sm:justify-between">
             <p className="admin-orders__pagination-text">
               Showing page {currentPage} of {totalPages} •{" "}
               {filteredOrders.length} matching order
@@ -471,7 +475,7 @@ function AdminOrdersPage() {
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="admin-orders__page-btn"
+                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:admin-orders__thead disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Previous
               </button>
@@ -484,8 +488,10 @@ function AdminOrdersPage() {
                   <button
                     key={pageNumber}
                     onClick={() => setCurrentPage(pageNumber)}
-                    className={`admin-orders__page-btn ${
-                      isActive ? "admin-orders__page-btn--active" : ""
+                    className={`rounded-xl px-4 py-2 text-sm font-medium shadow-sm transition ${
+                      isActive
+                        ? "bg-orange-500 text-white"
+                        : "border border-slate-200 bg-white text-slate-700 hover:admin-orders__thead"
                     }`}
                   >
                     {pageNumber}
@@ -498,7 +504,7 @@ function AdminOrdersPage() {
                   setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
                 disabled={currentPage === totalPages}
-                className="admin-orders__page-btn"
+                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:admin-orders__thead disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
               </button>
