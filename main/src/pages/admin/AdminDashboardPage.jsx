@@ -17,17 +17,17 @@ function formatMoney(amount) {
 
 function StatCard({ label, value, icon: Icon }) {
   return (
-    <div className="page-admin-dashboard rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-      <div className="flex items-center justify-between gap-4">
+    <div className="admin-dashboard__stat-card">
+      <div className="admin-dashboard__stat-row">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+          <p className="admin-dashboard__stat-label">
             {label}
           </p>
-          <p className="mt-2 text-2xl font-bold text-slate-900">{value}</p>
+          <p className="admin-dashboard__stat-value">{value}</p>
         </div>
 
-        <div className="rounded-2xl bg-orange-50 p-3 text-orange-600">
-          <Icon className="h-5 w-5" />
+        <div className="admin-dashboard__stat-icon-wrap">
+          <Icon className="admin-dashboard__icon" />
         </div>
       </div>
     </div>
@@ -67,19 +67,19 @@ function AdminDashboardPage() {
       subtitle="View high-level marketplace activity and admin stats."
     >
       {loading ? (
-        <div className="rounded-[28px] bg-white p-12 text-center shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-900">
+        <div className="admin-dashboard__state-card">
+          <h2 className="admin-dashboard__state-title">
             Loading dashboard...
           </h2>
-          <p className="mt-2 text-slate-500">Fetching admin statistics.</p>
+          <p className="admin-dashboard__state-message">Fetching admin statistics.</p>
         </div>
       ) : error ? (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="admin-dashboard__error">
           {error}
         </div>
       ) : (
         <>
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="admin-dashboard__stats-grid">
             <StatCard
               label="Total Users"
               value={dashboard?.totalUsers || 0}
@@ -127,13 +127,13 @@ function AdminDashboardPage() {
             />
           </div>
 
-          <div className="mt-6 rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-bold text-slate-900">Quick Actions</h2>
-            <p className="mt-2 text-sm text-slate-500">
+          <div className="admin-dashboard__quick-actions">
+            <h2 className="admin-dashboard__quick-title">Quick Actions</h2>
+            <p className="admin-dashboard__quick-subtitle">
               Use these shortcuts to manage the most important admin areas.
             </p>
 
-            <div className="mt-5 flex flex-wrap gap-3">
+            <div className="admin-dashboard__quick-buttons">
               <button
                 onClick={() => {
                   window.location.href = "/admin/products";
