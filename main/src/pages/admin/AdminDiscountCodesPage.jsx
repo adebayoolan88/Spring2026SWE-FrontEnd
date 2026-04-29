@@ -503,7 +503,7 @@ function AdminDiscountCodesPage() {
           <h2 className="text-xl font-semibold text-slate-900">
             Loading discount codes...
           </h2>
-          <p className="mt-2 text-slate-500">Fetching admin discount data.</p>
+          <p className="admin-discount-codes__state-message">Fetching admin discount data.</p>
         </div>
       ) : pageError ? (
         <div className="admin-discount-codes__error">
@@ -515,38 +515,38 @@ function AdminDiscountCodesPage() {
           <h2 className="admin-discount-codes__state-title admin-discount-codes__state-title--spaced">
             No discount codes found
           </h2>
-          <p className="mt-2 text-slate-500">
+          <p className="admin-discount-codes__state-message">
             Create your first discount code to start testing checkout promotions.
           </p>
         </div>
       ) : (
-        <div className="mt-6 overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-200">
-              <thead className="bg-slate-50">
+        <div className="admin-discount-codes__table-card">
+          <div className="admin-discount-codes__table-wrap">
+            <table className="admin-discount-codes__table">
+              <thead className="admin-discount-codes__thead">
                 <tr>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <th className="admin-discount-codes__th">
                     Code
                   </th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <th className="admin-discount-codes__th">
                     Discount
                   </th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <th className="admin-discount-codes__th">
                     Minimum
                   </th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <th className="admin-discount-codes__th">
                     Uses
                   </th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <th className="admin-discount-codes__th">
                     Dates
                   </th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <th className="admin-discount-codes__th">
                     Status
                   </th>
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-slate-100 bg-white">
+              <tbody className="admin-discount-codes__tbody">
                 {filteredCodes.map((code) => (
                   <tr key={code.discount_code_id} className="hover:bg-slate-50">
                     <td className="px-5 py-4">
@@ -556,55 +556,55 @@ function AdminDiscountCodesPage() {
                         </div>
 
                         <div>
-                          <p className="font-bold text-slate-900">{code.code}</p>
-                          <p className="mt-1 text-xs text-slate-500">
+                          <p className="admin-discount-codes__text-strong">{code.code}</p>
+                          <p className="admin-discount-codes__text-sub">
                             {code.description || "No description"}
                           </p>
                         </div>
                       </div>
                     </td>
 
-                    <td className="px-5 py-4">
-                      <p className="text-sm font-semibold text-slate-900">
+                    <td className="admin-discount-codes__td">
+                      <p className="admin-discount-codes__text-sm-strong">
                         {discountLabel(code)}
                       </p>
-                      <p className="mt-1 text-xs text-slate-500">
+                      <p className="admin-discount-codes__text-sub">
                         {code.discount_type}
                       </p>
                     </td>
 
-                    <td className="px-5 py-4 text-sm font-semibold text-slate-900">
+                    <td className="admin-discount-codes__td admin-discount-codes__text-sm-strong">
                       {formatMoney(code.minimum_order_amount)}
                     </td>
 
-                    <td className="px-5 py-4">
-                      <p className="text-sm font-semibold text-slate-900">
+                    <td className="admin-discount-codes__td">
+                      <p className="admin-discount-codes__text-sm-strong">
                         {Number(code.uses_count || 0)}
                         {code.max_uses ? ` / ${code.max_uses}` : ""}
                       </p>
-                      <p className="mt-1 text-xs text-slate-500">
+                      <p className="admin-discount-codes__text-sub">
                         {code.max_uses ? "limited" : "unlimited"}
                       </p>
                     </td>
 
-                    <td className="px-5 py-4">
-                      <p className="text-xs text-slate-500">
+                    <td className="admin-discount-codes__td">
+                      <p className="admin-discount-codes__text-xs">
                         Starts:{" "}
-                        <span className="font-medium text-slate-900">
+                        <span className="admin-discount-codes__meta-value">
                           {formatDate(code.starts_at)}
                         </span>
                       </p>
-                      <p className="mt-1 text-xs text-slate-500">
+                      <p className="admin-discount-codes__text-sub">
                         Expires:{" "}
-                        <span className="font-medium text-slate-900">
+                        <span className="admin-discount-codes__meta-value">
                           {formatDate(code.expires_at)}
                         </span>
                       </p>
                     </td>
 
-                    <td className="px-5 py-4">
+                    <td className="admin-discount-codes__td">
                       <span
-                        className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${statusClass(
+                        className={`admin-discount-codes__badge ${statusClass(
                           code
                         )}`}
                       >
