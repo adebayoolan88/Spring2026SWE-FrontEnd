@@ -670,19 +670,22 @@ export default function App() {
         />
 
         <CategoryNav
-          items={products}
-          activeMenu={activeMenu}
-          setActiveMenu={setActiveMenu}
-          onSelectCategory={setSelectedCategory}
-          onSelectListing={(item) => {
-            setSelectedCategory(item.category);
-            setSearchTerm(item.name);
-          }}
-          onClearCategory={() => {
-            setSelectedCategory("");
-            setSearchTerm("");
-          }}
-        />
+  items={products}
+  activeMenu={activeMenu}
+  setActiveMenu={setActiveMenu}
+  onSelectCategory={(category) => {
+    setSelectedCategory(category);
+    setSearchTerm(""); // important: clear keyword filter
+  }}
+  onSelectListing={(item) => {
+    setSelectedCategory(item.category);
+    setSearchTerm(item.name);
+  }}
+  onClearCategory={() => {
+    setSelectedCategory("");
+    setSearchTerm("");
+  }}
+/>
 
         <main className="catalog-main">
           <section className="catalog-main__header">

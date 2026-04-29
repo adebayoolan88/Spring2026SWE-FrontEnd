@@ -2,13 +2,13 @@ import { ChevronDown, X } from "lucide-react";
 import { useEffect, useMemo } from "react";
 
 const CATEGORIES = [
-  "Accessories",
-  "Brass",
-  "Drums",
   "Guitar",
   "Piano",
-  "Violin",
+  "Drums",
+  "Accessories",
+  "Brass",
   "Woodwind",
+  "Violin",
 ];
 
 function CategoryNav({
