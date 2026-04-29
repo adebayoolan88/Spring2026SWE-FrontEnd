@@ -470,7 +470,7 @@ function AdminProductsPage() {
 
                 <tbody className="admin-products__tbody">
                   {paginatedProducts.map((product) => (
-                    <tr key={product.productId} className="hover:admin-products__thead">
+                    <tr key={product.productId} className="admin-products__tr">
                       <td className="admin-products__td">
                         <div>
                           <p className="admin-products__text-strong">{product.name}</p>
@@ -586,7 +586,7 @@ function AdminProductsPage() {
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="admin-products__btn admin-products__btn--secondary admin-products__btn--disabled"
+                className="admin-products__btn admin-products__page-btn admin-products__page-btn--secondary"
               >
                 Previous
               </button>
@@ -599,10 +599,10 @@ function AdminProductsPage() {
                   <button
                     key={pageNumber}
                     onClick={() => setCurrentPage(pageNumber)}
-                    className={`admin-products__btn admin-products__btn--page ${
+                    className={`admin-products__btn admin-products__page-btn ${
                       isActive
-                        ? "admin-products__btn--primary"
-                        : "admin-products__btn--secondary"
+                        ? "admin-products__page-btn--primary"
+                        : "admin-products__page-btn--secondary"
                     }`}
                   >
                     {pageNumber}
@@ -615,7 +615,7 @@ function AdminProductsPage() {
                   setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
                 disabled={currentPage === totalPages}
-                className="admin-products__btn admin-products__btn--secondary admin-products__btn--disabled"
+                className="admin-products__btn admin-products__page-btn admin-products__page-btn--secondary"
               >
                 Next
               </button>
