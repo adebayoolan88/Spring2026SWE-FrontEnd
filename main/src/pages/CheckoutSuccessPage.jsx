@@ -56,36 +56,36 @@ function CheckoutSuccessPage({ onClearCart }) {
   }, [sessionId, onClearCart]);
 
   return (
-    <div className="page-checkout-success min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
-      <div className="mx-auto max-w-3xl rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm">
+    <div className="page-checkout-success">
+      <div className="checkout-success__container">
         {loading ? (
-          <div className="text-center">
-            <p className="text-sm font-semibold uppercase tracking-wide text-orange-500">
+          <div className="checkout-success__center">
+            <p className="checkout-success__eyebrow">
               Checkout
             </p>
-            <h1 className="mt-2 text-3xl font-bold text-slate-900">
+            <h1 className="checkout-success__title">
               Finalizing your order...
             </h1>
-            <p className="mt-3 text-slate-500">
+            <p className="checkout-success__subtitle">
               Please wait while we confirm your payment details.
             </p>
           </div>
         ) : error ? (
-          <div className="text-center">
-            <p className="text-sm font-semibold uppercase tracking-wide text-red-500">
+          <div className="checkout-success__center">
+            <p className="checkout-success__eyebrow checkout-success__eyebrow--error">
               Payment Error
             </p>
-            <h1 className="mt-2 text-3xl font-bold text-slate-900">
+            <h1 className="checkout-success__title">
               We could not confirm your order
             </h1>
-            <p className="mt-3 text-slate-600">{error}</p>
+            <p className="checkout-success__copy">{error}</p>
 
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <div className="checkout-success__action-row">
               <button
                 onClick={() => {
                   window.location.href = "/";
                 }}
-                className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                className="checkout-success__primary-btn"
               >
                 Return Home
               </button>
@@ -93,78 +93,78 @@ function CheckoutSuccessPage({ onClearCart }) {
           </div>
         ) : (
           <div>
-            <div className="text-center">
-              <p className="text-sm font-semibold uppercase tracking-wide text-emerald-500">
+            <div className="checkout-success__center">
+              <p className="checkout-success__eyebrow checkout-success__eyebrow--success">
                 Payment Successful
               </p>
-              <h1 className="mt-2 text-3xl font-bold text-slate-900">
+              <h1 className="checkout-success__title">
                 Thank you for your order
               </h1>
-              <p className="mt-3 text-slate-500">
+              <p className="checkout-success__subtitle">
                 Your test payment was successful and your order has been recorded.
               </p>
             </div>
 
-            <div className="mt-8 rounded-[28px] border border-slate-200 bg-slate-50 p-6">
-              <h2 className="text-lg font-semibold text-slate-900">Order Summary</h2>
+            <div className="checkout-success__summary">
+              <h2 className="checkout-success__section-title">Order Summary</h2>
 
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+              <div className="checkout-success__meta-grid">
+                <div className="checkout-success__meta-card">
+                  <p className="checkout-success__meta-label">
                     Order Number
                   </p>
-                  <p className="mt-2 text-lg font-bold text-slate-900">
+                  <p className="checkout-success__meta-value">
                     {formatOrderNumber(orderData?.orderId)}
                   </p>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                <div className="checkout-success__meta-card">
+                  <p className="checkout-success__meta-label">
                     Order ID
                   </p>
-                  <p className="mt-2 text-lg font-bold text-slate-900">
+                  <p className="checkout-success__meta-value">
                     {orderData?.orderId}
                   </p>
                 </div>
               </div>
 
-              <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5">
-                <div className="flex items-center justify-between border-b border-slate-100 py-3 text-sm">
-                  <span className="text-slate-500">Subtotal</span>
-                  <span className="font-semibold text-slate-900">
+              <div className="checkout-success__totals">
+                <div className="checkout-success__total-row">
+                  <span className="checkout-success__total-label">Subtotal</span>
+                  <span className="checkout-success__total-value">
                     {formatMoney(orderData?.amounts?.subtotalAmount)}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between border-b border-slate-100 py-3 text-sm">
-                  <span className="text-slate-500">Sales Tax</span>
-                  <span className="font-semibold text-slate-900">
+                <div className="checkout-success__total-row">
+                  <span className="checkout-success__total-label">Sales Tax</span>
+                  <span className="checkout-success__total-value">
                     {formatMoney(orderData?.amounts?.taxAmount)}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between border-b border-slate-100 py-3 text-sm">
-                  <span className="text-slate-500">Discount</span>
-                  <span className="font-semibold text-slate-900">
+                <div className="checkout-success__total-row">
+                  <span className="checkout-success__total-label">Discount</span>
+                  <span className="checkout-success__total-value">
                     -{formatMoney(orderData?.amounts?.discountAmount)}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between pt-4 text-base">
-                  <span className="font-semibold text-slate-900">Total</span>
-                  <span className="text-xl font-bold text-slate-900">
+                <div className="checkout-success__total-row checkout-success__total-row--grand">
+                  <span className="checkout-success__total-value">Total</span>
+                  <span className="checkout-success__grand-value">
                     {formatMoney(orderData?.amounts?.totalAmount)}
                   </span>
                 </div>
               </div>
             </div>
 
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <div className="checkout-success__action-row">
               <button
                 onClick={() => {
                   window.location.href = "/";
                 }}
-                className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+                className="checkout-success__primary-btn"
               >
                 Continue Shopping
               </button>
