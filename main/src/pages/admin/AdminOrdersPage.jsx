@@ -439,11 +439,7 @@ function AdminOrdersPage() {
                             Order: {order.orderStatus || "N/A"}
                           </span>
 
-                          <span
-                            className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${statusClass(
-                              order.paymentStatus
-                            )}`}
-                          >
+                          <span className={statusClass(order.paymentStatus)}>
                             Payment: {order.paymentStatus || "N/A"}
                           </span>
 
