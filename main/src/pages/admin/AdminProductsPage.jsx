@@ -297,89 +297,89 @@ function AdminProductsPage() {
       title="Products"
       subtitle="View and manage all marketplace item listings."
     >
-      <div className="page-admin-products grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-          <div className="flex items-center justify-between">
+      <div className="admin-products__stats-grid">
+        <div className="admin-products__stat-card">
+          <div className="admin-products__stat-row">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+              <p className="admin-products__stat-label">
                 Total Products
               </p>
-              <p className="mt-2 text-2xl font-bold text-slate-900">{totals.all}</p>
+              <p className="admin-products__stat-value">{totals.all}</p>
             </div>
-            <div className="rounded-2xl bg-orange-50 p-3 text-orange-600">
-              <Boxes className="h-5 w-5" />
+            <div className="admin-products__stat-icon admin-products__stat-icon--orange">
+              <Boxes className="admin-products__icon" />
             </div>
           </div>
         </div>
 
-        <div className="admin-stat-card">
-          <div className="flex items-center justify-between">
+        <div className="admin-products__stat-card">
+          <div className="admin-products__stat-row">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+              <p className="admin-products__stat-label">
                 Available
               </p>
-              <p className="mt-2 text-2xl font-bold text-slate-900">
+              <p className="admin-products__stat-value">
                 {totals.available}
               </p>
             </div>
-            <div className="rounded-2xl bg-emerald-50 p-3 text-emerald-600">
-              <Boxes className="h-5 w-5" />
+            <div className="admin-products__stat-icon admin-products__stat-icon--green">
+              <Boxes className="admin-products__icon" />
             </div>
           </div>
         </div>
 
-        <div className="admin-stat-card">
-          <div className="flex items-center justify-between">
+        <div className="admin-products__stat-card">
+          <div className="admin-products__stat-row">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+              <p className="admin-products__stat-label">
                 On Sale
               </p>
-              <p className="mt-2 text-2xl font-bold text-slate-900">
+              <p className="admin-products__stat-value">
                 {totals.onSale}
               </p>
             </div>
-            <div className="rounded-2xl bg-orange-50 p-3 text-orange-600">
-              <Tag className="h-5 w-5" />
+            <div className="admin-products__stat-icon admin-products__stat-icon--orange">
+              <Tag className="admin-products__icon" />
             </div>
           </div>
         </div>
 
-        <div className="admin-stat-card">
-          <div className="flex items-center justify-between">
+        <div className="admin-products__stat-card">
+          <div className="admin-products__stat-row">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+              <p className="admin-products__stat-label">
                 Featured
               </p>
-              <p className="mt-2 text-2xl font-bold text-slate-900">
+              <p className="admin-products__stat-value">
                 {totals.featured}
               </p>
             </div>
-            <div className="rounded-2xl bg-yellow-50 p-3 text-yellow-600">
-              <Star className="h-5 w-5" />
+            <div className="admin-products__stat-icon admin-products__stat-icon--yellow">
+              <Star className="admin-products__icon" />
             </div>
           </div>
         </div>
       </div>
 
-      <div className="mt-6 admin-stat-card">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-          <div className="flex flex-1 items-center rounded-2xl border border-slate-200 bg-white px-4 py-3">
-            <Search className="mr-3 h-5 w-5 text-slate-400" />
+      <div className="mt-6 admin-products__stat-card">
+        <div className="admin-products__filters-row">
+          <div className="admin-products__search">
+            <Search className="mr-3 admin-products__icon text-slate-400" />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by product, SKU, category..."
-              className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
+              className="admin-products__search-input"
             />
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <div className="flex items-center gap-2 rounded-2xl border border-slate-200 px-3 py-2">
-              <SlidersHorizontal className="h-4 w-4 text-slate-400" />
+          <div className="admin-products__filter-controls">
+            <div className="admin-products__filter-pill">
+              <SlidersHorizontal className="admin-products__tiny-icon" />
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="bg-transparent text-sm text-slate-700 outline-none"
+                className="admin-products__pill-select"
               >
                 <option value="all">All statuses</option>
                 <option value="available">Available</option>
@@ -388,12 +388,12 @@ function AdminProductsPage() {
               </select>
             </div>
 
-            <div className="flex items-center gap-2 rounded-2xl border border-slate-200 px-3 py-2">
-              <Tag className="h-4 w-4 text-slate-400" />
+            <div className="admin-products__filter-pill">
+              <Tag className="admin-products__tiny-icon" />
               <select
                 value={saleFilter}
                 onChange={(e) => setSaleFilter(e.target.value)}
-                className="bg-transparent text-sm text-slate-700 outline-none"
+                className="admin-products__pill-select"
               >
                 <option value="all">All listings</option>
                 <option value="sale">On sale</option>
@@ -408,7 +408,7 @@ function AdminProductsPage() {
                 setCreateModalError("");
                 setCreateModalSuccess("");
               }}
-              className="inline-flex items-center justify-center gap-2 btn-primary"
+              className="admin-products__create-btn btn-primary"
             >
               <Plus className="h-4 w-4" />
               Add Product
@@ -418,96 +418,96 @@ function AdminProductsPage() {
       </div>
 
       {loading ? (
-        <div className="mt-6 rounded-[28px] bg-white p-12 text-center shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-900">
+        <div className="admin-products__state-card">
+          <h2 className="admin-products__state-title">
             Loading products...
           </h2>
-          <p className="mt-2 text-slate-500">Fetching marketplace listings.</p>
+          <p className="admin-products__state-message">Fetching marketplace listings.</p>
         </div>
       ) : pageError ? (
-        <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="admin-products__error">
           {pageError}
         </div>
       ) : filteredProducts.length === 0 ? (
-        <div className="mt-6 rounded-[28px] border border-dashed border-slate-300 bg-white p-12 text-center shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-900">
+        <div className="admin-products__state-card admin-products__state-card--empty">
+          <h2 className="admin-products__state-title">
             No products found
           </h2>
-          <p className="mt-2 text-slate-500">
+          <p className="admin-products__state-message">
             Try adjusting your search or filters.
           </p>
         </div>
       ) : (
         <>
-          <div className="mt-6 overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-slate-200">
-                <thead className="bg-slate-50">
+          <div className="admin-products__table-card">
+            <div className="admin-products__table-wrap">
+              <table className="admin-products__table">
+                <thead className="admin-products__thead">
                   <tr>
-                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="admin-products__th">
                       Product
                     </th>
-                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="admin-products__th">
                       Price
                     </th>
-                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="admin-products__th">
                       Qty
                     </th>
-                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="admin-products__th">
                       Status
                     </th>
-                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="admin-products__th">
                       Flags
                     </th>
-                    <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="admin-products__th">
                       Listed
                     </th>
-                    <th className="px-5 py-4 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
+                    <th className="admin-products__th admin-products__th--right">
                       Actions
                     </th>
                   </tr>
                 </thead>
 
-                <tbody className="divide-y divide-slate-100 bg-white">
+                <tbody className="admin-products__tbody">
                   {paginatedProducts.map((product) => (
-                    <tr key={product.productId} className="hover:bg-slate-50">
-                      <td className="px-5 py-4">
+                    <tr key={product.productId} className="hover:admin-products__thead">
+                      <td className="admin-products__td">
                         <div>
-                          <p className="font-semibold text-slate-900">{product.name}</p>
-                          <p className="mt-1 text-xs text-slate-500">
+                          <p className="admin-products__text-strong">{product.name}</p>
+                          <p className="admin-products__text-sub">
                             {product.brand || "No brand"} •{" "}
                             {product.category?.name || "N/A"}
                           </p>
-                          <p className="mt-1 text-xs text-slate-400">
+                          <p className="admin-products__text-muted">
                             SKU: {product.sku || "N/A"}
                           </p>
                         </div>
                       </td>
 
-                      <td className="px-5 py-4">
+                      <td className="admin-products__td">
                         {product.isOnSale && product.salePrice !== null ? (
                           <div>
-                            <p className="text-sm font-bold text-emerald-700">
+                            <p className="admin-products__price admin-products__price--sale">
                               {formatMoney(product.salePrice)}
                             </p>
-                            <p className="text-xs text-slate-400 line-through">
+                            <p className="admin-products__price-strike">
                               {formatMoney(product.price)}
                             </p>
                           </div>
                         ) : (
-                          <p className="text-sm font-bold text-slate-900">
+                          <p className="admin-products__price">
                             {formatMoney(product.price)}
                           </p>
                         )}
                       </td>
 
-                      <td className="px-5 py-4">
-                        <p className="text-sm font-semibold text-slate-900">
+                      <td className="admin-products__td">
+                        <p className="text-sm admin-products__text-strong">
                           {product.quantity}
                         </p>
                       </td>
 
-                      <td className="px-5 py-4">
+                      <td className="admin-products__td">
                         <span
                           className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${statusClass(
                             product.availabilityStatus
@@ -517,35 +517,35 @@ function AdminProductsPage() {
                         </span>
                       </td>
 
-                      <td className="px-5 py-4">
-                        <div className="flex flex-wrap gap-2">
+                      <td className="admin-products__td">
+                        <div className="admin-products__chips">
                           {product.isOnSale ? (
-                            <span className="rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-700">
+                            <span className="admin-products__chip admin-products__chip--sale">
                               Sale
                             </span>
                           ) : null}
 
                           {product.isFeatured ? (
-                            <span className="rounded-full bg-yellow-50 px-3 py-1 text-xs font-semibold text-yellow-700">
+                            <span className="admin-products__chip admin-products__chip--featured">
                               Featured
                             </span>
                           ) : null}
 
                           {!product.isOnSale && !product.isFeatured ? (
-                            <span className="text-xs text-slate-400">None</span>
+                            <span className="admin-products__text-muted">None</span>
                           ) : null}
                         </div>
                       </td>
 
-                      <td className="px-5 py-4 text-sm text-slate-600">
+                      <td className="admin-products__td admin-products__text-sm">
                         {formatDate(product.listingDate)}
                       </td>
 
-                      <td className="px-5 py-4 text-right">
-                        <div className="flex justify-end gap-2">
+                      <td className="admin-products__td text-right">
+                        <div className="admin-products__actions">
                           <button
                             onClick={() => handleOpenEdit(product)}
-                            className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
+                            className="admin-products__action-btn admin-products__action-btn--edit"
                           >
                             <Edit className="h-4 w-4" />
                             Edit
@@ -557,7 +557,7 @@ function AdminProductsPage() {
                               deletingProductId === product.productId ||
                               product.availabilityStatus === "removed"
                             }
-                            className="inline-flex items-center gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+                            className="admin-products__action-btn admin-products__action-btn--delete"
                           >
                             <Trash2 className="h-4 w-4" />
                             {deletingProductId === product.productId
@@ -575,18 +575,18 @@ function AdminProductsPage() {
             </div>
           </div>
 
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-slate-500">
+          <div className="mt-6 admin-products__filter-controls sm:items-center sm:justify-between">
+            <p className="admin-products__pagination-text">
               Showing page {currentPage} of {totalPages} •{" "}
               {filteredProducts.length} matching product
               {filteredProducts.length === 1 ? "" : "s"}
             </p>
 
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="admin-products__pagination-controls">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:admin-products__thead disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Previous
               </button>
@@ -602,7 +602,7 @@ function AdminProductsPage() {
                     className={`rounded-xl px-4 py-2 text-sm font-medium shadow-sm transition ${
                       isActive
                         ? "bg-orange-500 text-white"
-                        : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                        : "border border-slate-200 bg-white text-slate-700 hover:admin-products__thead"
                     }`}
                   >
                     {pageNumber}
@@ -615,7 +615,7 @@ function AdminProductsPage() {
                   setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
                 disabled={currentPage === totalPages}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:admin-products__thead disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
               </button>
