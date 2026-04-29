@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import NavBar from "./components/layout/NavBar";
 import CategoryNav from "./components/layout/CategoryNav";
+import Footer from "./components/layout/Footer";
 import ItemCard from "./components/ui/ItemCard";
 import AuthModal from "./components/ui/AuthModal";
 import CartPanel from "./components/ui/CartPanel";
@@ -788,6 +789,8 @@ export default function App() {
             </>
           )}
         </main>
+
+        <Footer />
       </div>
 
       <CartPanel
