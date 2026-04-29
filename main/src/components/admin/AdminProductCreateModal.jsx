@@ -328,7 +328,7 @@ function AdminProductCreateModal({
             <button
               type="submit"
               disabled={saving}
-              className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+              className="admin-product-create-modal__btn admin-product-create-modal__btn--primary admin-product-create-modal__btn--disabled"
             >
               {saving ? "Creating..." : "Create Product"}
             </button>

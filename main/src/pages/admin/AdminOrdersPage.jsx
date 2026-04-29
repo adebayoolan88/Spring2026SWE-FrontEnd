@@ -475,7 +475,7 @@ function AdminOrdersPage() {
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:admin-orders__thead disabled:cursor-not-allowed disabled:opacity-50"
+                className="admin-orders__btn admin-orders__btn--secondary admin-orders__btn--disabled"
               >
                 Previous
               </button>
@@ -488,10 +488,10 @@ function AdminOrdersPage() {
                   <button
                     key={pageNumber}
                     onClick={() => setCurrentPage(pageNumber)}
-                    className={`rounded-xl px-4 py-2 text-sm font-medium shadow-sm transition ${
+                    className={`admin-orders__btn admin-orders__btn--page ${
                       isActive
-                        ? "bg-orange-500 text-white"
-                        : "border border-slate-200 bg-white text-slate-700 hover:admin-orders__thead"
+                        ? "admin-orders__btn--primary"
+                        : "admin-orders__btn--secondary"
                     }`}
                   >
                     {pageNumber}
@@ -504,7 +504,7 @@ function AdminOrdersPage() {
                   setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
                 disabled={currentPage === totalPages}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:admin-orders__thead disabled:cursor-not-allowed disabled:opacity-50"
+                className="admin-orders__btn admin-orders__btn--secondary admin-orders__btn--disabled"
               >
                 Next
               </button>

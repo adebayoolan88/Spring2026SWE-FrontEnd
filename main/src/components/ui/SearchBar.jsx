@@ -17,7 +17,7 @@ function SearchBar({ value, onChange }) {
 
       {/* Visual search button.
           In the current app, live filtering mostly happens as the user types. */}
-      <button className="rounded-2xl bg-orange-500 px-6 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-orange-600">
+      <button className="search-bar__btn search-bar__btn--primary">
         Search
       </button>
     </div>
