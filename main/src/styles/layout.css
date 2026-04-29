@@ -1,6 +1,19 @@
 /* Shared layout helpers */
-.l-container { width: min(100% - 2rem, 1200px); margin-inline: auto; }
-.l-container--narrow { width: min(100% - 2rem, 860px); margin-inline: auto; }
-.l-grid { display: grid; gap: 1rem; }
-.l-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.l-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.l-container {
+  width: min(100% - 2rem, 1200px);
+  margin-inline: auto;
+}
+.l-container--narrow {
+  width: min(100% - 2rem, 860px);
+  margin-inline: auto;
+}
+.l-grid {
+  display: grid;
+  gap: 1rem;
+}
+.l-grid--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.l-grid--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
