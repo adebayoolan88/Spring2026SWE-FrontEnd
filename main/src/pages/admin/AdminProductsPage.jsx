@@ -586,7 +586,7 @@ function AdminProductsPage() {
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:admin-products__thead disabled:cursor-not-allowed disabled:opacity-50"
+                className="admin-products__btn admin-products__btn--secondary admin-products__btn--disabled"
               >
                 Previous
               </button>
@@ -599,10 +599,10 @@ function AdminProductsPage() {
                   <button
                     key={pageNumber}
                     onClick={() => setCurrentPage(pageNumber)}
-                    className={`admin-products__page-btn ${
+                    className={`admin-products__btn admin-products__btn--page ${
                       isActive
-                        ? "bg-orange-500 text-white"
-                        : "border border-slate-200 bg-white text-slate-700 hover:admin-products__thead"
+                        ? "admin-products__btn--primary"
+                        : "admin-products__btn--secondary"
                     }`}
                   >
                     {pageNumber}
@@ -615,7 +615,7 @@ function AdminProductsPage() {
                   setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
                 disabled={currentPage === totalPages}
-                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:admin-products__thead disabled:cursor-not-allowed disabled:opacity-50"
+                className="admin-products__btn admin-products__btn--secondary admin-products__btn--disabled"
               >
                 Next
               </button>
