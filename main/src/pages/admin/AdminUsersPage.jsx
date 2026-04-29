@@ -354,7 +354,7 @@ function AdminUsersPage() {
                   </tr>
                 </thead>
 
-                <tbody className="divide-y divide-slate-100 bg-white">
+                <tbody className="admin-users__tbody">
                   {paginatedUsers.map((user) => (
                     <tr key={user.userId} className="hover:admin-users__thead">
                       <td className="px-5 py-4">
@@ -363,59 +363,59 @@ function AdminUsersPage() {
                             ? `${user.firstName || ""} ${user.lastName || ""}`.trim()
                             : user.username}
                         </p>
-                        <p className="mt-1 text-xs text-slate-500">
+                        <p className="admin-users__text-sub">
                           @{user.username}
                         </p>
-                        <p className="mt-1 text-xs text-slate-400">
+                        <p className="admin-users__text-muted">
                           ID: {user.userId}
                         </p>
                       </td>
 
-                      <td className="px-5 py-4">
-                        <p className="text-sm font-semibold text-slate-900">
+                      <td className="admin-users__td">
+                        <p className="admin-users__text-sm-strong">
                           {user.email}
                         </p>
-                        <p className="mt-1 text-xs text-slate-500">
+                        <p className="admin-users__text-sub">
                           {user.phoneNumber || "No phone"}
                         </p>
                       </td>
 
-                      <td className="px-5 py-4">
+                      <td className="admin-users__td">
                         <span
-                          className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${roleClass(
+                          className={roleClass(
                             user.role
-                          )}`}
+                          )}
                         >
                           {user.role || "customer"}
                         </span>
                       </td>
 
-                      <td className="px-5 py-4 text-sm font-semibold text-slate-900">
+                      <td className="admin-users__td admin-users__text-sm-strong">
                         {user.orderCount || 0}
                       </td>
 
-                      <td className="px-5 py-4 text-sm font-bold text-slate-900">
+                      <td className="admin-users__td admin-users__text-strong">
                         {formatMoney(user.totalSpent)}
                       </td>
 
-                      <td className="px-5 py-4">
+                      <td className="admin-users__td">
                         <span
-                          className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${statusClass(
+                          className={statusClass(
                             user.isActive
-                          )}`}
+                          )}
                         >
                           {user.isActive ? "Active" : "Inactive"}
                         </span>
                       </td>
 
-                      <td className="px-5 py-4 text-sm text-slate-600">
+                      <td className="admin-users__td admin-users__text-sm">
                         {formatDate(user.createdAt)}
                       </td>
 
-                      <td className="px-5 py-4 text-right">
+                      <td className="admin-users__td admin-users__td--right">
                         <button
                           onClick={() => handleOpenEdit(user)}
-                          className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800"
+                          className="admin-users__action-btn"
                         >
                           <Edit className="h-4 w-4" />
                           Edit
@@ -435,7 +435,7 @@ function AdminUsersPage() {
               {filteredUsers.length === 1 ? "" : "s"}
             </p>
 
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="admin-users__pagination-controls">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
