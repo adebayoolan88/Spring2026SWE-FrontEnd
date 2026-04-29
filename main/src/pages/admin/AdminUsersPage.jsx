@@ -263,10 +263,10 @@ function AdminUsersPage() {
         </div>
       </div>
 
-      <div className="admin-users__filters">
+      <div className="mt-6 admin-users__stat-card">
         <div className="admin-users__filters-row">
           <div className="admin-users__search">
-            <Search className="admin-users__search-icon" />
+            <Search className="mr-3 admin-users__icon text-slate-400" />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -313,7 +313,7 @@ function AdminUsersPage() {
       ) : filteredUsers.length === 0 ? (
         <div className="admin-users__state-card admin-users__state-card--empty">
           <Users className="admin-users__empty-icon" />
-          <h2 className="admin-users__state-title admin-users__state-title--spaced">
+          <h2 className="mt-4 admin-users__state-title">
             No users found
           </h2>
           <p className="admin-users__state-message">
@@ -356,9 +356,9 @@ function AdminUsersPage() {
 
                 <tbody className="admin-users__tbody">
                   {paginatedUsers.map((user) => (
-                    <tr key={user.userId} className="admin-users__row">
-                      <td className="admin-users__td">
-                        <p className="admin-users__text-strong">
+                    <tr key={user.userId} className="hover:admin-users__thead">
+                      <td className="px-5 py-4">
+                        <p className="font-bold text-slate-900">
                           {user.firstName || user.lastName
                             ? `${user.firstName || ""} ${user.lastName || ""}`.trim()
                             : user.username}
@@ -428,8 +428,8 @@ function AdminUsersPage() {
             </div>
           </div>
 
-          <div className="admin-users__pagination-row">
-            <p className="admin-users__pagination-text">
+          <div className="mt-6 admin-users__filter-controls sm:items-center sm:justify-between">
+            <p className="text-sm text-slate-500">
               Showing page {currentPage} of {totalPages} •{" "}
               {filteredUsers.length} matching user
               {filteredUsers.length === 1 ? "" : "s"}
@@ -439,7 +439,7 @@ function AdminUsersPage() {
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="admin-users__page-btn"
+                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:admin-users__thead disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Previous
               </button>
@@ -452,8 +452,10 @@ function AdminUsersPage() {
                   <button
                     key={pageNumber}
                     onClick={() => setCurrentPage(pageNumber)}
-                      className={`admin-users__page-btn ${
-                      isActive ? "admin-users__page-btn--active" : ""
+                    className={`rounded-xl px-4 py-2 text-sm font-medium shadow-sm transition ${
+                      isActive
+                        ? "bg-orange-500 text-white"
+                        : "border border-slate-200 bg-white text-slate-700 hover:admin-users__thead"
                     }`}
                   >
                     {pageNumber}
@@ -466,7 +468,7 @@ function AdminUsersPage() {
                   setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
                 disabled={currentPage === totalPages}
-                className="admin-users__page-btn"
+                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:admin-users__thead disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
               </button>
