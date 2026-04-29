@@ -361,10 +361,10 @@ function AdminProductsPage() {
         </div>
       </div>
 
-      <div className="admin-products__filters">
+      <div className="mt-6 admin-products__stat-card">
         <div className="admin-products__filters-row">
           <div className="admin-products__search">
-            <Search className="admin-products__search-icon" />
+            <Search className="mr-3 admin-products__icon text-slate-400" />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -470,7 +470,7 @@ function AdminProductsPage() {
 
                 <tbody className="admin-products__tbody">
                   {paginatedProducts.map((product) => (
-                    <tr key={product.productId} className="admin-products__row">
+                    <tr key={product.productId} className="hover:admin-products__thead">
                       <td className="admin-products__td">
                         <div>
                           <p className="admin-products__text-strong">{product.name}</p>
@@ -502,7 +502,7 @@ function AdminProductsPage() {
                       </td>
 
                       <td className="admin-products__td">
-                        <p className="admin-products__text-sm-strong">
+                        <p className="text-sm admin-products__text-strong">
                           {product.quantity}
                         </p>
                       </td>
@@ -541,7 +541,7 @@ function AdminProductsPage() {
                         {formatDate(product.listingDate)}
                       </td>
 
-                      <td className="admin-products__td admin-products__td--right">
+                      <td className="admin-products__td text-right">
                         <div className="admin-products__actions">
                           <button
                             onClick={() => handleOpenEdit(product)}
@@ -575,7 +575,7 @@ function AdminProductsPage() {
             </div>
           </div>
 
-          <div className="admin-products__pagination-row">
+          <div className="mt-6 admin-products__filter-controls sm:items-center sm:justify-between">
             <p className="admin-products__pagination-text">
               Showing page {currentPage} of {totalPages} •{" "}
               {filteredProducts.length} matching product
@@ -586,7 +586,7 @@ function AdminProductsPage() {
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="admin-products__page-btn"
+                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:admin-products__thead disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Previous
               </button>
@@ -601,8 +601,8 @@ function AdminProductsPage() {
                     onClick={() => setCurrentPage(pageNumber)}
                     className={`admin-products__page-btn ${
                       isActive
-                        ? "admin-products__page-btn--active"
-                        : ""
+                        ? "bg-orange-500 text-white"
+                        : "border border-slate-200 bg-white text-slate-700 hover:admin-products__thead"
                     }`}
                   >
                     {pageNumber}
@@ -615,7 +615,7 @@ function AdminProductsPage() {
                   setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                 }
                 disabled={currentPage === totalPages}
-                className="admin-products__page-btn"
+                className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:admin-products__thead disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
               </button>
