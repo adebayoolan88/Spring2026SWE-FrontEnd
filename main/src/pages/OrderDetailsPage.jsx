@@ -30,15 +30,8 @@ function OrderDetailsPage() {
     const loadOrder = async () => {
       try {
         const token = getStoredToken();
-
-        if (!token) {
-          throw new Error("You must be logged in to view order details.");
-        }
-
-        if (!orderId) {
-          throw new Error("Missing order ID.");
-        }
-
+        if (!token) throw new Error("You must be logged in to view order details.");
+        if (!orderId) throw new Error("Missing order ID.");
         const result = await getOrderById(token, orderId);
         setOrder(result.order);
       } catch (err) {
@@ -53,126 +46,47 @@ function OrderDetailsPage() {
   }, [orderId]);
 
   return (
-    <div className="page-order-details min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900">
-      <div className="mx-auto max-w-5xl rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm">
+    <div className="page-order-details">
+      <div className="order-details__container">
         {loading ? (
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-slate-900">Loading Order...</h1>
-            <p className="mt-3 text-slate-500">
-              Please wait while we load your order details.
-            </p>
+          <div className="order-details__state order-details__state--center">
+            <h1 className="order-details__title">Loading Order...</h1>
+            <p className="order-details__subtitle">Please wait while we load your order details.</p>
           </div>
         ) : error ? (
-          <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            {error}
-          </div>
+          <div className="order-details__alert order-details__alert--error">{error}</div>
         ) : !order ? (
-          <div className="text-center">
-            <h1 className="text-3xl font-bold text-slate-900">Order Not Found</h1>
+          <div className="order-details__state order-details__state--center">
+            <h1 className="order-details__title">Order Not Found</h1>
           </div>
         ) : (
           <>
-            <div className="mb-8">
-              <p className="text-sm font-semibold uppercase tracking-wide text-orange-500">
-                Order Details
-              </p>
-              <h1 className="mt-2 text-3xl font-bold text-slate-900">
-                {order.orderNumber}
-              </h1>
-              <p className="mt-3 text-slate-500">
-                Placed on {formatDate(order.orderDate)}
-              </p>
+            <div className="order-details__header">
+              <p className="order-details__eyebrow">Order Details</p>
+              <h1 className="order-details__title">{order.orderNumber}</h1>
+              <p className="order-details__subtitle">Placed on {formatDate(order.orderDate)}</p>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                  Payment Status
-                </p>
-                <p className="mt-2 text-sm font-semibold text-slate-900">
-                  {order.paymentStatus}
-                </p>
-              </div>
-
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                  Order Status
-                </p>
-                <p className="mt-2 text-sm font-semibold text-slate-900">
-                  {order.orderStatus}
-                </p>
-              </div>
-
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                  Order ID
-                </p>
-                <p className="mt-2 text-sm font-semibold text-slate-900">
-                  {order.orderId}
-                </p>
-              </div>
-
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                  Items
-                </p>
-                <p className="mt-2 text-sm font-semibold text-slate-900">
-                  {order.items?.length || 0}
-                </p>
-              </div>
+            <div className="order-details__summary-grid">
+              <div className="order-details__summary-card"><p className="order-details__label">Payment Status</p><p className="order-details__value">{order.paymentStatus}</p></div>
+              <div className="order-details__summary-card"><p className="order-details__label">Order Status</p><p className="order-details__value">{order.orderStatus}</p></div>
+              <div className="order-details__summary-card"><p className="order-details__label">Order ID</p><p className="order-details__value">{order.orderId}</p></div>
+              <div className="order-details__summary-card"><p className="order-details__label">Items</p><p className="order-details__value">{order.items?.length || 0}</p></div>
             </div>
 
-            <div className="mt-8 space-y-4">
+            <div className="order-details__items">
               {order.items?.map((item) => (
-                <div
-                  key={item.orderItemId}
-                  className="rounded-[28px] border border-slate-200 bg-slate-50 p-5"
-                >
-                  <div className="flex gap-4">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="h-24 w-24 rounded-2xl object-cover"
-                    />
-
-                    <div className="flex-1">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-orange-500">
-                        {item.category}
-                      </p>
-                      <h3 className="mt-1 text-lg font-semibold text-slate-900">
-                        {item.name}
-                      </h3>
-                      <p className="mt-1 text-sm text-slate-500">
-                        {item.brand} • SKU: {item.sku}
-                      </p>
-
-                      <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                        <div>
-                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                            Quantity
-                          </p>
-                          <p className="mt-1 text-sm font-semibold text-slate-900">
-                            {item.quantity}
-                          </p>
-                        </div>
-
-                        <div>
-                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                            Unit Price
-                          </p>
-                          <p className="mt-1 text-sm font-semibold text-slate-900">
-                            {formatMoney(item.unitPrice)}
-                          </p>
-                        </div>
-
-                        <div>
-                          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                            Line Total
-                          </p>
-                          <p className="mt-1 text-sm font-semibold text-slate-900">
-                            {formatMoney(item.lineTotal)}
-                          </p>
-                        </div>
+                <div key={item.orderItemId} className="order-details__item-card">
+                  <div className="order-details__item-layout">
+                    <img src={item.image} alt={item.name} className="order-details__item-image" />
+                    <div className="order-details__item-content">
+                      <p className="order-details__item-category">{item.category}</p>
+                      <h3 className="order-details__item-name">{item.name}</h3>
+                      <p className="order-details__item-meta">{item.brand} • SKU: {item.sku}</p>
+                      <div className="order-details__item-stats">
+                        <div><p className="order-details__label">Quantity</p><p className="order-details__value">{item.quantity}</p></div>
+                        <div><p className="order-details__label">Unit Price</p><p className="order-details__value">{formatMoney(item.unitPrice)}</p></div>
+                        <div><p className="order-details__label">Line Total</p><p className="order-details__value">{formatMoney(item.lineTotal)}</p></div>
                       </div>
                     </div>
                   </div>
@@ -180,58 +94,19 @@ function OrderDetailsPage() {
               ))}
             </div>
 
-            <div className="mt-8 rounded-[28px] border border-slate-200 bg-slate-50 p-6">
-              <h2 className="text-lg font-semibold text-slate-900">Totals</h2>
-
-              <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-5">
-                <div className="flex items-center justify-between border-b border-slate-100 py-3 text-sm">
-                  <span className="text-slate-500">Subtotal</span>
-                  <span className="font-semibold text-slate-900">
-                    {formatMoney(order.subtotalAmount)}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between border-b border-slate-100 py-3 text-sm">
-                  <span className="text-slate-500">Sales Tax</span>
-                  <span className="font-semibold text-slate-900">
-                    {formatMoney(order.taxAmount)}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between border-b border-slate-100 py-3 text-sm">
-                  <span className="text-slate-500">Discount</span>
-                  <span className="font-semibold text-slate-900">
-                    -{formatMoney(order.discountAmount)}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between pt-4 text-base">
-                  <span className="font-semibold text-slate-900">Total</span>
-                  <span className="text-xl font-bold text-slate-900">
-                    {formatMoney(order.totalAmount)}
-                  </span>
-                </div>
+            <div className="order-details__totals-wrap">
+              <h2 className="order-details__section-title">Totals</h2>
+              <div className="order-details__totals-card">
+                <div className="order-details__total-row"><span className="order-details__total-label">Subtotal</span><span className="order-details__total-value">{formatMoney(order.subtotalAmount)}</span></div>
+                <div className="order-details__total-row"><span className="order-details__total-label">Sales Tax</span><span className="order-details__total-value">{formatMoney(order.taxAmount)}</span></div>
+                <div className="order-details__total-row"><span className="order-details__total-label">Discount</span><span className="order-details__total-value">-{formatMoney(order.discountAmount)}</span></div>
+                <div className="order-details__total-row order-details__total-row--grand"><span className="order-details__grand-label">Total</span><span className="order-details__grand-value">{formatMoney(order.totalAmount)}</span></div>
               </div>
             </div>
 
-            <div className="mt-8 flex flex-wrap gap-3">
-              <button
-                onClick={() => {
-                  window.location.href = "/orders";
-                }}
-                className="btn-primary"
-              >
-                Back to Orders
-              </button>
-
-              <button
-                onClick={() => {
-                  window.location.href = "/";
-                }}
-                className="btn-secondary"
-              >
-                Return Home
-              </button>
+            <div className="order-details__actions">
+              <button onClick={() => (window.location.href = "/orders")} className="btn-primary">Back to Orders</button>
+              <button onClick={() => (window.location.href = "/")} className="btn-secondary">Return Home</button>
             </div>
           </>
         )}
