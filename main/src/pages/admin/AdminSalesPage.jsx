@@ -76,14 +76,14 @@ function statusLabel(sale) {
 
 function statusClass(sale) {
   if (!sale.is_active) {
-    return "border-slate-200 bg-slate-100 text-slate-600";
+    return "admin-sales__badge admin-sales__badge--inactive";
   }
 
   if (isExpired(sale)) {
-    return "border-red-200 bg-red-50 text-red-700";
+    return "admin-sales__badge admin-sales__badge--expired";
   }
 
-  return "border-emerald-200 bg-emerald-50 text-emerald-700";
+  return "admin-sales__badge admin-sales__badge--active";
 }
 
 function scopeLabel(scope) {
@@ -313,51 +313,51 @@ function AdminSalesPage() {
       title="Sales"
       subtitle="Create and review sale campaigns for products, categories, or the full marketplace."
     >
-      <div className="page-admin-sales grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+      <div className="admin-sales__stats-grid">
+        <div className="admin-sales__sale-card">
+          <p className="admin-sales__stat-label">
             Total Sales
           </p>
-          <p className="mt-2 text-2xl font-bold text-slate-900">{totals.all}</p>
+          <p className="admin-sales__stat-value">{totals.all}</p>
         </div>
 
-        <div className="admin-stat-card">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+        <div className="admin-sales__stat-card">
+          <p className="admin-sales__stat-label">
             Active
           </p>
-          <p className="mt-2 text-2xl font-bold text-emerald-700">
+          <p className="admin-sales__stat-value admin-sales__stat-value--green">
             {totals.active}
           </p>
         </div>
 
-        <div className="admin-stat-card">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+        <div className="admin-sales__stat-card">
+          <p className="admin-sales__stat-label">
             Inactive
           </p>
-          <p className="mt-2 text-2xl font-bold text-slate-700">
+          <p className="admin-sales__stat-value admin-sales__stat-value--muted">
             {totals.inactive}
           </p>
         </div>
 
-        <div className="admin-stat-card">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+        <div className="admin-sales__stat-card">
+          <p className="admin-sales__stat-label">
             Expired
           </p>
-          <p className="mt-2 text-2xl font-bold text-red-700">
+          <p className="admin-sales__stat-value admin-sales__stat-value--red">
             {totals.expired}
           </p>
         </div>
       </div>
 
-      <div className="mt-6 admin-stat-card">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-          <div className="flex flex-1 items-center rounded-2xl border border-slate-200 bg-white px-4 py-3">
-            <Search className="mr-3 h-5 w-5 text-slate-400" />
+      <div className="mt-6 admin-sales__stat-card">
+        <div className="admin-sales__filters-row">
+          <div className="admin-sales__search">
+            <Search className="admin-sales__search-icon" />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by sale name, description, scope, or discount type..."
-              className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
+              className="admin-sales__search-input"
             />
           </div>
 
@@ -367,46 +367,46 @@ function AdminSalesPage() {
               setFormError("");
               setSuccessMessage("");
             }}
-            className="inline-flex items-center justify-center gap-2 btn-primary"
+            className="admin-sales__create-btn btn-primary"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="admin-sales__icon" />
             {showCreateForm ? "Close Form" : "Create Sale"}
           </button>
         </div>
       </div>
 
       {showCreateForm ? (
-        <div className="mt-6 rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="mb-5">
-            <p className="text-sm font-semibold uppercase tracking-wide text-orange-500">
+        <div className="admin-sales__create-card">
+          <div className="admin-sales__create-header">
+            <p className="admin-sales__eyebrow">
               New Sale
             </p>
-            <h2 className="mt-1 text-xl font-bold text-slate-900">
+            <h2 className="admin-sales__section-title">
               Create Sale Campaign
             </h2>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="admin-sales__section-subtitle">
               These sale campaigns are validated during checkout and can apply to the whole store, categories, or selected products.
             </p>
           </div>
 
           {formError ? (
-            <div className="mb-5 flex gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            <div className="admin-sales__create-header flex gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              <AlertCircle className="mt-0.5 admin-sales__icon shrink-0" />
               <span>{formError}</span>
             </div>
           ) : null}
 
           {successMessage ? (
-            <div className="mb-5 flex gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+            <div className="admin-sales__create-header flex gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+              <CheckCircle2 className="mt-0.5 admin-sales__icon shrink-0" />
               <span>{successMessage}</span>
             </div>
           ) : null}
 
-          <form className="space-y-5" onSubmit={handleCreateSale}>
-            <div className="grid gap-5 md:grid-cols-2">
+          <form className="admin-sales__form" onSubmit={handleCreateSale}>
+            <div className="admin-sales__grid admin-sales__grid--2">
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
+                <label className="admin-sales__label">
                   Sale Name
                 </label>
                 <input
@@ -414,13 +414,13 @@ function AdminSalesPage() {
                   value={form.saleName}
                   onChange={handleChange}
                   placeholder="Spring Instrument Sale"
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                  className="admin-sales__input"
                   required
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
+                <label className="admin-sales__label">
                   Description
                 </label>
                 <input
@@ -428,14 +428,14 @@ function AdminSalesPage() {
                   value={form.description}
                   onChange={handleChange}
                   placeholder="Discount for selected listings"
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                  className="admin-sales__input"
                 />
               </div>
             </div>
 
-            <div className="grid gap-5 md:grid-cols-4">
+            <div className="admin-sales__grid admin-sales__grid--4">
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
+                <label className="admin-sales__label">
                   Sale Scope
                 </label>
                 <select
@@ -452,7 +452,7 @@ function AdminSalesPage() {
                       categoryIds: [],
                     }));
                   }}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                  className="admin-sales__input"
                 >
                   <option value="site_wide">Site-wide</option>
                   <option value="category">Category</option>
@@ -461,14 +461,14 @@ function AdminSalesPage() {
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
+                <label className="admin-sales__label">
                   Discount Type
                 </label>
                 <select
                   name="discountType"
                   value={form.discountType}
                   onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                  className="admin-sales__input"
                 >
                   <option value="percentage">Percentage</option>
                   <option value="fixed_amount">Fixed Amount</option>
@@ -476,7 +476,7 @@ function AdminSalesPage() {
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
+                <label className="admin-sales__label">
                   Discount Value
                 </label>
                 <input
@@ -487,18 +487,18 @@ function AdminSalesPage() {
                   value={form.discountValue}
                   onChange={handleChange}
                   placeholder={form.discountType === "percentage" ? "20" : "25.00"}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                  className="admin-sales__input"
                   required
                 />
               </div>
 
-              <label className="flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 md:mt-7">
+              <label className="admin-sales__active-row md:mt-7">
                 <input
                   name="isActive"
                   type="checkbox"
                   checked={form.isActive}
                   onChange={handleChange}
-                  className="h-4 w-4 rounded border-slate-300 text-orange-500"
+                  className="admin-sales__icon rounded border-slate-300 text-orange-500"
                 />
                 Active
               </label>
@@ -571,9 +571,9 @@ function AdminSalesPage() {
               </div>
             ) : null}
 
-            <div className="grid gap-5 md:grid-cols-2">
+            <div className="admin-sales__grid admin-sales__grid--2">
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
+                <label className="admin-sales__label">
                   Starts At
                 </label>
                 <input
@@ -581,12 +581,12 @@ function AdminSalesPage() {
                   type="datetime-local"
                   value={form.startsAt}
                   onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                  className="admin-sales__input"
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
+                <label className="admin-sales__label">
                   Ends At
                 </label>
                 <input
@@ -594,12 +594,12 @@ function AdminSalesPage() {
                   type="datetime-local"
                   value={form.endsAt}
                   onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                  className="admin-sales__input"
                 />
               </div>
             </div>
 
-            <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end">
+            <div className="admin-sales__actions">
               <button
                 type="button"
                 onClick={() => {
@@ -608,7 +608,7 @@ function AdminSalesPage() {
                   setFormError("");
                   setSuccessMessage("");
                 }}
-                className="btn-secondary"
+                className="admin-sales__btn admin-sales__btn--secondary"
               >
                 Cancel
               </button>
@@ -616,7 +616,7 @@ function AdminSalesPage() {
               <button
                 type="submit"
                 disabled={creating}
-                className="btn-primary disabled:cursor-not-allowed disabled:opacity-60"
+                className="admin-sales__btn admin-sales__btn--primary"
               >
                 {creating ? "Creating..." : "Create Sale"}
               </button>
@@ -626,20 +626,20 @@ function AdminSalesPage() {
       ) : null}
 
       {loading ? (
-        <div className="mt-6 rounded-[28px] bg-white p-12 text-center shadow-sm">
+        <div className="admin-sales__state-card">
           <h2 className="text-xl font-semibold text-slate-900">
             Loading sales...
           </h2>
           <p className="mt-2 text-slate-500">Fetching admin sale data.</p>
         </div>
       ) : pageError ? (
-        <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="admin-sales__error">
           {pageError}
         </div>
       ) : filteredSales.length === 0 ? (
-        <div className="mt-6 rounded-[28px] border border-dashed border-slate-300 bg-white p-12 text-center shadow-sm">
-          <Tags className="mx-auto h-10 w-10 text-slate-400" />
-          <h2 className="mt-4 text-xl font-semibold text-slate-900">
+        <div className="admin-sales__state-card admin-sales__state-card--empty">
+          <Tags className="admin-sales__empty-icon" />
+          <h2 className="admin-sales__state-title admin-sales__state-title--spaced">
             No sales found
           </h2>
           <p className="mt-2 text-slate-500">
@@ -676,7 +676,7 @@ function AdminSalesPage() {
                     <td className="px-5 py-4">
                       <div className="flex items-start gap-3">
                         <div className="rounded-2xl bg-orange-50 p-2 text-orange-600">
-                          <Tags className="h-4 w-4" />
+                          <Tags className="admin-sales__icon" />
                         </div>
 
                         <div>
@@ -708,13 +708,13 @@ function AdminSalesPage() {
                     <td className="px-5 py-4">
                       <p className="text-xs text-slate-500">
                         Starts:{" "}
-                        <span className="font-medium text-slate-900">
+                        <span className="admin-sales__meta-value">
                           {formatDate(sale.starts_at)}
                         </span>
                       </p>
                       <p className="mt-1 text-xs text-slate-500">
                         Ends:{" "}
-                        <span className="font-medium text-slate-900">
+                        <span className="admin-sales__meta-value">
                           {formatDate(sale.ends_at)}
                         </span>
                       </p>
