@@ -1,7 +1,4 @@
-import { X } from "lucide-react";
-import ButtonGroup from "react-bootstrap/ButtonGroup";
-import Dropdown from "react-bootstrap/Dropdown";
-import DropdownButton from "react-bootstrap/DropdownButton";
+import { ChevronDown, X } from "lucide-react";
 
 const CATEGORIES = [
   "Accessories",
@@ -23,8 +20,17 @@ function CategoryNav({
 }) {
   const getItemsForCategory = (category) => {
     return items.filter(
-      (item) => item.category.toLowerCase() === category.toLowerCase()
+      (item) => item.category?.toLowerCase() === category.toLowerCase()
     );
+  };
+
+  const toggleMenu = (category) => {
+    const next = activeMenu === category ? null : category;
+    setActiveMenu(next);
+
+    if (next) {
+      onSelectCategory(category);
+    }
   };
 
   return (
@@ -36,57 +42,68 @@ function CategoryNav({
 
           return (
             <div key={category} className="category-nav__menu">
-              <DropdownButton
-                as={ButtonGroup}
-                title={category}
+              <button
+                type="button"
                 className={`category-nav__trigger ${
                   isOpen ? "category-nav__trigger--active" : ""
                 }`}
-                show={isOpen}
-                onToggle={(isDropdownOpen) => {
-                  setActiveMenu(isDropdownOpen ? category : null);
-                  if (isDropdownOpen) {
-                    onSelectCategory(category);
-                  }
-                }}
-                variant=""
+                aria-expanded={isOpen}
+                aria-haspopup="menu"
+                onClick={() => toggleMenu(category)}
               >
-                <Dropdown.Item
-                  onClick={() => {
-                    onClearCategory();
-                    setActiveMenu(null);
-                  }}
-                  className="category-nav__clear-item"
-                >
-                  <X className="category-nav__clear-icon" />
-                  Show full inventory
-                </Dropdown.Item>
+                <span>{category}</span>
+                <ChevronDown
+                  className={`category-nav__trigger-icon ${
+                    isOpen ? "category-nav__trigger-icon--open" : ""
+                  }`}
+                />
+              </button>
 
-                {categoryItems.length === 0 ? (
-                  <Dropdown.Item disabled className="category-nav__empty-item">
-                    No listings in this category yet.
-                  </Dropdown.Item>
-                ) : (
-                  categoryItems.map((item) => (
-                    <Dropdown.Item
-                      key={item.id}
-                      onClick={() => {
-                        onSelectListing(item);
+              {isOpen && (
+                <div className="category-nav__panel" role="menu">
+                  <div className="category-nav__panel-header">
+                    <div className="category-nav__panel-title">{category} Listings</div>
+
+                    <button
+                      type="button"
+                      className="category-nav__clear-btn"
+                      aria-label="Show full inventory"
+                      title="Show full inventory"
+                      onClick={(event) => {
+                        event.stopPropagation();
                         setActiveMenu(null);
+                        onClearCategory();
                       }}
-                      className="category-nav__listing-item"
                     >
-                      <div className="category-nav__item-row">
-                        <div>
-                          <p className="category-nav__item-name">{item.name}</p>
-                          <p className="category-nav__item-meta">Qty: {item.quantity}</p>
+                      <X className="category-nav__clear-icon" />
+                    </button>
+                  </div>
+
+                  {categoryItems.length === 0 ? (
+                    <div className="category-nav__empty">No listings in this category yet.</div>
+                  ) : (
+                    categoryItems.map((item) => (
+                      <button
+                        type="button"
+                        key={item.id}
+                        className="category-nav__item"
+                        onClick={() => {
+                          onSelectListing(item);
+                          setActiveMenu(null);
+                        }}
+                      >
+                        <div className="category-nav__item-row">
+                          <div>
+                            <p className="category-nav__item-name">{item.name}</p>
+                            <p className="category-nav__item-meta">Qty: {item.quantity}</p>
+                          </div>
+                          <p className="category-nav__item-price">${item.price}</p>
                         </div>
-                        <p className="category-nav__item-price">${item.price}</p>
-                      </div>
-                    </Dropdown.Item>
-                  ))
-                )}
-              </DropdownButton>
+                      </button>
+                    ))
+                  )}
+                </div>
+              )}
             </div>
           );
         })}
