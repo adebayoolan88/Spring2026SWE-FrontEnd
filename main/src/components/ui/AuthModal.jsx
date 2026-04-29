@@ -229,26 +229,26 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
 
   return (
     <div
-      className="auth-modal fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 px-4 py-6 backdrop-blur-sm"
+      className="auth-modal auth-modal--overlay"
       onClick={onClose}
     >
       <div
-        className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-[32px] border border-white/20 bg-white p-5 shadow-2xl sm:p-6"
+        className="auth-modal__panel"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="mb-6 flex items-start justify-between gap-4">
+        <div className="auth-modal__header">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-orange-500">
+            <p className="auth-modal__eyebrow">
               {confirmationRequired
                 ? "Verify account"
                 : isLogin
                 ? "Welcome back"
                 : "Create account"}
             </p>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
+            <h2 className="auth-modal__title">
               {title}
             </h2>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="auth-modal__subtitle">
               {confirmationRequired
                 ? "Enter the confirmation code sent to finish creating your account."
                 : isLogin
@@ -260,7 +260,7 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
+            className="auth-modal__close-btn"
           >
             <X className="h-4 w-4" />
           </button>
@@ -296,23 +296,23 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
         )}
 
         {error ? (
-          <div className="mb-4 flex gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+          <div className="mb-4 flex gap-2 auth-modal__alert auth-modal__alert--error">
+            <AlertCircle className="auth-modal__requirement-icon" />
             <span>{error}</span>
           </div>
         ) : null}
 
         {successMessage ? (
-          <div className="mb-4 flex gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+          <div className="mb-4 flex gap-2 auth-modal__alert auth-modal__alert--success">
+            <CheckCircle2 className="auth-modal__requirement-icon" />
             <span>{successMessage}</span>
           </div>
         ) : null}
 
         {confirmationRequired ? (
-          <form className="space-y-4" onSubmit={handleConfirmSignup}>
+          <form className="auth-modal__stack" onSubmit={handleConfirmSignup}>
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
+              <label className="mb-2 auth-modal__label">
                 Username
               </label>
               <input
@@ -323,7 +323,7 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
+              <label className="mb-2 auth-modal__label">
                 Confirmation Code
               </label>
               <input
@@ -340,7 +340,7 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
             <button
               type="submit"
               disabled={submitting}
-              className="mt-2 inline-flex w-full items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-2 auth-modal__submit-btn"
             >
               {submitting ? "Confirming..." : "Confirm Account"}
             </button>
@@ -368,9 +368,9 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
             </button>
           </form>
         ) : isLogin ? (
-          <form className="space-y-4" onSubmit={handleLoginSubmit}>
+          <form className="auth-modal__stack" onSubmit={handleLoginSubmit}>
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
+              <label className="mb-2 auth-modal__label">
                 Username
               </label>
               <input
@@ -384,7 +384,7 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
+              <label className="mb-2 auth-modal__label">
                 Password
               </label>
               <input
@@ -400,15 +400,15 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
             <button
               type="submit"
               disabled={submitting}
-              className="mt-2 inline-flex w-full items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-2 auth-modal__submit-btn"
             >
               {submitting ? "Logging in..." : "Log In"}
             </button>
           </form>
         ) : (
-          <form className="space-y-4" onSubmit={handleSignupSubmit}>
+          <form className="auth-modal__stack" onSubmit={handleSignupSubmit}>
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
+              <label className="mb-2 auth-modal__label">
                 Full Name
               </label>
               <input
@@ -422,7 +422,7 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
+              <label className="mb-2 auth-modal__label">
                 Username
               </label>
               <input
@@ -436,7 +436,7 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
+              <label className="mb-2 auth-modal__label">
                 Email
               </label>
               <input
@@ -450,7 +450,7 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
+              <label className="mb-2 auth-modal__label">
                 Phone Number
               </label>
 
@@ -493,7 +493,7 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
+              <label className="mb-2 auth-modal__label">
                 Address
               </label>
               <input
@@ -507,7 +507,7 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
+              <label className="mb-2 auth-modal__label">
                 Password
               </label>
               <input
@@ -544,8 +544,8 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
                       <CheckCircle2
                         className={`h-3.5 w-3.5 ${
                           requirement.isValid
-                            ? "text-emerald-600"
-                            : "text-slate-300"
+                            ? "auth-modal__text--success"
+                            : "auth-modal__text--muted"
                         }`}
                       />
                       <span>{requirement.label}</span>
@@ -556,7 +556,7 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
+              <label className="mb-2 auth-modal__label">
                 Confirm Password
               </label>
               <input
@@ -572,7 +572,7 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
                 <p
                   className={`mt-2 text-xs ${
                     signupForm.password === signupForm.confirmPassword
-                      ? "text-emerald-600"
+                      ? "auth-modal__text--success"
                       : "text-red-600"
                   }`}
                 >
@@ -586,7 +586,7 @@ function AuthModal({ mode, onClose, onSwitchMode, onAuthSuccess }) {
             <button
               type="submit"
               disabled={submitting}
-              className="mt-2 inline-flex w-full items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-2 auth-modal__submit-btn"
             >
               {submitting ? "Creating account..." : "Create Account"}
             </button>

@@ -491,8 +491,8 @@ export default function App() {
       return (
         <div className="page-shell">
           <div className="status-card">
-            <h1 className="text-3xl font-bold text-slate-900">Loading...</h1>
-            <p className="mt-3 text-slate-500">
+            <h1 className="status-card__title">Loading...</h1>
+            <p className="status-card__message">
               Please wait while we prepare your order confirmation.
             </p>
           </div>
@@ -512,8 +512,8 @@ export default function App() {
       return (
         <div className="page-shell">
           <div className="status-card">
-            <h1 className="text-3xl font-bold text-slate-900">Loading...</h1>
-            <p className="mt-3 text-slate-500">
+            <h1 className="status-card__title">Loading...</h1>
+            <p className="status-card__message">
               Please wait while we prepare your profile.
             </p>
           </div>
@@ -529,8 +529,8 @@ export default function App() {
       return (
         <div className="page-shell">
           <div className="status-card">
-            <h1 className="text-3xl font-bold text-slate-900">Loading...</h1>
-            <p className="mt-3 text-slate-500">
+            <h1 className="status-card__title">Loading...</h1>
+            <p className="status-card__message">
               Please wait while we load your orders.
             </p>
           </div>
@@ -546,8 +546,8 @@ export default function App() {
       return (
         <div className="page-shell">
           <div className="status-card">
-            <h1 className="text-3xl font-bold text-slate-900">Loading...</h1>
-            <p className="mt-3 text-slate-500">
+            <h1 className="status-card__title">Loading...</h1>
+            <p className="status-card__message">
               Please wait while we load your order details.
             </p>
           </div>
@@ -563,8 +563,8 @@ export default function App() {
       return (
         <div className="page-shell">
           <div className="status-card">
-            <h1 className="text-3xl font-bold text-slate-900">Loading...</h1>
-            <p className="mt-3 text-slate-500">
+            <h1 className="status-card__title">Loading...</h1>
+            <p className="status-card__message">
               Please wait while we verify admin access.
             </p>
           </div>
@@ -576,17 +576,17 @@ export default function App() {
       return (
         <div className="page-shell">
           <div className="status-card">
-            <p className="text-sm font-semibold uppercase tracking-wide text-orange-500">
+            <p className="status-card__eyebrow">
               Login Required
             </p>
-            <h1 className="mt-2 text-3xl font-bold text-slate-900">
+            <h1 className="status-card__title status-card__title--spaced">
               Admin access requires login
             </h1>
-            <p className="mt-3 text-slate-500">
+            <p className="status-card__message">
               Please log in with an admin account to continue.
             </p>
 
-            <div className="mt-8 flex justify-center gap-3">
+            <div className="status-card__actions">
               <button
                 onClick={() => {
                   window.location.href = "/";
@@ -605,13 +605,13 @@ export default function App() {
       return (
         <div className="page-shell">
           <div className="status-card status-card-error">
-            <p className="text-sm font-semibold uppercase tracking-wide text-red-500">
+            <p className="status-card__eyebrow status-card__eyebrow--error">
               Access Denied
             </p>
-            <h1 className="mt-2 text-3xl font-bold text-slate-900">
+            <h1 className="status-card__title status-card__title--spaced">
               You are not an admin
             </h1>
-            <p className="mt-3 text-slate-500">
+            <p className="status-card__message">
               This area is only available to users in the Cognito admin group.
             </p>
 
@@ -619,7 +619,7 @@ export default function App() {
               onClick={() => {
                 window.location.href = "/";
               }}
-              className="mt-8 btn-primary"
+              className="btn-primary status-card__primary-action"
             >
               Return Home
             </button>
@@ -655,7 +655,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <div className={isOverlayOpen ? "pointer-events-none select-none blur-[4px]" : ""}>
+      <div className={isOverlayOpen ? "app-shell__content app-shell__content--overlay" : "app-shell__content"}>
         <NavBar
           onOpenLogin={() => setAuthMode("login")}
           onOpenSignup={() => setAuthMode("signup")}
@@ -683,21 +683,21 @@ export default function App() {
           }}
         />
 
-        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-          <section className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+        <main className="catalog-main">
+          <section className="catalog-main__header">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-orange-500">
+              <p className="catalog-main__eyebrow">
                 Items on sale
               </p>
-              <h1 className="mt-1 text-3xl font-bold tracking-tight text-slate-900">
+              <h1 className="catalog-main__title">
                 {selectedCategory
                   ? `${selectedCategory} Listings`
                   : "Browse current listings"}
               </h1>
             </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <p className="text-sm text-slate-500">
+            <div className="catalog-main__controls">
+              <p className="catalog-main__count">
                 Showing {displayedItems.length} item
                 {displayedItems.length === 1 ? "" : "s"}
               </p>
@@ -705,7 +705,7 @@ export default function App() {
               <select
                 value={sortOption}
                 onChange={(e) => setSortOption(e.target.value)}
-                className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm outline-none"
+                className="catalog-main__sort"
               >
                 <option value="default">Featured</option>
                 <option value="price-low-high">Price: Low to High</option>
@@ -717,29 +717,29 @@ export default function App() {
           </section>
 
           {productsLoading || authChecking ? (
-            <div className="rounded-[28px] bg-white p-12 text-center shadow-sm">
-              <h3 className="text-xl font-semibold text-slate-900">Loading...</h3>
-              <p className="mt-2 text-slate-500">
+            <div className="catalog-main__state-card">
+              <h3 className="catalog-main__state-title">Loading...</h3>
+              <p className="catalog-main__state-message">
                 Please wait while the page finishes loading.
               </p>
             </div>
           ) : productsError ? (
-            <div className="rounded-[28px] border border-red-200 bg-red-50 p-12 text-center shadow-sm">
-              <h3 className="text-xl font-semibold text-red-700">
+            <div className="catalog-main__state-card catalog-main__state-card--error">
+              <h3 className="catalog-main__state-title catalog-main__state-title--error">
                 Unable to load products
               </h3>
-              <p className="mt-2 text-red-600">{productsError}</p>
+              <p className="catalog-main__state-message catalog-main__state-message--error">{productsError}</p>
             </div>
           ) : displayedItems.length === 0 ? (
-            <div className="rounded-[28px] border border-dashed border-slate-300 bg-white p-12 text-center shadow-sm">
-              <h3 className="text-xl font-semibold text-slate-900">No items found</h3>
-              <p className="mt-2 text-slate-500">
+            <div className="catalog-main__state-card catalog-main__state-card--empty">
+              <h3 className="catalog-main__state-title">No items found</h3>
+              <p className="catalog-main__state-message">
                 Try searching for another category or keyword.
               </p>
             </div>
           ) : (
             <>
-              <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              <div className="catalog-main__grid">
                 {paginatedItems.map((item) => (
                   <ItemCard
                     key={item.id}
@@ -749,11 +749,11 @@ export default function App() {
                 ))}
               </div>
 
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+              <div className="catalog-main__pagination">
                 <button
                   onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                   disabled={currentPage === 1}
-                  className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="catalog-main__page-btn"
                 >
                   Previous
                 </button>
@@ -766,10 +766,8 @@ export default function App() {
                     <button
                       key={pageNumber}
                       onClick={() => setCurrentPage(pageNumber)}
-                      className={`rounded-xl px-4 py-2 text-sm font-medium shadow-sm transition ${
-                        isActive
-                          ? "bg-orange-500 text-white"
-                          : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                      className={`catalog-main__page-btn ${
+                        isActive ? "catalog-main__page-btn--active" : ""
                       }`}
                     >
                       {pageNumber}
@@ -782,7 +780,7 @@ export default function App() {
                     setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                   }
                   disabled={currentPage === totalPages}
-                  className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="catalog-main__page-btn"
                 >
                   Next
                 </button>
