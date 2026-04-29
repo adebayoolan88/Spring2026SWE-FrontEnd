@@ -349,7 +349,7 @@ function AdminSalesPage() {
         </div>
       </div>
 
-      <div className="admin-sales__filters">
+      <div className="mt-6 admin-sales__stat-card">
         <div className="admin-sales__filters-row">
           <div className="admin-sales__search">
             <Search className="admin-sales__search-icon" />
@@ -390,15 +390,15 @@ function AdminSalesPage() {
           </div>
 
           {formError ? (
-            <div className="admin-sales__alert admin-sales__alert--error">
-              <AlertCircle className="admin-sales__alert-icon" />
+            <div className="admin-sales__create-header flex gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              <AlertCircle className="mt-0.5 admin-sales__icon shrink-0" />
               <span>{formError}</span>
             </div>
           ) : null}
 
           {successMessage ? (
-            <div className="admin-sales__alert admin-sales__alert--success">
-              <CheckCircle2 className="admin-sales__alert-icon" />
+            <div className="admin-sales__create-header flex gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+              <CheckCircle2 className="mt-0.5 admin-sales__icon shrink-0" />
               <span>{successMessage}</span>
             </div>
           ) : null}
@@ -492,13 +492,13 @@ function AdminSalesPage() {
                 />
               </div>
 
-              <label className="admin-sales__active-row">
+              <label className="admin-sales__active-row md:mt-7">
                 <input
                   name="isActive"
                   type="checkbox"
                   checked={form.isActive}
                   onChange={handleChange}
-                  className="admin-sales__checkbox"
+                  className="admin-sales__icon rounded border-slate-300 text-orange-500"
                 />
                 Active
               </label>
@@ -627,7 +627,7 @@ function AdminSalesPage() {
 
       {loading ? (
         <div className="admin-sales__state-card">
-          <h2 className="admin-sales__state-title">
+          <h2 className="text-xl font-semibold text-slate-900">
             Loading sales...
           </h2>
           <p className="admin-sales__state-message">Fetching admin sale data.</p>
@@ -672,10 +672,10 @@ function AdminSalesPage() {
 
               <tbody className="admin-sales__tbody">
                 {filteredSales.map((sale) => (
-                  <tr key={sale.sale_id} className="admin-sales__row">
-                    <td className="admin-sales__td">
-                      <div className="admin-sales__sale-cell">
-                        <div className="admin-sales__sale-icon-wrap">
+                  <tr key={sale.sale_id} className="hover:bg-slate-50">
+                    <td className="px-5 py-4">
+                      <div className="flex items-start gap-3">
+                        <div className="rounded-2xl bg-orange-50 p-2 text-orange-600">
                           <Tags className="admin-sales__icon" />
                         </div>
 
