@@ -1,5 +1,4 @@
 import { ChevronDown, X } from "lucide-react";
-import React, { useEffect, useMemo } from "react";
 
 const CATEGORIES = [
   "Accessories",
@@ -19,7 +18,7 @@ function CategoryNav({
   onSelectListing,
   onClearCategory,
 }) {
-  const navRef = React.useRef(null);
+  const navRef = useRef(null);
 
   const getItemsForCategory = (category) => {
     return items.filter(
@@ -27,72 +26,7 @@ function CategoryNav({
     );
   };
 
-  const activeItems = useMemo(
-    () => (activeMenu ? getItemsForCategory(activeMenu) : []),
-    [items, activeMenu]
-  );
-
-  const activeSections = useMemo(() => {
-    if (!activeMenu) return [];
-
-    const inStock = activeItems.filter((item) => Number(item.quantity) > 0);
-    const outOfStock = activeItems.filter((item) => Number(item.quantity) <= 0);
-
-    const priceLowHigh = [...activeItems].sort(
-      (a, b) => Number(a.price || 0) - Number(b.price || 0)
-    );
-
-    const featured = activeItems.filter((item) => Boolean(item.isFeatured));
-
-    return [
-      {
-        key: "in-stock",
-        title: `${activeMenu} In Stock`,
-        items: inStock.slice(0, 7),
-      },
-      {
-        key: "budget-picks",
-        title: "Budget Picks",
-        items: priceLowHigh.slice(0, 7),
-      },
-      {
-        key: "featured",
-        title: "Featured",
-        items: featured.slice(0, 7),
-      },
-      {
-        key: "out-of-stock",
-        title: "Coming Soon",
-        items: outOfStock.slice(0, 7),
-      },
-    ].filter((section) => section.items.length > 0);
-  }, [activeItems, activeMenu]);
-
-  useEffect(() => {
-    if (!activeMenu) return undefined;
-
-    const handlePointerDown = (event) => {
-      if (navRef.current && !navRef.current.contains(event.target)) {
-        setActiveMenu(null);
-      }
-    };
-
-    const handleEsc = (event) => {
-      if (event.key === "Escape") {
-        setActiveMenu(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handlePointerDown);
-    document.addEventListener("keydown", handleEsc);
-
-    return () => {
-      document.removeEventListener("mousedown", handlePointerDown);
-      document.removeEventListener("keydown", handleEsc);
-    };
-  }, [activeMenu, setActiveMenu]);
-
-  const handleOpenCategory = (category) => {
+  const toggleMenu = (category) => {
     const next = activeMenu === category ? null : category;
     setActiveMenu(next);
 
@@ -108,28 +42,70 @@ function CategoryNav({
           const isOpen = activeMenu === category;
 
           return (
-            <button
-              key={category}
-              type="button"
-              role="menuitem"
-              className={`category-nav__tab ${
-                isOpen ? "category-nav__tab--active" : ""
-              }`}
-              aria-expanded={isOpen}
-              aria-controls="category-nav-mega-panel"
-              onClick={() => handleOpenCategory(category)}
-              onMouseEnter={() => {
-                setActiveMenu(category);
-                onSelectCategory(category);
-              }}
-            >
-              <span>{category}</span>
-              <ChevronDown
-                className={`category-nav__trigger-icon ${
-                  isOpen ? "category-nav__trigger-icon--open" : ""
+            <div key={category} className="category-nav__menu">
+              <button
+                type="button"
+                className={`category-nav__trigger ${
+                  isOpen ? "category-nav__trigger--active" : ""
                 }`}
-              />
-            </button>
+                aria-expanded={isOpen}
+                aria-haspopup="menu"
+                onClick={() => toggleMenu(category)}
+              >
+                <span>{category}</span>
+                <ChevronDown
+                  className={`category-nav__trigger-icon ${
+                    isOpen ? "category-nav__trigger-icon--open" : ""
+                  }`}
+                />
+              </button>
+
+              {isOpen && (
+                <div className="category-nav__panel" role="menu">
+                  <div className="category-nav__panel-header">
+                    <div className="category-nav__panel-title">{category} Listings</div>
+
+                    <button
+                      type="button"
+                      className="category-nav__clear-btn"
+                      aria-label="Show full inventory"
+                      title="Show full inventory"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setActiveMenu(null);
+                        onClearCategory();
+                      }}
+                    >
+                      <X className="category-nav__clear-icon" />
+                    </button>
+                  </div>
+
+                  {categoryItems.length === 0 ? (
+                    <div className="category-nav__empty">No listings in this category yet.</div>
+                  ) : (
+                    categoryItems.map((item) => (
+                      <button
+                        type="button"
+                        key={item.id}
+                        className="category-nav__item"
+                        onClick={() => {
+                          onSelectListing(item);
+                          setActiveMenu(null);
+                        }}
+                      >
+                        <div className="category-nav__item-row">
+                          <div>
+                            <p className="category-nav__item-name">{item.name}</p>
+                            <p className="category-nav__item-meta">Qty: {item.quantity}</p>
+                          </div>
+                          <p className="category-nav__item-price">${item.price}</p>
+                        </div>
+                      </button>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
           );
         })}
       </div>
