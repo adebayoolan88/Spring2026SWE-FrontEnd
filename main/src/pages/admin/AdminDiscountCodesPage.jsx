@@ -69,14 +69,14 @@ function isExpired(code) {
 
 function statusClass(code) {
   if (!code.is_active) {
-    return "border-slate-200 bg-slate-100 text-slate-600";
+    return "admin-discount-codes__badge admin-discount-codes__badge--inactive";
   }
 
   if (isExpired(code)) {
-    return "border-red-200 bg-red-50 text-red-700";
+    return "admin-discount-codes__badge admin-discount-codes__badge--expired";
   }
 
-  return "border-emerald-200 bg-emerald-50 text-emerald-700";
+  return "admin-discount-codes__badge admin-discount-codes__badge--active";
 }
 
 function statusLabel(code) {
@@ -254,45 +254,45 @@ function AdminDiscountCodesPage() {
       title="Discount Codes"
       subtitle="Create and review discount codes that can be applied during checkout."
     >
-      <div className="page-admin-discount-codes grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+      <div className="admin-discount-codes__stats-grid">
+        <div className="admin-discount-codes__stat-card">
+          <p className="admin-discount-codes__stat-label">
             Total Codes
           </p>
-          <p className="mt-2 text-2xl font-bold text-slate-900">{totals.all}</p>
+          <p className="admin-discount-codes__stat-value">{totals.all}</p>
         </div>
 
-        <div className="admin-stat-card">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+        <div className="admin-discount-codes__stat-card">
+          <p className="admin-discount-codes__stat-label">
             Active
           </p>
-          <p className="mt-2 text-2xl font-bold text-emerald-700">{totals.active}</p>
+          <p className="admin-discount-codes__stat-value admin-discount-codes__stat-value--green">{totals.active}</p>
         </div>
 
-        <div className="admin-stat-card">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+        <div className="admin-discount-codes__stat-card">
+          <p className="admin-discount-codes__stat-label">
             Inactive
           </p>
-          <p className="mt-2 text-2xl font-bold text-slate-700">{totals.inactive}</p>
+          <p className="admin-discount-codes__stat-value admin-discount-codes__stat-value--muted">{totals.inactive}</p>
         </div>
 
-        <div className="admin-stat-card">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+        <div className="admin-discount-codes__stat-card">
+          <p className="admin-discount-codes__stat-label">
             Expired
           </p>
-          <p className="mt-2 text-2xl font-bold text-red-700">{totals.expired}</p>
+          <p className="admin-discount-codes__stat-value admin-discount-codes__stat-value--red">{totals.expired}</p>
         </div>
       </div>
 
-      <div className="mt-6 admin-stat-card">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-          <div className="flex flex-1 items-center rounded-2xl border border-slate-200 bg-white px-4 py-3">
-            <Search className="mr-3 h-5 w-5 text-slate-400" />
+      <div className="admin-discount-codes__filters">
+        <div className="admin-discount-codes__filters-row">
+          <div className="admin-discount-codes__search">
+            <Search className="admin-discount-codes__search-icon" />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by code, description, or discount type..."
-              className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
+              className="admin-discount-codes__search-input"
             />
           </div>
 
@@ -302,46 +302,46 @@ function AdminDiscountCodesPage() {
               setFormError("");
               setSuccessMessage("");
             }}
-            className="inline-flex items-center justify-center gap-2 btn-primary"
+            className="admin-discount-codes__create-btn btn-primary"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="admin-discount-codes__icon" />
             {showCreateForm ? "Close Form" : "Create Code"}
           </button>
         </div>
       </div>
 
       {showCreateForm ? (
-        <div className="mt-6 rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-          <div className="mb-5">
-            <p className="text-sm font-semibold uppercase tracking-wide text-orange-500">
+        <div className="admin-discount-codes__create-card">
+          <div className="admin-discount-codes__create-header">
+            <p className="admin-discount-codes__eyebrow">
               New Discount
             </p>
-            <h2 className="mt-1 text-xl font-bold text-slate-900">
+            <h2 className="admin-discount-codes__section-title">
               Create Discount Code
             </h2>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="admin-discount-codes__section-subtitle">
               This code will be validated by the backend during checkout.
             </p>
           </div>
 
           {formError ? (
-            <div className="mb-5 flex gap-2 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            <div className="admin-discount-codes__alert admin-discount-codes__alert--error">
+              <AlertCircle className="admin-discount-codes__alert-icon" />
               <span>{formError}</span>
             </div>
           ) : null}
 
           {successMessage ? (
-            <div className="mb-5 flex gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+            <div className="admin-discount-codes__alert admin-discount-codes__alert--success">
+              <CheckCircle2 className="admin-discount-codes__alert-icon" />
               <span>{successMessage}</span>
             </div>
           ) : null}
 
-          <form className="space-y-5" onSubmit={handleCreateDiscountCode}>
-            <div className="grid gap-5 md:grid-cols-2">
+          <form className="admin-discount-codes__form" onSubmit={handleCreateDiscountCode}>
+            <div className="admin-discount-codes__grid admin-discount-codes__grid--2">
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
+                <label className="admin-discount-codes__label">
                   Code
                 </label>
                 <input
@@ -349,13 +349,13 @@ function AdminDiscountCodesPage() {
                   value={form.code}
                   onChange={handleChange}
                   placeholder="WELCOME10"
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm uppercase text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                  className="admin-discount-codes__input admin-discount-codes__input--upper"
                   required
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
+                <label className="admin-discount-codes__label">
                   Description
                 </label>
                 <input
@@ -363,21 +363,21 @@ function AdminDiscountCodesPage() {
                   value={form.description}
                   onChange={handleChange}
                   placeholder="10 percent off first order"
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                  className="admin-discount-codes__input"
                 />
               </div>
             </div>
 
-            <div className="grid gap-5 md:grid-cols-4">
+            <div className="admin-discount-codes__grid admin-discount-codes__grid--4">
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
+                <label className="admin-discount-codes__label">
                   Discount Type
                 </label>
                 <select
                   name="discountType"
                   value={form.discountType}
                   onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                  className="admin-discount-codes__input"
                 >
                   <option value="percentage">Percentage</option>
                   <option value="fixed_amount">Fixed Amount</option>
@@ -385,7 +385,7 @@ function AdminDiscountCodesPage() {
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
+                <label className="admin-discount-codes__label">
                   Discount Value
                 </label>
                 <input
@@ -396,13 +396,13 @@ function AdminDiscountCodesPage() {
                   value={form.discountValue}
                   onChange={handleChange}
                   placeholder={form.discountType === "percentage" ? "10" : "25.00"}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                  className="admin-discount-codes__input"
                   required
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
+                <label className="admin-discount-codes__label">
                   Minimum Order
                 </label>
                 <input
@@ -412,12 +412,12 @@ function AdminDiscountCodesPage() {
                   step="0.01"
                   value={form.minimumOrderAmount}
                   onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                  className="admin-discount-codes__input"
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
+                <label className="admin-discount-codes__label">
                   Max Uses
                 </label>
                 <input
@@ -428,14 +428,14 @@ function AdminDiscountCodesPage() {
                   value={form.maxUses}
                   onChange={handleChange}
                   placeholder="Optional"
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                  className="admin-discount-codes__input"
                 />
               </div>
             </div>
 
-            <div className="grid gap-5 md:grid-cols-2">
+            <div className="admin-discount-codes__grid admin-discount-codes__grid--2">
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
+                <label className="admin-discount-codes__label">
                   Starts At
                 </label>
                 <input
@@ -443,12 +443,12 @@ function AdminDiscountCodesPage() {
                   type="datetime-local"
                   value={form.startsAt}
                   onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                  className="admin-discount-codes__input"
                 />
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-700">
+                <label className="admin-discount-codes__label">
                   Expires At
                 </label>
                 <input
@@ -456,23 +456,23 @@ function AdminDiscountCodesPage() {
                   type="datetime-local"
                   value={form.expiresAt}
                   onChange={handleChange}
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                  className="admin-discount-codes__input"
                 />
               </div>
             </div>
 
-            <label className="flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700">
+            <label className="admin-discount-codes__active-row">
               <input
                 name="isActive"
                 type="checkbox"
                 checked={form.isActive}
                 onChange={handleChange}
-                className="h-4 w-4 rounded border-slate-300 text-orange-500"
+                className="admin-discount-codes__checkbox"
               />
               Active immediately
             </label>
 
-            <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end">
+            <div className="admin-discount-codes__actions">
               <button
                 type="button"
                 onClick={() => {
@@ -481,7 +481,7 @@ function AdminDiscountCodesPage() {
                   setFormError("");
                   setSuccessMessage("");
                 }}
-                className="btn-secondary"
+                className="admin-discount-codes__btn admin-discount-codes__btn--secondary"
               >
                 Cancel
               </button>
@@ -489,7 +489,7 @@ function AdminDiscountCodesPage() {
               <button
                 type="submit"
                 disabled={creating}
-                className="btn-primary disabled:cursor-not-allowed disabled:opacity-60"
+                className="admin-discount-codes__btn admin-discount-codes__btn--primary"
               >
                 {creating ? "Creating..." : "Create Discount Code"}
               </button>
@@ -499,112 +499,112 @@ function AdminDiscountCodesPage() {
       ) : null}
 
       {loading ? (
-        <div className="mt-6 rounded-[28px] bg-white p-12 text-center shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-900">
+        <div className="admin-discount-codes__state-card">
+          <h2 className="admin-discount-codes__state-title">
             Loading discount codes...
           </h2>
-          <p className="mt-2 text-slate-500">Fetching admin discount data.</p>
+          <p className="admin-discount-codes__state-message">Fetching admin discount data.</p>
         </div>
       ) : pageError ? (
-        <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="admin-discount-codes__error">
           {pageError}
         </div>
       ) : filteredCodes.length === 0 ? (
-        <div className="mt-6 rounded-[28px] border border-dashed border-slate-300 bg-white p-12 text-center shadow-sm">
-          <TicketPercent className="mx-auto h-10 w-10 text-slate-400" />
-          <h2 className="mt-4 text-xl font-semibold text-slate-900">
+        <div className="admin-discount-codes__state-card admin-discount-codes__state-card--empty">
+          <TicketPercent className="admin-discount-codes__empty-icon" />
+          <h2 className="admin-discount-codes__state-title admin-discount-codes__state-title--spaced">
             No discount codes found
           </h2>
-          <p className="mt-2 text-slate-500">
+          <p className="admin-discount-codes__state-message">
             Create your first discount code to start testing checkout promotions.
           </p>
         </div>
       ) : (
-        <div className="mt-6 overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-slate-200">
-              <thead className="bg-slate-50">
+        <div className="admin-discount-codes__table-card">
+          <div className="admin-discount-codes__table-wrap">
+            <table className="admin-discount-codes__table">
+              <thead className="admin-discount-codes__thead">
                 <tr>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <th className="admin-discount-codes__th">
                     Code
                   </th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <th className="admin-discount-codes__th">
                     Discount
                   </th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <th className="admin-discount-codes__th">
                     Minimum
                   </th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <th className="admin-discount-codes__th">
                     Uses
                   </th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <th className="admin-discount-codes__th">
                     Dates
                   </th>
-                  <th className="px-5 py-4 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  <th className="admin-discount-codes__th">
                     Status
                   </th>
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-slate-100 bg-white">
+              <tbody className="admin-discount-codes__tbody">
                 {filteredCodes.map((code) => (
-                  <tr key={code.discount_code_id} className="hover:bg-slate-50">
-                    <td className="px-5 py-4">
-                      <div className="flex items-start gap-3">
-                        <div className="rounded-2xl bg-orange-50 p-2 text-orange-600">
-                          <Percent className="h-4 w-4" />
+                  <tr key={code.discount_code_id} className="admin-discount-codes__row">
+                    <td className="admin-discount-codes__td">
+                      <div className="admin-discount-codes__code-cell">
+                        <div className="admin-discount-codes__code-icon-wrap">
+                          <Percent className="admin-discount-codes__icon" />
                         </div>
 
                         <div>
-                          <p className="font-bold text-slate-900">{code.code}</p>
-                          <p className="mt-1 text-xs text-slate-500">
+                          <p className="admin-discount-codes__text-strong">{code.code}</p>
+                          <p className="admin-discount-codes__text-sub">
                             {code.description || "No description"}
                           </p>
                         </div>
                       </div>
                     </td>
 
-                    <td className="px-5 py-4">
-                      <p className="text-sm font-semibold text-slate-900">
+                    <td className="admin-discount-codes__td">
+                      <p className="admin-discount-codes__text-sm-strong">
                         {discountLabel(code)}
                       </p>
-                      <p className="mt-1 text-xs text-slate-500">
+                      <p className="admin-discount-codes__text-sub">
                         {code.discount_type}
                       </p>
                     </td>
 
-                    <td className="px-5 py-4 text-sm font-semibold text-slate-900">
+                    <td className="admin-discount-codes__td admin-discount-codes__text-sm-strong">
                       {formatMoney(code.minimum_order_amount)}
                     </td>
 
-                    <td className="px-5 py-4">
-                      <p className="text-sm font-semibold text-slate-900">
+                    <td className="admin-discount-codes__td">
+                      <p className="admin-discount-codes__text-sm-strong">
                         {Number(code.uses_count || 0)}
                         {code.max_uses ? ` / ${code.max_uses}` : ""}
                       </p>
-                      <p className="mt-1 text-xs text-slate-500">
+                      <p className="admin-discount-codes__text-sub">
                         {code.max_uses ? "limited" : "unlimited"}
                       </p>
                     </td>
 
-                    <td className="px-5 py-4">
-                      <p className="text-xs text-slate-500">
+                    <td className="admin-discount-codes__td">
+                      <p className="admin-discount-codes__text-xs">
                         Starts:{" "}
-                        <span className="font-medium text-slate-900">
+                        <span className="admin-discount-codes__meta-value">
                           {formatDate(code.starts_at)}
                         </span>
                       </p>
-                      <p className="mt-1 text-xs text-slate-500">
+                      <p className="admin-discount-codes__text-sub">
                         Expires:{" "}
-                        <span className="font-medium text-slate-900">
+                        <span className="admin-discount-codes__meta-value">
                           {formatDate(code.expires_at)}
                         </span>
                       </p>
                     </td>
 
-                    <td className="px-5 py-4">
+                    <td className="admin-discount-codes__td">
                       <span
-                        className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${statusClass(
+                        className={`admin-discount-codes__badge ${statusClass(
                           code
                         )}`}
                       >
