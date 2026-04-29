@@ -40,67 +40,67 @@ function ProductDetailsModal({ item, onClose, onAddToCart }) {
 
   return (
     <div
-      className="product-details-modal fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 px-4 backdrop-blur-sm"
+      className="product-details-modal product-details-modal--overlay"
       onClick={onClose}
     >
       <div
-        className="max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-[32px] border border-white/20 bg-white shadow-2xl"
+        className="product-details-modal__panel"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+        <div className="product-details-modal__header">
           <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <p className="text-sm font-semibold uppercase tracking-wide text-orange-500">
+            <div className="product-details-modal__chips">
+              <p className="product-details-modal__category">
                 {item.category || "Item"}
               </p>
 
               {hasValidSalePrice ? (
-                <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-700">
+                <span className="product-details-modal__chip product-details-modal__chip--sale">
                   <Tag className="h-3 w-3" />
                   Sale
                 </span>
               ) : null}
 
               {item.isFeatured ? (
-                <span className="inline-flex items-center gap-1 rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-white">
+                <span className="product-details-modal__chip product-details-modal__chip--featured">
                   <Star className="h-3 w-3" />
                   Featured
                 </span>
               ) : null}
             </div>
 
-            <h2 className="mt-1 text-2xl font-bold text-slate-900">
+            <h2 className="product-details-modal__title">
               {item.name}
             </h2>
           </div>
 
           <button
             onClick={onClose}
-            className="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
+            className="product-details-modal__close-btn"
           >
-            <X className="h-5 w-5" />
+            <X className="product-details-modal__icon" />
           </button>
         </div>
 
-        <div className="grid gap-8 p-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="product-details-modal__content">
           <div>
-            <div className="relative overflow-hidden rounded-[28px] bg-slate-100">
+            <div className="product-details-modal__image-wrap">
               <img
                 src={item.image}
                 alt={item.name}
-                className="h-[420px] w-full object-cover"
+                className="product-details-modal__image"
               />
 
-              <div className="absolute left-5 top-5 flex flex-wrap gap-2">
+              <div className="product-details-modal__floating-chips">
                 {hasValidSalePrice ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-orange-500 px-3 py-1 text-xs font-semibold text-white shadow-sm">
+                  <span className="product-details-modal__chip product-details-modal__chip--sale-solid">
                     <Tag className="h-3 w-3" />
                     Sale
                   </span>
                 ) : null}
 
                 {item.isFeatured ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-white shadow-sm">
+                  <span className="product-details-modal__chip product-details-modal__chip--featured shadow-sm">
                     <Star className="h-3 w-3" />
                     Featured
                   </span>
@@ -108,99 +108,99 @@ function ProductDetailsModal({ item, onClose, onAddToCart }) {
               </div>
             </div>
 
-            <div className="mt-6 rounded-[28px] border border-slate-200 bg-slate-50 p-5">
-              <h3 className="text-lg font-semibold text-slate-900">
+            <div className="product-details-modal__description">
+              <h3 className="product-details-modal__section-title">
                 Description
               </h3>
-              <p className="mt-3 leading-7 text-slate-600">
+              <p className="product-details-modal__description-text">
                 {item.description || "No description available for this item yet."}
               </p>
             </div>
           </div>
 
-          <div className="space-y-5">
-            <div className="admin-stat-card">
+          <div className="product-details-modal__sidebar">
+            <div className="product-details-modal__card">
               <p
-                className={`text-3xl font-bold ${
-                  hasValidSalePrice ? "text-emerald-700" : "text-slate-900"
+                className={`product-details-modal__price ${
+                  hasValidSalePrice ? "product-details-modal__price--sale" : "product-details-modal__price--default"
                 }`}
               >
                 {formatMoney(displayPrice)}
               </p>
 
               {hasValidSalePrice ? (
-                <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <p className="text-sm font-medium text-slate-400 line-through">
+                <div className="mt-2 product-details-modal__chips">
+                  <p className="product-details-modal__price-original">
                     {formatMoney(price)}
                   </p>
 
-                  <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                  <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold product-details-modal__price--sale">
                     Save {formatMoney(price - salePrice)}
                   </span>
                 </div>
               ) : null}
             </div>
 
-            <div className="admin-stat-card">
-              <h3 className="text-lg font-semibold text-slate-900">
+            <div className="product-details-modal__card">
+              <h3 className="product-details-modal__section-title">
                 Item Details
               </h3>
 
-              <div className="mt-4 space-y-4 text-sm text-slate-600">
-                <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-3">
-                  <span className="inline-flex items-center gap-2">
+              <div className="product-details-modal__details">
+                <div className="product-details-modal__detail-row">
+                  <span className="product-details-modal__detail-label">
                     <Tag className="h-4 w-4" />
                     Brand
                   </span>
-                  <span className="font-medium text-slate-900">
+                  <span className="font-medium product-details-modal__price--default">
                     {item.brand || "N/A"}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-3">
-                  <span className="inline-flex items-center gap-2">
+                <div className="product-details-modal__detail-row">
+                  <span className="product-details-modal__detail-label">
                     <Package className="h-4 w-4" />
                     SKU
                   </span>
-                  <span className="font-medium text-slate-900">
+                  <span className="font-medium product-details-modal__price--default">
                     {item.sku || "N/A"}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-3">
+                <div className="product-details-modal__detail-row">
                   <span>Category</span>
-                  <span className="font-medium text-slate-900">
+                  <span className="font-medium product-details-modal__price--default">
                     {item.category || "N/A"}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-3">
+                <div className="product-details-modal__detail-row">
                   <span>Condition</span>
-                  <span className="font-medium text-slate-900">
+                  <span className="font-medium product-details-modal__price--default">
                     {item.condition || "N/A"}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-3">
+                <div className="product-details-modal__detail-row">
                   <span>Quantity</span>
-                  <span className="font-medium text-slate-900">
+                  <span className="font-medium product-details-modal__price--default">
                     {item.quantity ?? "N/A"}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-3">
+                <div className="product-details-modal__detail-row">
                   <span>Status</span>
-                  <span className="font-medium text-slate-900">
+                  <span className="font-medium product-details-modal__price--default">
                     {item.availabilityStatus || "N/A"}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between gap-4">
-                  <span className="inline-flex items-center gap-2">
+                <div className="product-details-modal__detail-row product-details-modal__detail-row--last">
+                  <span className="product-details-modal__detail-label">
                     <CalendarDays className="h-4 w-4" />
                     Listed
                   </span>
-                  <span className="font-medium text-slate-900">
+                  <span className="font-medium product-details-modal__price--default">
                     {formatDate(item.listingDate)}
                   </span>
                 </div>
@@ -210,7 +210,7 @@ function ProductDetailsModal({ item, onClose, onAddToCart }) {
             <button
               onClick={() => onAddToCart(item)}
               disabled={item.availabilityStatus !== "available" || Number(item.quantity) <= 0}
-              className="inline-flex w-full items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+              className="product-details-modal__add-btn"
             >
               {item.availabilityStatus !== "available" || Number(item.quantity) <= 0
                 ? "Unavailable"
