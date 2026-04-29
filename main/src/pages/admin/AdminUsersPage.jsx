@@ -417,7 +417,7 @@ function AdminUsersPage() {
                           onClick={() => handleOpenEdit(user)}
                           className="admin-users__action-btn"
                         >
-                          <Edit className="h-4 w-4" />
+                          <Edit className="admin-users__action-icon" />
                           Edit
                         </button>
                       </td>
