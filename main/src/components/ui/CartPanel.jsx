@@ -157,7 +157,7 @@ function CartPanel({
                 </p>
                 <button
                   onClick={onClose}
-                  className="mt-6 cart-panel__btn cart-panel__btn--primary"
+                  className="cart-panel__btn cart-panel__btn--primary cart-panel__btn--spaced"
                 >
                   Continue Shopping
                 </button>

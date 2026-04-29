@@ -279,8 +279,8 @@ function AdminProductCreateModal({
             </div>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <label className="flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700">
+          <div className="admin-product-create-modal__toggle-grid">
+            <label className="admin-product-create-modal__toggle-option">
               <input
                 name="isOnSale"
                 type="checkbox"
@@ -291,7 +291,7 @@ function AdminProductCreateModal({
               Mark as on sale
             </label>
 
-            <label className="flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700">
+            <label className="admin-product-create-modal__toggle-option">
               <input
                 name="isFeatured"
                 type="checkbox"

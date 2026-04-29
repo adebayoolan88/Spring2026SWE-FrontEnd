@@ -10,3 +10,7 @@
 @media (min-width:640px){.admin-product-create-modal__actions{flex-direction:row;justify-content:flex-end}}
 @media (min-width:768px){.admin-product-create-modal__grid--2{grid-template-columns:repeat(2,minmax(0,1fr))}.admin-product-create-modal__grid--4{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .admin-product-create-modal button:focus-visible,.admin-product-create-modal a:focus-visible,.admin-product-create-modal input:focus-visible,.admin-product-create-modal select:focus-visible,.admin-product-create-modal textarea:focus-visible{outline:2px solid #fb923c;outline-offset:2px}
+
+.admin-product-create-modal__toggle-grid{display:grid;gap:.75rem}
+.admin-product-create-modal__toggle-option{display:flex;align-items:center;gap:.75rem;border:1px solid #e2e8f0;border-radius:1rem;padding:.75rem 1rem;font-size:.875rem;font-weight:500;color:#334155}
+@media (min-width:640px){.admin-product-create-modal__toggle-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}

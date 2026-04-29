@@ -37,3 +37,23 @@ If you touch these files, keep the semantic class pattern consistent and update 
 npm install
 npm run dev
 ```
+
+## Button policy
+
+We use **shared button primitives** for all new and refactored button work.
+
+- Base interaction/sizing comes from shared classes in `src/styles/utilities.css`.
+- Use `btn-primary`, `btn-secondary`, `btn-ghost`, and `btn-destructive` directly in JSX.
+- For disabled buttons, use the native `disabled` attribute (the primitive styles handle opacity/cursor).
+
+Examples:
+
+```jsx
+<button className="btn-primary">Primary</button>
+<button className="btn-secondary">Secondary</button>
+<button className="btn-ghost">Ghost</button>
+<button className="btn-destructive">Delete</button>
+<button className="btn-primary" disabled>Disabled</button>
+```
+
+Run `npm run check:classnames` before opening a PR. This flags new Tailwind-like utility tokens in `className` values.
