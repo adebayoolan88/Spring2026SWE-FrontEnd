@@ -45,7 +45,7 @@ function MyOrdersPage() {
 
   return (
     <div className="page-my-orders">
-      <div className="my-orders__container">
+      <div className="my-orders__container u-card-surface">
         <div className="my-orders__header">
           <p className="my-orders__eyebrow">Orders</p>
           <h1 className="my-orders__title">My Orders</h1>
@@ -77,7 +77,7 @@ function MyOrdersPage() {
         ) : (
           <div className="my-orders__list">
             {orders.map((order) => (
-              <div key={order.orderId} className="my-orders__card">
+              <div key={order.orderId} className="my-orders__card u-card-surface u-card-hover">
                 <div className="my-orders__card-layout">
                   <div className="my-orders__meta-grid">
                     <div>
@@ -102,7 +102,7 @@ function MyOrdersPage() {
                     <span className="my-orders__status-pill">{order.paymentStatus}</span>
                     <button
                       onClick={() => (window.location.href = `/orders/${order.orderId}`)}
-                      className="my-orders__details-btn"
+                      className="my-orders__details-btn btn-primary"
                     >
                       View Details
                     </button>

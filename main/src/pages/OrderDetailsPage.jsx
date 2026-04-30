@@ -68,17 +68,17 @@ function OrderDetailsPage() {
             </div>
 
             <div className="order-details__summary-grid">
-              <div className="order-details__summary-card"><p className="order-details__label">Payment Status</p><p className="order-details__value">{order.paymentStatus}</p></div>
-              <div className="order-details__summary-card"><p className="order-details__label">Order Status</p><p className="order-details__value">{order.orderStatus}</p></div>
-              <div className="order-details__summary-card"><p className="order-details__label">Order ID</p><p className="order-details__value">{order.orderId}</p></div>
-              <div className="order-details__summary-card"><p className="order-details__label">Items</p><p className="order-details__value">{order.items?.length || 0}</p></div>
+              <div className="order-details__summary-card u-card-surface"><p className="order-details__label">Payment Status</p><p className="order-details__value">{order.paymentStatus}</p></div>
+              <div className="order-details__summary-card u-card-surface"><p className="order-details__label">Order Status</p><p className="order-details__value">{order.orderStatus}</p></div>
+              <div className="order-details__summary-card u-card-surface"><p className="order-details__label">Order ID</p><p className="order-details__value">{order.orderId}</p></div>
+              <div className="order-details__summary-card u-card-surface"><p className="order-details__label">Items</p><p className="order-details__value">{order.items?.length || 0}</p></div>
             </div>
 
             <div className="order-details__items">
               {order.items?.map((item) => (
-                <div key={item.orderItemId} className="order-details__item-card">
+                <div key={item.orderItemId} className="order-details__item-card u-card-surface">
                   <div className="order-details__item-layout">
-                    <img src={item.image} alt={item.name} className="order-details__item-image" />
+                    <img src={item.image} alt={item.name} className="order-details__item-image u-card-media" />
                     <div className="order-details__item-content">
                       <p className="order-details__item-category">{item.category}</p>
                       <h3 className="order-details__item-name">{item.name}</h3>
@@ -94,9 +94,9 @@ function OrderDetailsPage() {
               ))}
             </div>
 
-            <div className="order-details__totals-wrap">
+            <div className="order-details__totals-wrap u-card-surface">
               <h2 className="order-details__section-title">Totals</h2>
-              <div className="order-details__totals-card">
+              <div className="order-details__totals-card u-card-surface">
                 <div className="order-details__total-row"><span className="order-details__total-label">Subtotal</span><span className="order-details__total-value">{formatMoney(order.subtotalAmount)}</span></div>
                 <div className="order-details__total-row"><span className="order-details__total-label">Sales Tax</span><span className="order-details__total-value">{formatMoney(order.taxAmount)}</span></div>
                 <div className="order-details__total-row"><span className="order-details__total-label">Discount</span><span className="order-details__total-value">-{formatMoney(order.discountAmount)}</span></div>
