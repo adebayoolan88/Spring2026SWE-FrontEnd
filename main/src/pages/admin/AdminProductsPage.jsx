@@ -298,7 +298,7 @@ function AdminProductsPage() {
       subtitle="View and manage all marketplace item listings."
     >
       <div className="admin-products__stats-grid">
-        <div className="admin-products__stat-card">
+        <div className="admin-products__stat-card u-card-surface">
           <div className="admin-products__stat-row">
             <div>
               <p className="admin-products__stat-label">
@@ -312,7 +312,7 @@ function AdminProductsPage() {
           </div>
         </div>
 
-        <div className="admin-products__stat-card">
+        <div className="admin-products__stat-card u-card-surface">
           <div className="admin-products__stat-row">
             <div>
               <p className="admin-products__stat-label">
@@ -328,7 +328,7 @@ function AdminProductsPage() {
           </div>
         </div>
 
-        <div className="admin-products__stat-card">
+        <div className="admin-products__stat-card u-card-surface">
           <div className="admin-products__stat-row">
             <div>
               <p className="admin-products__stat-label">
@@ -344,7 +344,7 @@ function AdminProductsPage() {
           </div>
         </div>
 
-        <div className="admin-products__stat-card">
+        <div className="admin-products__stat-card u-card-surface">
           <div className="admin-products__stat-row">
             <div>
               <p className="admin-products__stat-label">
@@ -418,7 +418,7 @@ function AdminProductsPage() {
       </div>
 
       {loading ? (
-        <div className="admin-products__state-card">
+        <div className="admin-products__state-card u-card-surface">
           <h2 className="admin-products__state-title">
             Loading products...
           </h2>
@@ -439,7 +439,7 @@ function AdminProductsPage() {
         </div>
       ) : (
         <>
-          <div className="admin-products__table-card">
+          <div className="admin-products__table-card u-card-surface">
             <div className="admin-products__table-wrap">
               <table className="admin-products__table">
                 <thead className="admin-products__thead">
