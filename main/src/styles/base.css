@@ -3,8 +3,10 @@
   --font-sans: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --text-primary: var(--color-text-main, #11161d);
   --bg-page: var(--color-bg-page, #f8f9fb);
-  --transition-fast: 180ms;
-  --transition-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-fast: var(--motion-duration-fast, 150ms);
+  --transition-standard: var(--motion-duration-standard, 200ms);
+  --transition-slow: var(--motion-duration-slow, 250ms);
+  --transition-ease: var(--motion-ease-standard, cubic-bezier(0.22, 1, 0.36, 1));
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -34,6 +36,29 @@ body {
     box-shadow var(--transition-fast) var(--transition-ease),
     opacity var(--transition-fast) var(--transition-ease),
     transform var(--transition-fast) var(--transition-ease);
+}
+
+:where(a, button, input, textarea, select, summary, [role="button"]):focus-visible {
+  outline: 2px solid var(--color-focus-ring, #8ba7c9);
+  outline-offset: 2px;
+}
+
+:where(input, textarea, select):hover:not(:disabled) {
+  border-color: var(--gray-300, #d7dde4);
+}
+
+:where(input, textarea, select):active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
 }
 
 img, picture, svg, video, canvas { display: block; max-width: 100%; }
