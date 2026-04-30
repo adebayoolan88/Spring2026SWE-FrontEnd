@@ -136,7 +136,7 @@ function NavBar({
                   onClick={() => {
                     window.location.href = "/admin";
                   }}
-                  className="nav-bar__admin-cta"
+                  className="nav-bar__admin-cta nav-bar__cta-btn btn btn-primary"
                 >
                   Admin
                 </button>
@@ -148,12 +148,12 @@ function NavBar({
             </>
           ) : (
             <>
-              <button onClick={onOpenLogin} className="nav-bar__btn nav-bar__btn--ghost">
+              <button onClick={onOpenLogin} className="nav-bar__btn nav-bar__btn--ghost btn btn-ghost">
                 <LogIn className="nav-bar__btn-icon" />
                 Login
               </button>
 
-              <button onClick={onOpenSignup} className="nav-bar__btn nav-bar__btn--primary">
+              <button onClick={onOpenSignup} className="nav-bar__btn nav-bar__btn--primary nav-bar__cta-btn btn btn-primary">
                 <UserPlus className="nav-bar__btn-icon" />
                 Sign Up
               </button>
