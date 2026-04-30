@@ -45,6 +45,23 @@
   --space-10: 2.5rem;
   --space-12: 3rem;
 
+
+  /* Shared layout primitives */
+  --layout-max-width: 80rem;
+  --layout-max-width-narrow: 48rem;
+  --layout-padding-x: var(--space-4);
+  --layout-padding-x-wide: var(--space-6);
+  --layout-section-space: var(--space-12);
+  --layout-content-rhythm: var(--space-6);
+
+  /* Heading hierarchy */
+  --heading-h1-size: clamp(1.875rem, 1.5rem + 1.5vw, 2.5rem);
+  --heading-h2-size: clamp(1.375rem, 1.2rem + 0.8vw, 1.875rem);
+  --heading-h3-size: 1.25rem;
+  --heading-h1-weight: var(--font-weight-bold);
+  --heading-h2-weight: var(--font-weight-semibold);
+  --heading-supporting-size: var(--font-size-base);
+
   /* Radius scale */
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
