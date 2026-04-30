@@ -1,3 +1,5 @@
+/* LEGACY: Deprecated token set retained temporarily during phased UI migration.
+   Source of truth is src/styles/tokens.css. Remove this file after final compatibility sweep. */
 :root {
   --color-bg-page-start: #f8fafc;
   --color-bg-page-end: #f5f7fb;
