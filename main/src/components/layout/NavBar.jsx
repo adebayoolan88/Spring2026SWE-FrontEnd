@@ -43,16 +43,24 @@ function NavBar({
     <header className="nav-bar">
       <div className="nav-bar__inner">
         <button
-          onClick={() => {
-            window.location.href = "/";
-          }}
-          className="nav-bar__brand"
-        >
-          <div className="nav-bar__brand-copy">
-            <p className="nav-bar__title">NoteSwap</p>
-            <p className="nav-bar__tagline">Buy. Sell. Play.</p>
-          </div>
-        </button>
+  onClick={() => {
+    window.location.href = "/";
+  }}
+  className="nav-bar__brand"
+>
+  <div className="nav-bar__brand-badge">
+    <img
+      src="/soundwave icon 2.png"
+      alt="NoteSwap soundwave logo"
+      className="nav-bar__brand-logo"
+    />
+  </div>
+
+  <div className="nav-bar__brand-copy">
+    <p className="nav-bar__title">NoteSwap</p>
+    <p className="nav-bar__tagline">Buy. Sell. Play.</p>
+  </div>
+</button>
 
         <div className="nav-bar__search-wrap">
           <div className="nav-bar__search">
