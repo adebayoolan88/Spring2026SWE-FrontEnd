@@ -1,47 +1,137 @@
-import { Heart, ShoppingCart } from "lucide-react";
+import { Heart, ShoppingCart, Star, Tag } from "lucide-react";
+
+function formatMoney(amount) {
+  return `$${Number(amount || 0).toFixed(2)}`;
+}
+
+function getDisplayPricing(item) {
+  const price = Number(item.price) || 0;
+  const salePrice =
+    item.salePrice === null || item.salePrice === undefined
+      ? null
+      : Number(item.salePrice);
+
+  const hasValidSalePrice =
+    item.isOnSale && salePrice !== null && salePrice >= 0 && salePrice < price;
+
+  return {
+    price,
+    salePrice,
+    hasValidSalePrice,
+    displayPrice: hasValidSalePrice ? salePrice : price,
+    savings: hasValidSalePrice ? price - salePrice : 0,
+  };
+}
+
+function getSaleLabel(item) {
+  if (!item.saleName) return "Sale";
+
+  if (item.saleSource === "sales_table") {
+    if (item.saleScope === "site_wide") {
+      return `${item.saleName} • Site-wide sale`;
+    }
+
+    if (item.saleScope === "category") {
+      return `${item.saleName} • Category sale`;
+    }
+
+    if (item.saleScope === "product") {
+      return `${item.saleName} • Product sale`;
+    }
+  }
+
+  return item.saleName;
+}
 
 function ItemCard({ item, onViewItem }) {
+  const { price, hasValidSalePrice, displayPrice, savings } =
+    getDisplayPricing(item);
+
+  const saleLabel = getSaleLabel(item);
+
   return (
-    // Each card represents one product in the inventory grid.
-    <div className="group overflow-hidden rounded-[28px] border border-slate-200/80 bg-white shadow-[0_12px_30px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(15,23,42,0.12)]">
-      {/* Product image area */}
-      <div className="relative h-56 overflow-hidden bg-slate-100">
+    <div className={`item-card ${hasValidSalePrice ? "item-card--sale" : ""}`}>
+      <div className="item-card__media">
         <img
           src={item.image}
           alt={item.name}
-          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+          className="item-card__image"
         />
 
-        {/* Favorite button.
-            This is currently visual only and does not have real favorite logic yet. */}
-        <button className="absolute right-4 top-4 rounded-full bg-white/90 p-2 text-slate-700 shadow-sm backdrop-blur">
-          <Heart className="h-4 w-4" />
+        <button className="item-card__favorite-btn">
+          <Heart className="item-card__icon" />
         </button>
 
-        {/* Small badge for item condition */}
-        <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-700 shadow-sm">
-          {item.condition}
-        </span>
+        <div className="item-card__badges">
+          <span className="item-card__badge item-card__badge--stock">
+            Qty: {item.quantity}
+          </span>
+
+          {hasValidSalePrice ? (
+            <span className="item-card__badge item-card__badge--sale">
+              <Tag className="item-card__badge-icon" />
+              Sale
+            </span>
+          ) : null}
+
+          {item.isFeatured ? (
+            <span className="item-card__badge item-card__badge--featured">
+              <Star className="item-card__badge-icon" />
+              Featured
+            </span>
+          ) : null}
+        </div>
       </div>
 
-      {/* Product text/details area */}
-      <div className="space-y-4 p-5">
-        <div className="flex items-start justify-between gap-4">
+      <div className="item-card__content">
+        <div className="item-card__header">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-orange-500">
-              {item.category}
-            </p>
-            <h3 className="mt-1 text-lg font-semibold text-slate-900">{item.name}</h3>
+            <p className="item-card__category">{item.category}</p>
+
+            <h3 className="item-card__name">{item.name}</h3>
           </div>
-          <p className="text-lg font-bold text-slate-900">${Number(item.price).toFixed(2)}</p>
+
+          <div className="item-card__pricing">
+            <p
+              className={`item-card__price ${
+                hasValidSalePrice ? "item-card__price--sale" : ""
+              }`}
+            >
+              {formatMoney(displayPrice)}
+            </p>
+
+            {hasValidSalePrice ? (
+              <p className="item-card__price-original">
+                {formatMoney(price)}
+              </p>
+            ) : null}
+          </div>
         </div>
 
-        {/* Clicking this button tells the parent which item to open in the details modal */}
+        {hasValidSalePrice ? (
+          <div className="item-card__sale-banner">
+            <div className="item-card__sale-banner-top">
+              <Tag className="item-card__sale-banner-icon" />
+              <span>{saleLabel}</span>
+            </div>
+
+            <p className="item-card__sale-banner-text">
+              Save {formatMoney(savings)}
+            </p>
+          </div>
+        ) : null}
+
+        <div className="item-card__meta">
+          <p className="item-card__condition">
+            Condition: {item.condition || "N/A"}
+          </p>
+        </div>
+
         <button
           onClick={() => onViewItem(item)}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800"
+          className="item-card__view-btn"
         >
-          <ShoppingCart className="h-4 w-4" />
+          <ShoppingCart className="item-card__icon" />
           View Item
         </button>
       </div>

@@ -1,0 +1,16 @@
+.search-bar {
+  position: relative;
+}
+
+.search-bar__btn{border-radius:1rem;padding:.75rem 1.5rem;font-size:.875rem;font-weight:600;box-shadow:0 4px 10px rgba(15,23,42,.15);transition:background-color .2s ease}
+.search-bar__btn--primary{border:0;background:#f97316;color:#fff}
+.search-bar__btn--primary:hover{background:#ea580c}
+
+.search-bar button:focus-visible,
+.search-bar a:focus-visible,
+.search-bar input:focus-visible,
+.search-bar select:focus-visible,
+.search-bar textarea:focus-visible {
+  outline: 2px solid #fb923c;
+  outline-offset: 2px;
+}

@@ -1,0 +1,31 @@
+/* Minimal utility layer for repeated patterns */
+.u-flex { display: flex; }
+.u-flex-center { display: flex; align-items: center; justify-content: center; }
+.u-gap-sm { gap: 0.5rem; }
+.u-gap-md { gap: 1rem; }
+.u-shadow-card { box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04); }
+.u-card { border: 1px solid #e2e8f0; border-radius: 1rem; background: #fff; }
+
+/* Shared button primitives */
+.btn, .btn-primary, .btn-secondary, .btn-ghost, .btn-destructive {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 1rem;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-primary { background: var(--color-button-primary-bg); color: var(--color-button-primary-text); border-color: var(--color-button-primary-bg); }
+.btn-primary:hover:not(:disabled) { background: var(--color-button-primary-bg-hover); border-color: var(--color-button-primary-bg-hover); }
+.btn-secondary { background: var(--color-button-secondary-bg); color: var(--color-button-secondary-text); border-color: var(--color-button-secondary-border); }
+.btn-secondary:hover:not(:disabled) { background: var(--color-button-secondary-bg-hover); }
+.btn-ghost { background: transparent; color: var(--color-button-secondary-text); border-color: transparent; }
+.btn-ghost:hover:not(:disabled) { background: var(--color-button-secondary-bg-hover); }
+.btn-destructive { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+.btn-destructive:hover:not(:disabled) { background: #fee2e2; }

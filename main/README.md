@@ -1,16 +1,59 @@
-# React + Vite
+# Frontend (React + Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Styling architecture
 
-Currently, two official plugins are available:
+This project is using a **semantic CSS architecture** and is explicitly moving away from Tailwind utility-class JSX.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### Rules for contributors
 
-## React Compiler
+- Prefer semantic/BEM-like class names in JSX (e.g. `my-orders__card`, `checkout-success__total-row`).
+- Add or update styles under `src/styles/**`.
+- Keep page-specific styles in `src/styles/pages/**`.
+- Keep reusable component styles in `src/styles/components/**`.
+- Shared layout/base tokens live in:
+  - `src/styles/base.css`
+  - `src/styles/layout.css`
+  - `src/styles/tokens.css`
+  - `src/styles/utilities.css` (for project utility helpers only, not Tailwind classes)
+- Avoid introducing new Tailwind-style class strings in JSX (e.g. `px-4`, `text-slate-900`, `sm:grid-cols-2`).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Current migration status
 
-## Expanding the ESLint configuration
+The following high-utility screens/components have been migrated to semantic class usage:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- `MyOrdersPage.jsx`
+- `MyProfilePage.jsx`
+- `CheckoutSuccessPage.jsx`
+- `CheckoutCancelPage.jsx`
+- Modal/component cleanup in:
+  - `AdminUserEditModal.jsx`
+  - `ProductDetailsModal.jsx`
+
+If you touch these files, keep the semantic class pattern consistent and update the paired CSS files in `src/styles/`.
+
+## Development
+
+```bash
+npm install
+npm run dev
+```
+
+## Button policy
+
+We use **shared button primitives** for all new and refactored button work.
+
+- Base interaction/sizing comes from shared classes in `src/styles/utilities.css`.
+- Use `btn-primary`, `btn-secondary`, `btn-ghost`, and `btn-destructive` directly in JSX.
+- For disabled buttons, use the native `disabled` attribute (the primitive styles handle opacity/cursor).
+
+Examples:
+
+```jsx
+<button className="btn-primary">Primary</button>
+<button className="btn-secondary">Secondary</button>
+<button className="btn-ghost">Ghost</button>
+<button className="btn-destructive">Delete</button>
+<button className="btn-primary" disabled>Disabled</button>
+```
+
+Run `npm run check:classnames` before opening a PR. This flags new Tailwind-like utility tokens in `className` values.

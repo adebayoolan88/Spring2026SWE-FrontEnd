@@ -1,14 +1,14 @@
 import { ChevronDown, X } from "lucide-react";
+import { useEffect, useMemo } from "react";
 
-// Hardcoded category list used for the secondary navigation bar.
 const CATEGORIES = [
-  "Accessories",
-  "Brass",
-  "Drums",
   "Guitar",
   "Piano",
-  "Violin",
+  "Drums",
+  "Accessories",
+  "Brass",
   "Woodwind",
+  "Violin",
 ];
 
 function CategoryNav({
@@ -19,106 +19,187 @@ function CategoryNav({
   onSelectListing,
   onClearCategory,
 }) {
-  // Returns only the products that belong to one category.
   const getItemsForCategory = (category) => {
     return items.filter(
-      (item) => item.category.toLowerCase() === category.toLowerCase()
+      (item) => item.category?.toLowerCase() === category.toLowerCase()
     );
   };
 
-  // If the user clicks the same category again, close it.
-  // If they click a different one, open that one instead.
-  const toggleMenu = (category) => {
-    setActiveMenu(activeMenu === category ? null : category);
+  const activeItems = useMemo(
+    () => (activeMenu ? getItemsForCategory(activeMenu) : []),
+    [items, activeMenu]
+  );
+
+  const activeSections = useMemo(() => {
+    if (!activeMenu) return [];
+
+    const inStock = activeItems.filter((item) => Number(item.quantity) > 0);
+    const outOfStock = activeItems.filter((item) => Number(item.quantity) <= 0);
+    const priceLowHigh = [...activeItems].sort(
+      (a, b) => Number(a.price || 0) - Number(b.price || 0)
+    );
+    const featured = activeItems.filter((item) => Boolean(item.isFeatured));
+
+    return [
+      {
+        key: "in-stock",
+        title: `${activeMenu} In Stock`,
+        items: inStock.slice(0, 7),
+      },
+      {
+        key: "budget-picks",
+        title: "Budget Picks",
+        items: priceLowHigh.slice(0, 7),
+      },
+      {
+        key: "featured",
+        title: "Featured",
+        items: featured.slice(0, 7),
+      },
+      {
+        key: "out-of-stock",
+        title: "Coming Soon",
+        items: outOfStock.slice(0, 7),
+      },
+    ].filter((section) => section.items.length > 0);
+  }, [activeItems, activeMenu]);
+
+  useEffect(() => {
+    if (!activeMenu) return undefined;
+
+    const handlePointerDown = (event) => {
+      if (!event.target.closest(".category-nav")) {
+        setActiveMenu(null);
+      }
+    };
+
+    const handleEsc = (event) => {
+      if (event.key === "Escape") {
+        setActiveMenu(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("keydown", handleEsc);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleEsc);
+    };
+  }, [activeMenu, setActiveMenu]);
+
+  const handleOpenCategory = (category) => {
+    const next = activeMenu === category ? null : category;
+    setActiveMenu(next);
+
+    if (next) {
+      onSelectCategory(category);
+    }
   };
 
   return (
-    <div className="border-b border-slate-200 bg-white">
-      {/* Category buttons laid out in a responsive grid */}
-      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-2 px-4 py-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 lg:px-8">
+    <div className="category-nav">
+      <div className="category-nav__tabs" role="menubar" aria-label="Categories">
         {CATEGORIES.map((category) => {
           const isOpen = activeMenu === category;
-          const categoryItems = getItemsForCategory(category);
 
           return (
-            <div key={category} className="relative">
-              {/* Category button */}
-              <button
-                onClick={() => {
-                  toggleMenu(category);
-                  onSelectCategory(category);
-                }}
-                className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition ${
-                  isOpen
-                    ? "bg-slate-900 text-white"
-                    : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+            <button
+              key={category}
+              type="button"
+              role="menuitem"
+              className={`category-nav__tab ${
+                isOpen ? "category-nav__tab--active" : ""
+              }`}
+              aria-expanded={isOpen}
+              aria-controls="category-nav-mega-panel"
+              onClick={() => handleOpenCategory(category)}
+            >
+              <span>{category}</span>
+              <ChevronDown
+                className={`category-nav__trigger-icon ${
+                  isOpen ? "category-nav__trigger-icon--open" : ""
                 }`}
-              >
-                {category}
-                <ChevronDown className="h-4 w-4" />
-              </button>
-
-              {/* Dropdown for products in that category */}
-              {isOpen && (
-                <div className="absolute left-0 top-full z-40 mt-2 w-80 rounded-2xl border border-slate-200 bg-white p-2 shadow-xl">
-                  <div className="flex items-center justify-between px-3 py-2">
-                    <div className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                      {category} Listings
-                    </div>
-
-                    {/* X button clears filters and returns to full inventory */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveMenu(null);
-                        onClearCategory();
-                      }}
-                      className="rounded-full p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
-                      aria-label="Show full inventory"
-                      title="Show full inventory"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-
-                  {/* Empty state vs listing buttons */}
-                  {categoryItems.length === 0 ? (
-                    <div className="px-3 py-3 text-sm text-slate-500">
-                      No listings in this category yet.
-                    </div>
-                  ) : (
-                    categoryItems.map((item) => (
-                      <button
-                        key={item.id}
-                        onClick={() => {
-                          // Selecting a listing usually updates category + search in the parent.
-                          onSelectListing(item);
-                          setActiveMenu(null);
-                        }}
-                        className="block w-full rounded-xl px-3 py-3 text-left transition hover:bg-slate-50"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <p className="text-sm font-semibold text-slate-900">
-                              {item.name}
-                            </p>
-                            <p className="mt-1 text-xs text-slate-500">
-                              {item.location} • {item.condition}
-                            </p>
-                          </div>
-                          <p className="text-sm font-bold text-slate-900">
-                            ${item.price}
-                          </p>
-                        </div>
-                      </button>
-                    ))
-                  )}
-                </div>
-              )}
-            </div>
+              />
+            </button>
           );
         })}
       </div>
+
+      {activeMenu && (
+        <div
+          className="category-nav__mega"
+          id="category-nav-mega-panel"
+          role="region"
+        >
+          <div className="category-nav__mega-header">
+            <h3 className="category-nav__mega-title">{activeMenu}</h3>
+
+            <div className="category-nav__mega-actions">
+              <button
+                type="button"
+                className="category-nav__shop-all"
+                onClick={() => {
+                  onSelectCategory(activeMenu);
+                  setActiveMenu(null);
+                }}
+              >
+                Shop All {activeMenu}
+              </button>
+
+              <button
+                type="button"
+                className="category-nav__clear-btn"
+                aria-label="Show full inventory"
+                title="Show full inventory"
+                onClick={() => {
+                  onClearCategory();
+                  setActiveMenu(null);
+                }}
+              >
+                <X className="category-nav__clear-icon" />
+              </button>
+            </div>
+          </div>
+
+          {activeSections.length === 0 ? (
+            <div className="category-nav__empty">
+              No listings in this category yet.
+            </div>
+          ) : (
+            <div className="category-nav__mega-grid">
+              {activeSections.map((section) => (
+                <div key={section.key} className="category-nav__section">
+                  <h4 className="category-nav__section-title">
+                    {section.title}
+                  </h4>
+
+                  <div className="category-nav__section-list">
+                    {section.items.map((item) => (
+                      <button
+                        type="button"
+                        key={item.id}
+                        className="category-nav__mega-link"
+                        onClick={() => {
+                          onSelectListing(item);
+                          setActiveMenu(null);
+                        }}
+                      >
+                        <span className="category-nav__item-name">
+                          {item.name}
+                        </span>
+                        <span className="category-nav__item-meta">
+                          Qty: {item.quantity} • ${item.price}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,0 +1,248 @@
+.nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+.nav-bar__inner {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nav-bar__brand {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.nav-bar__brand-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #fff;
+  font-weight: 700;
+}
+
+.nav-bar__brand-copy {
+  text-align: left;
+}
+
+.nav-bar__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.nav-bar__tagline {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.nav-bar__search-wrap {
+  flex: 1;
+}
+
+.nav-bar__search {
+  display: flex;
+  align-items: center;
+  border: 2px solid #cbd5e1;
+  border-radius: 1rem;
+  padding: 0.75rem 1rem;
+  background: #fff;
+}
+
+.nav-bar__search-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #94a3b8;
+  margin-right: 0.75rem;
+}
+
+.nav-bar__search-input {
+  width: 100%;
+  border: 0;
+  outline: none;
+  font-size: 0.875rem;
+  color: #334155;
+  background: transparent;
+}
+
+.nav-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nav-bar__menu-wrap {
+  position: relative;
+  z-index: 1001;
+}
+
+.nav-bar__menu-toggle,
+.nav-bar__btn,
+.nav-bar__admin-cta,
+.nav-bar__logout-mobile {
+  border-radius: 1rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  cursor: pointer;
+}
+
+.nav-bar__menu-toggle {
+  display: none;
+}
+
+.nav-bar__menu-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.5rem);
+  z-index: 1002;
+  width: 14rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  background: #fff;
+  padding: 0.5rem;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.15);
+}
+
+.nav-bar__menu-item {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  border-radius: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  color: #334155;
+}
+
+.nav-bar__menu-item:hover {
+  background: #f1f5f9;
+}
+
+.nav-bar__menu-item--admin {
+  color: #ea580c;
+}
+
+.nav-bar__menu-item--danger {
+  color: #dc2626;
+}
+
+.nav-bar__menu-divider {
+  height: 1px;
+  background: #f1f5f9;
+  margin: 0.5rem 0;
+}
+
+.nav-bar__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav-bar__btn--primary {
+  background: #f97316;
+  color: #fff;
+  border-color: #f97316;
+}
+
+.nav-bar__btn--ghost {
+  color: #334155;
+}
+
+.nav-bar__btn-icon,
+.nav-bar__cart-icon,
+.nav-bar__menu-chevron {
+  width: 1rem;
+  height: 1rem;
+}
+
+.nav-bar__admin-cta {
+  background: #0f172a;
+  color: #fff;
+  display: none;
+}
+
+.nav-bar__logout-mobile {
+  display: inline-flex;
+}
+
+.nav-bar__cart-btn {
+  position: relative;
+  border: 0;
+  background: #f97316;
+  color: #fff;
+  border-radius: 1rem;
+  padding: 0.625rem;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.nav-bar__cart-count {
+  position: absolute;
+  right: -0.5rem;
+  top: -0.5rem;
+  min-width: 1.25rem;
+  min-height: 1.25rem;
+  border-radius: 999px;
+  background: #0f172a;
+  color: #fff;
+  font-size: 0.6875rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.375rem;
+}
+
+.nav-bar button:focus-visible,
+.nav-bar a:focus-visible,
+.nav-bar input:focus-visible,
+.nav-bar select:focus-visible,
+.nav-bar textarea:focus-visible {
+  outline: 2px solid #fb923c;
+  outline-offset: 2px;
+}
+
+@media (min-width: 768px) {
+  .nav-bar__inner {
+    padding: 1rem 1.5rem;
+  }
+
+  .nav-bar__menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f8fafc;
+  }
+
+  .nav-bar__logout-mobile {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .nav-bar__inner {
+    padding: 1rem 2rem;
+  }
+
+  .nav-bar__admin-cta {
+    display: inline-flex;
+  }
+}

@@ -1,6 +1,5 @@
-import { CalendarDays, Package, Tag, User, X } from "lucide-react";
+import { CalendarDays, Package, Star, Tag, X } from "lucide-react";
 
-// Helper function for turning raw dates into something readable.
 function formatDate(dateValue) {
   if (!dateValue) return "N/A";
 
@@ -11,144 +10,308 @@ function formatDate(dateValue) {
   }
 }
 
-function ProductDetailsModal({ item, onClose }) {
-  // If no item is selected, don't render anything.
+function formatMoney(amount) {
+  return `$${Number(amount || 0).toFixed(2)}`;
+}
+
+function getDisplayPricing(item) {
+  const price = Number(item.price) || 0;
+  const salePrice =
+    item.salePrice === null || item.salePrice === undefined
+      ? null
+      : Number(item.salePrice);
+
+  const hasValidSalePrice =
+    item.isOnSale && salePrice !== null && salePrice >= 0 && salePrice < price;
+
+  return {
+    price,
+    salePrice,
+    hasValidSalePrice,
+    displayPrice: hasValidSalePrice ? salePrice : price,
+    savings: hasValidSalePrice ? price - salePrice : 0,
+  };
+}
+
+function getSaleLabel(item) {
+  if (!item.saleName) return "Sale";
+
+  if (item.saleSource === "sales_table") {
+    if (item.saleScope === "site_wide") {
+      return `${item.saleName} • Site-wide sale`;
+    }
+
+    if (item.saleScope === "category") {
+      return `${item.saleName} • Category sale`;
+    }
+
+    if (item.saleScope === "product") {
+      return `${item.saleName} • Product sale`;
+    }
+  }
+
+  return item.saleName;
+}
+
+function getSaleDescription(item) {
+  if (!item.saleSource || item.saleSource === "product_sale_price") {
+    return "This item has been individually marked down.";
+  }
+
+  if (item.saleScope === "site_wide") {
+    return "This discount is part of an active site-wide sale campaign.";
+  }
+
+  if (item.saleScope === "category") {
+    return `This discount applies to items in the ${item.category || "selected"} category.`;
+  }
+
+  if (item.saleScope === "product") {
+    return "This discount is part of an active product-specific sale campaign.";
+  }
+
+  return "This item is currently discounted.";
+}
+
+function ProductDetailsModal({ item, onClose, onAddToCart }) {
   if (!item) return null;
 
+  const { price, salePrice, hasValidSalePrice, displayPrice, savings } =
+    getDisplayPricing(item);
+
+  const saleLabel = getSaleLabel(item);
+  const saleDescription = getSaleDescription(item);
+
   return (
-    // Full-screen overlay for the details modal.
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 px-4 backdrop-blur-sm"
+      className="product-details-modal product-details-modal--overlay"
       onClick={onClose}
     >
-      {/* Modal container */}
       <div
-        className="max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-[32px] border border-white/20 bg-white shadow-2xl"
+        className="product-details-modal__panel"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Top header */}
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+        <div className="product-details-modal__header">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-orange-500">
-              {item.category || "Item"}
-            </p>
-            <h2 className="mt-1 text-2xl font-bold text-slate-900">{item.name}</h2>
+            <div className="product-details-modal__chips">
+              <p className="product-details-modal__category">
+                {item.category || "Item"}
+              </p>
+
+              {hasValidSalePrice ? (
+                <span className="product-details-modal__chip product-details-modal__chip--sale">
+                  <Tag className="product-details-modal__chip-icon" />
+                  Sale
+                </span>
+              ) : null}
+
+              {item.isFeatured ? (
+                <span className="product-details-modal__chip product-details-modal__chip--featured">
+                  <Star className="product-details-modal__chip-icon" />
+                  Featured
+                </span>
+              ) : null}
+            </div>
+
+            <h2 className="product-details-modal__title">{item.name}</h2>
           </div>
 
-          {/* Close button */}
           <button
             onClick={onClose}
-            className="rounded-full border border-slate-200 p-2 text-slate-500 transition hover:bg-slate-50 hover:text-slate-900"
+            className="product-details-modal__close-btn"
+            aria-label="Close product details"
           >
-            <X className="h-5 w-5" />
+            <X className="product-details-modal__icon" />
           </button>
         </div>
 
-        {/* Main modal layout: image + description on left, metadata on right */}
-        <div className="grid gap-8 p-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="product-details-modal__content">
           <div>
-            <div className="overflow-hidden rounded-[28px] bg-slate-100">
+            <div className="product-details-modal__image-wrap">
               <img
                 src={item.image}
                 alt={item.name}
-                className="h-[420px] w-full object-cover"
+                className="product-details-modal__image"
               />
+
+              <div className="product-details-modal__floating-chips">
+                {hasValidSalePrice ? (
+                  <span className="product-details-modal__chip product-details-modal__chip--sale-solid">
+                    <Tag className="product-details-modal__chip-icon" />
+                    Sale
+                  </span>
+                ) : null}
+
+                {item.isFeatured ? (
+                  <span className="product-details-modal__chip product-details-modal__chip--featured">
+                    <Star className="product-details-modal__chip-icon" />
+                    Featured
+                  </span>
+                ) : null}
+              </div>
             </div>
 
-            {/* Product description from the database */}
-            <div className="mt-6 rounded-[28px] border border-slate-200 bg-slate-50 p-5">
-              <h3 className="text-lg font-semibold text-slate-900">Description</h3>
-              <p className="mt-3 leading-7 text-slate-600">
+            {hasValidSalePrice ? (
+              <div className="product-details-modal__sale-callout">
+                <div className="product-details-modal__sale-callout-top">
+                  <Tag className="product-details-modal__sale-callout-icon" />
+                  <div>
+                    <p className="product-details-modal__sale-callout-title">
+                      {saleLabel}
+                    </p>
+                    <p className="product-details-modal__sale-callout-text">
+                      {saleDescription}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="product-details-modal__sale-callout-bottom">
+                  <span>Original: {formatMoney(price)}</span>
+                  <span>Now: {formatMoney(displayPrice)}</span>
+                  <span>Save {formatMoney(savings)}</span>
+                </div>
+              </div>
+            ) : null}
+
+            <div className="product-details-modal__description">
+              <h3 className="product-details-modal__section-title">
+                Description
+              </h3>
+              <p className="product-details-modal__description-text">
                 {item.description || "No description available for this item yet."}
               </p>
             </div>
           </div>
 
-          <div className="space-y-5">
-            {/* Price and summary badges */}
-            <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-              <p className="text-3xl font-bold text-slate-900">
-                ${Number(item.price).toFixed(2)}
+          <div className="product-details-modal__sidebar">
+            <div className="product-details-modal__card">
+              <p
+                className={`product-details-modal__price ${
+                  hasValidSalePrice
+                    ? "product-details-modal__price--sale"
+                    : "product-details-modal__price--default"
+                }`}
+              >
+                {formatMoney(displayPrice)}
               </p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                <span className="rounded-full bg-orange-50 px-3 py-1 text-sm font-medium text-orange-600">
-                  {item.condition || "Unknown Condition"}
-                </span>
-                <span className="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700">
-                  {item.itemType || "Unknown Type"}
-                </span>
-                <span className="rounded-full bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-700">
-                  {item.availabilityStatus || "Unknown Status"}
-                </span>
-              </div>
+
+              {hasValidSalePrice ? (
+                <div className="product-details-modal__price-row">
+                  <p className="product-details-modal__price-original">
+                    {formatMoney(price)}
+                  </p>
+
+                  <span className="product-details-modal__savings">
+                    Save {formatMoney(savings)}
+                  </span>
+                </div>
+              ) : null}
             </div>
 
-            {/* More detailed metadata section */}
-            <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
-              <h3 className="text-lg font-semibold text-slate-900">Item Details</h3>
+            {hasValidSalePrice ? (
+              <div className="product-details-modal__card product-details-modal__card--sale">
+                <h3 className="product-details-modal__section-title">
+                  Active Sale
+                </h3>
 
-              <div className="mt-4 space-y-4 text-sm text-slate-600">
-                <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-3">
-                  <span className="inline-flex items-center gap-2">
-                    <Tag className="h-4 w-4" />
+                <div className="product-details-modal__sale-summary">
+                  <p className="product-details-modal__sale-summary-title">
+                    {saleLabel}
+                  </p>
+                  <p className="product-details-modal__sale-summary-text">
+                    {saleDescription}
+                  </p>
+
+                  {item.saleDiscountType && item.saleDiscountValue !== null ? (
+                    <p className="product-details-modal__sale-summary-meta">
+                      Discount:{" "}
+                      {item.saleDiscountType === "percentage"
+                        ? `${Number(item.saleDiscountValue || 0)}% off`
+                        : `${formatMoney(item.saleDiscountValue)} off`}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+            ) : null}
+
+            <div className="product-details-modal__card">
+              <h3 className="product-details-modal__section-title">
+                Item Details
+              </h3>
+
+              <div className="product-details-modal__details">
+                <div className="product-details-modal__detail-row">
+                  <span className="product-details-modal__detail-label">
+                    <Tag className="product-details-modal__detail-icon" />
                     Brand
                   </span>
-                  <span className="font-medium text-slate-900">{item.brand || "N/A"}</span>
+                  <span className="product-details-modal__detail-value">
+                    {item.brand || "N/A"}
+                  </span>
                 </div>
 
-                <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-3">
-                  <span className="inline-flex items-center gap-2">
-                    <Package className="h-4 w-4" />
+                <div className="product-details-modal__detail-row">
+                  <span className="product-details-modal__detail-label">
+                    <Package className="product-details-modal__detail-icon" />
                     SKU
                   </span>
-                  <span className="font-medium text-slate-900">{item.sku || "N/A"}</span>
+                  <span className="product-details-modal__detail-value">
+                    {item.sku || "N/A"}
+                  </span>
                 </div>
 
-                <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-3">
+                <div className="product-details-modal__detail-row">
                   <span>Category</span>
-                  <span className="font-medium text-slate-900">{item.category || "N/A"}</span>
+                  <span className="product-details-modal__detail-value">
+                    {item.category || "N/A"}
+                  </span>
                 </div>
 
-                <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-3">
+                <div className="product-details-modal__detail-row">
                   <span>Condition</span>
-                  <span className="font-medium text-slate-900">{item.condition || "N/A"}</span>
+                  <span className="product-details-modal__detail-value">
+                    {item.condition || "N/A"}
+                  </span>
                 </div>
 
-                <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-3">
-                  <span>Type</span>
-                  <span className="font-medium text-slate-900">{item.itemType || "N/A"}</span>
+                <div className="product-details-modal__detail-row">
+                  <span>Quantity</span>
+                  <span className="product-details-modal__detail-value">
+                    {item.quantity ?? "N/A"}
+                  </span>
                 </div>
 
-                <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-3">
+                <div className="product-details-modal__detail-row">
                   <span>Status</span>
-                  <span className="font-medium text-slate-900">
+                  <span className="product-details-modal__detail-value">
                     {item.availabilityStatus || "N/A"}
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-3">
-                  <span className="inline-flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    Seller
-                  </span>
-                  <span className="font-medium text-slate-900">{item.seller || "N/A"}</span>
-                </div>
-
-                <div className="flex items-center justify-between gap-4">
-                  <span className="inline-flex items-center gap-2">
-                    <CalendarDays className="h-4 w-4" />
+                <div className="product-details-modal__detail-row product-details-modal__detail-row--last">
+                  <span className="product-details-modal__detail-label">
+                    <CalendarDays className="product-details-modal__detail-icon" />
                     Listed
                   </span>
-                  <span className="font-medium text-slate-900">
+                  <span className="product-details-modal__detail-value">
                     {formatDate(item.listingDate)}
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Placeholder for future cart functionality */}
-            <button className="inline-flex w-full items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
-              Add to Cart
+            <button
+              onClick={() => onAddToCart(item)}
+              disabled={
+                item.availabilityStatus !== "available" ||
+                Number(item.quantity) <= 0
+              }
+              className="product-details-modal__add-btn"
+            >
+              {item.availabilityStatus !== "available" ||
+              Number(item.quantity) <= 0
+                ? "Unavailable"
+                : "Add to Cart"}
             </button>
           </div>
         </div>

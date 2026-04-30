@@ -1,4 +1,11 @@
-import { LogIn, Search, ShoppingCart, UserPlus } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  ChevronDown,
+  LogIn,
+  Search,
+  ShoppingCart,
+  UserPlus,
+} from "lucide-react";
 
 function NavBar({
   onOpenLogin,
@@ -6,81 +13,156 @@ function NavBar({
   onOpenCart,
   onLogout,
   currentUser,
+  isAdmin,
   searchTerm,
   setSearchTerm,
+  cartCount,
 }) {
-  return (
-    // Main top header of the site.
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white">
-      <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-4 sm:px-6 lg:px-8">
-        {/* Brand/logo section */}
-        <div className="flex min-w-fit items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 text-lg font-bold text-white shadow-md">
-            NS
-          </div>
-          <div>
-            <p className="text-xl font-bold tracking-tight text-slate-900">NoteSwap</p>
-            <p className="text-xs text-slate-500">Buy. Sell. Play.</p>
-          </div>
-        </div>
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const accountMenuRef = useRef(null);
 
-        {/* Search bar built directly into the navbar */}
-        <div className="flex-1">
-          <div className="flex items-center rounded-2xl border-2 border-slate-300 bg-white px-4 py-3 shadow-sm">
-            <Search className="mr-3 h-5 w-5 text-slate-400" />
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        accountMenuRef.current &&
+        !accountMenuRef.current.contains(event.target)
+      ) {
+        setAccountMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const displayName = currentUser?.firstName || currentUser?.username || "User";
+
+  return (
+    <header className="nav-bar">
+      <div className="nav-bar__inner">
+        <button
+          onClick={() => {
+            window.location.href = "/";
+          }}
+          className="nav-bar__brand"
+        >
+          <div className="nav-bar__brand-badge">NS</div>
+          <div className="nav-bar__brand-copy">
+            <p className="nav-bar__title">NoteSwap</p>
+            <p className="nav-bar__tagline">Buy. Sell. Play.</p>
+          </div>
+        </button>
+
+        <div className="nav-bar__search-wrap">
+          <div className="nav-bar__search">
+            <Search className="nav-bar__search-icon" />
             <input
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               type="text"
               placeholder="Search for instruments, brands, and gear"
-              className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
+              className="nav-bar__search-input"
             />
           </div>
         </div>
 
-        {/* Right side actions */}
-        <div className="flex min-w-fit items-center gap-3">
+        <div className="nav-bar__actions">
           {currentUser ? (
             <>
-              {/* If logged in, greet the user */}
-              <div className="hidden rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-700 md:block">
-                Hi, <span className="font-semibold">{currentUser.firstName || currentUser.username}</span>
+              <div className="nav-bar__menu-wrap" ref={accountMenuRef}>
+                <button
+                  onClick={() => setAccountMenuOpen((prev) => !prev)}
+                  className="nav-bar__menu-toggle"
+                >
+                  <span>
+                    Hi, <span className="nav-bar__user-name">{displayName}</span>
+                  </span>
+                  <ChevronDown className="nav-bar__menu-chevron" />
+                </button>
+
+                {accountMenuOpen && (
+                  <div className="nav-bar__menu-panel">
+                    <button
+                      onClick={() => {
+                        setAccountMenuOpen(false);
+                        window.location.href = "/profile";
+                      }}
+                      className="nav-bar__menu-item"
+                    >
+                      My Profile
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setAccountMenuOpen(false);
+                        window.location.href = "/orders";
+                      }}
+                      className="nav-bar__menu-item"
+                    >
+                      My Orders
+                    </button>
+
+                    {isAdmin ? (
+                      <button
+                        onClick={() => {
+                          setAccountMenuOpen(false);
+                          window.location.href = "/admin";
+                        }}
+                        className="nav-bar__menu-item nav-bar__menu-item--admin"
+                      >
+                        Admin Panel
+                      </button>
+                    ) : null}
+
+                    <div className="nav-bar__menu-divider" />
+
+                    <button
+                      onClick={() => {
+                        setAccountMenuOpen(false);
+                        onLogout();
+                      }}
+                      className="nav-bar__menu-item nav-bar__menu-item--danger"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
               </div>
 
-              <button
-                onClick={onLogout}
-                className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50"
-              >
+              {isAdmin ? (
+                <button
+                  onClick={() => {
+                    window.location.href = "/admin";
+                  }}
+                  className="nav-bar__admin-cta"
+                >
+                  Admin
+                </button>
+              ) : null}
+
+              <button onClick={onLogout} className="nav-bar__logout-mobile">
                 Logout
               </button>
             </>
           ) : (
             <>
-              {/* If not logged in, show login and signup buttons */}
-              <button
-                onClick={onOpenLogin}
-                className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50"
-              >
-                <LogIn className="h-4 w-4" />
+              <button onClick={onOpenLogin} className="nav-bar__btn nav-bar__btn--ghost">
+                <LogIn className="nav-bar__btn-icon" />
                 Login
               </button>
 
-              <button
-                onClick={onOpenSignup}
-                className="inline-flex items-center gap-2 rounded-2xl bg-orange-500 px-4 py-2 text-sm font-medium text-white shadow-md transition hover:bg-orange-600"
-              >
-                <UserPlus className="h-4 w-4" />
+              <button onClick={onOpenSignup} className="nav-bar__btn nav-bar__btn--primary">
+                <UserPlus className="nav-bar__btn-icon" />
                 Sign Up
               </button>
             </>
           )}
 
-          {/* Cart button stays visible no matter what */}
-          <button
-            onClick={onOpenCart}
-            className="inline-flex items-center justify-center rounded-2xl bg-orange-500 p-2.5 text-white shadow-md transition hover:bg-orange-600"
-          >
-            <ShoppingCart className="h-5 w-5" />
+          <button onClick={onOpenCart} className="nav-bar__cart-btn">
+            <ShoppingCart className="nav-bar__cart-icon" />
+            {cartCount > 0 && <span className="nav-bar__cart-count">{cartCount}</span>}
           </button>
         </div>
       </div>
