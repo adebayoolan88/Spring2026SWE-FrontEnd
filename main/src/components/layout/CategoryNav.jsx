@@ -5,10 +5,10 @@ const CATEGORIES = [
   "Guitar",
   "Piano",
   "Drums",
-  "Accessories",
   "Brass",
   "Woodwind",
   "Violin",
+  "Accessories",
 ];
 
 function CategoryNav({

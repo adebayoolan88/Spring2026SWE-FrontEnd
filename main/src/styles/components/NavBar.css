@@ -25,15 +25,9 @@
 }
 
 .nav-bar__brand-badge {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 2.75rem;
   height: 2.75rem;
-  border-radius: 1rem;
-  background: linear-gradient(135deg, #f97316, #ea580c);
   color: #fff;
-  font-weight: 700;
 }
 
 .nav-bar__brand-copy {

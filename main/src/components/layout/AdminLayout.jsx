@@ -30,7 +30,6 @@ function AdminLayout({ children, title = "Admin Panel", subtitle = "" }) {
             }}
             className="admin-layout__brand"
           >
-            <div className="admin-layout__brand-badge">NS</div>
             <div className="admin-layout__brand-copy">
               <p className="admin-layout__brand-title">NoteSwap Admin</p>
               <p className="admin-layout__brand-subtitle">Manage marketplace operations</p>

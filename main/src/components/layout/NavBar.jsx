@@ -48,7 +48,6 @@ function NavBar({
           }}
           className="nav-bar__brand"
         >
-          <div className="nav-bar__brand-badge">NS</div>
           <div className="nav-bar__brand-copy">
             <p className="nav-bar__title">NoteSwap</p>
             <p className="nav-bar__tagline">Buy. Sell. Play.</p>
