@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { AlertCircle, CheckCircle2, X } from "lucide-react";
+import { AlertCircle, CheckCircle2, ImageIcon, X } from "lucide-react";
 
 const initialForm = {
   sku: "",
@@ -15,6 +15,7 @@ const initialForm = {
   productCondition: "good",
   availabilityStatus: "available",
   productDescription: "",
+  imageUrl: "",
 };
 
 function AdminProductCreateModal({
@@ -27,6 +28,7 @@ function AdminProductCreateModal({
   categories = [],
 }) {
   const [form, setForm] = useState(initialForm);
+  const [imagePreviewFailed, setImagePreviewFailed] = useState(false);
 
   const sortedCategories = useMemo(() => {
     return [...categories].sort((a, b) => a.name.localeCompare(b.name));
@@ -37,6 +39,10 @@ function AdminProductCreateModal({
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
+    if (name === "imageUrl") {
+      setImagePreviewFailed(false);
+    }
+
     setForm((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
@@ -45,11 +51,68 @@ function AdminProductCreateModal({
 
   const handleClose = () => {
     setForm(initialForm);
+    setImagePreviewFailed(false);
     onClose();
+  };
+
+  const validateForm = () => {
+    if (!form.productName.trim()) {
+      return "Product name is required.";
+    }
+
+    if (!form.sku.trim()) {
+      return "SKU is required.";
+    }
+
+    if (!form.categoryId) {
+      return "Category is required.";
+    }
+
+    if (form.price === "" || Number(form.price) < 0) {
+      return "Price must be 0 or higher.";
+    }
+
+    if (form.quantity === "" || Number(form.quantity) < 0) {
+      return "Quantity must be 0 or higher.";
+    }
+
+    if (form.salePrice !== "" && Number(form.salePrice) < 0) {
+      return "Sale price must be 0 or higher.";
+    }
+
+    if (form.isOnSale && form.salePrice === "") {
+      return "Sale price is required when the product is marked on sale.";
+    }
+
+    if (
+      form.salePrice !== "" &&
+      Number(form.salePrice) > Number(form.price)
+    ) {
+      return "Sale price should not be higher than the regular price.";
+    }
+
+    if (form.imageUrl.trim() && !/^https?:\/\//i.test(form.imageUrl.trim())) {
+      return "Image URL must start with http:// or https://.";
+    }
+
+    return "";
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const validationError = validateForm();
+
+    if (validationError) {
+      onSave(
+        {
+          validationOnly: true,
+          validationError,
+        },
+        () => {}
+      );
+      return;
+    }
 
     const payload = {
       sku: form.sku.trim().toUpperCase(),
@@ -57,7 +120,11 @@ function AdminProductCreateModal({
       brand: form.brand.trim() || null,
       categoryId: Number(form.categoryId),
       price: Number(form.price),
-      salePrice: form.salePrice === "" ? null : Number(form.salePrice),
+      salePrice: form.isOnSale
+        ? Number(form.salePrice)
+        : form.salePrice === ""
+          ? null
+          : Number(form.salePrice),
       isOnSale: Boolean(form.isOnSale),
       isFeatured: Boolean(form.isFeatured),
       quantity: Number(form.quantity),
@@ -65,12 +132,16 @@ function AdminProductCreateModal({
       productCondition: form.productCondition,
       availabilityStatus: form.availabilityStatus,
       productDescription: form.productDescription.trim() || null,
+      imageUrl: form.imageUrl.trim() || null,
     };
 
     onSave(payload, () => {
       setForm(initialForm);
+      setImagePreviewFailed(false);
     });
   };
+
+  const imagePreviewUrl = form.imageUrl.trim();
 
   return (
     <div
@@ -90,7 +161,8 @@ function AdminProductCreateModal({
               Add Product Listing
             </h2>
             <p className="admin-product-create-modal__subtitle">
-              Product images are automatically assigned from the selected category.
+              Add a product-specific image URL so this listing does not rely on
+              category fallback images.
             </p>
           </div>
 
@@ -98,6 +170,7 @@ function AdminProductCreateModal({
             type="button"
             onClick={handleClose}
             className="admin-product-create-modal__close-btn"
+            aria-label="Close product creator"
           >
             <X className="admin-product-create-modal__icon" />
           </button>
@@ -155,6 +228,7 @@ function AdminProductCreateModal({
                 name="brand"
                 value={form.brand}
                 onChange={handleChange}
+                placeholder="Yamaha, Fender, etc."
                 className="admin-product-create-modal__input"
               />
             </div>
@@ -168,7 +242,7 @@ function AdminProductCreateModal({
                 value={form.categoryId}
                 onChange={handleChange}
                 required
-                className="admin-product-create-modal__input"
+                className="admin-product-create-modal__select"
               >
                 <option value="">Select category</option>
                 {sortedCategories.map((category) => (
@@ -208,6 +282,8 @@ function AdminProductCreateModal({
                 step="0.01"
                 value={form.salePrice}
                 onChange={handleChange}
+                disabled={!form.isOnSale}
+                placeholder="Optional"
                 className="admin-product-create-modal__input"
               />
             </div>
@@ -236,7 +312,7 @@ function AdminProductCreateModal({
                 name="availabilityStatus"
                 value={form.availabilityStatus}
                 onChange={handleChange}
-                className="admin-product-create-modal__input"
+                className="admin-product-create-modal__select"
               >
                 <option value="available">Available</option>
                 <option value="sold">Sold</option>
@@ -253,7 +329,7 @@ function AdminProductCreateModal({
                 name="itemType"
                 value={form.itemType}
                 onChange={handleChange}
-                className="admin-product-create-modal__input"
+                className="admin-product-create-modal__select"
               >
                 <option value="new">New</option>
                 <option value="used">Used</option>
@@ -268,7 +344,7 @@ function AdminProductCreateModal({
                 name="productCondition"
                 value={form.productCondition}
                 onChange={handleChange}
-                className="admin-product-create-modal__input"
+                className="admin-product-create-modal__select"
               >
                 <option value="new">New</option>
                 <option value="like_new">Like New</option>
@@ -281,6 +357,15 @@ function AdminProductCreateModal({
 
           <div className="admin-product-create-modal__toggle-grid">
             <label className="admin-product-create-modal__toggle-option">
+              <span className="admin-product-create-modal__toggle-copy">
+                <span className="admin-product-create-modal__toggle-title">
+                  On Sale
+                </span>
+                <span className="admin-product-create-modal__toggle-subtitle">
+                  Require and display a sale price
+                </span>
+              </span>
+
               <input
                 name="isOnSale"
                 type="checkbox"
@@ -288,10 +373,18 @@ function AdminProductCreateModal({
                 onChange={handleChange}
                 className="admin-product-create-modal__checkbox"
               />
-              Mark as on sale
             </label>
 
             <label className="admin-product-create-modal__toggle-option">
+              <span className="admin-product-create-modal__toggle-copy">
+                <span className="admin-product-create-modal__toggle-title">
+                  Featured Product
+                </span>
+                <span className="admin-product-create-modal__toggle-subtitle">
+                  Highlight this item in the storefront
+                </span>
+              </span>
+
               <input
                 name="isFeatured"
                 type="checkbox"
@@ -299,8 +392,48 @@ function AdminProductCreateModal({
                 onChange={handleChange}
                 className="admin-product-create-modal__checkbox"
               />
-              Featured product
             </label>
+          </div>
+
+          <div className="admin-product-create-modal__image-section">
+            <div>
+              <label className="admin-product-create-modal__label">
+                Image URL
+              </label>
+              <input
+                name="imageUrl"
+                type="url"
+                value={form.imageUrl}
+                onChange={handleChange}
+                placeholder="https://example.com/product-image.jpg"
+                className="admin-product-create-modal__input"
+              />
+              <p className="admin-product-create-modal__help-text">
+                Paste a direct image URL. This image will appear on the product
+                card and details page. If left blank, the backend can still use a
+                category fallback image.
+              </p>
+            </div>
+
+            <div className="admin-product-create-modal__image-preview">
+              {imagePreviewUrl && !imagePreviewFailed ? (
+                <img
+                  src={imagePreviewUrl}
+                  alt={`${form.productName || "Product"} preview`}
+                  className="admin-product-create-modal__image"
+                  onError={() => setImagePreviewFailed(true)}
+                />
+              ) : (
+                <div className="admin-product-create-modal__image-placeholder">
+                  <ImageIcon className="admin-product-create-modal__image-placeholder-icon" />
+                  <span>
+                    {imagePreviewUrl
+                      ? "Image preview unavailable"
+                      : "Image preview"}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
 
           <div>
@@ -312,7 +445,7 @@ function AdminProductCreateModal({
               value={form.productDescription}
               onChange={handleChange}
               rows={4}
-              className="admin-product-create-modal__input"
+              className="admin-product-create-modal__textarea"
             />
           </div>
 
@@ -320,6 +453,7 @@ function AdminProductCreateModal({
             <button
               type="button"
               onClick={handleClose}
+              disabled={saving}
               className="admin-product-create-modal__btn admin-product-create-modal__btn--secondary"
             >
               Cancel
@@ -328,7 +462,7 @@ function AdminProductCreateModal({
             <button
               type="submit"
               disabled={saving}
-              className="admin-product-create-modal__btn admin-product-create-modal__btn--primary admin-product-create-modal__btn--disabled"
+              className="admin-product-create-modal__btn admin-product-create-modal__btn--primary"
             >
               {saving ? "Creating..." : "Create Product"}
             </button>

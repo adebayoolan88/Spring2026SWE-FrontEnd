@@ -108,14 +108,12 @@ function CategoryNav({
               key={category}
               type="button"
               role="menuitem"
-              className={`category-nav__tab ${isOpen ? "category-nav__tab--active" : ""}`}
+              className={`category-nav__tab ${
+                isOpen ? "category-nav__tab--active" : ""
+              }`}
               aria-expanded={isOpen}
               aria-controls="category-nav-mega-panel"
               onClick={() => handleOpenCategory(category)}
-              onMouseEnter={() => {
-                setActiveMenu(category);
-                onSelectCategory(category);
-              }}
             >
               <span>{category}</span>
               <ChevronDown
@@ -129,7 +127,11 @@ function CategoryNav({
       </div>
 
       {activeMenu && (
-        <div className="category-nav__mega" id="category-nav-mega-panel" role="region">
+        <div
+          className="category-nav__mega"
+          id="category-nav-mega-panel"
+          role="region"
+        >
           <div className="category-nav__mega-header">
             <h3 className="category-nav__mega-title">{activeMenu}</h3>
 
@@ -161,12 +163,16 @@ function CategoryNav({
           </div>
 
           {activeSections.length === 0 ? (
-            <div className="category-nav__empty">No listings in this category yet.</div>
+            <div className="category-nav__empty">
+              No listings in this category yet.
+            </div>
           ) : (
             <div className="category-nav__mega-grid">
               {activeSections.map((section) => (
                 <div key={section.key} className="category-nav__section">
-                  <h4 className="category-nav__section-title">{section.title}</h4>
+                  <h4 className="category-nav__section-title">
+                    {section.title}
+                  </h4>
 
                   <div className="category-nav__section-list">
                     {section.items.map((item) => (
@@ -179,7 +185,9 @@ function CategoryNav({
                           setActiveMenu(null);
                         }}
                       >
-                        <span className="category-nav__item-name">{item.name}</span>
+                        <span className="category-nav__item-name">
+                          {item.name}
+                        </span>
                         <span className="category-nav__item-meta">
                           Qty: {item.quantity} • ${item.price}
                         </span>

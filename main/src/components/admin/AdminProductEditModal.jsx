@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { AlertCircle, CheckCircle2, Save, X } from "lucide-react";
+import { AlertCircle, CheckCircle2, ImageIcon, Save, X } from "lucide-react";
 import { getStoredToken } from "../../lib/auth";
 import { updateAdminProduct } from "../../lib/admin";
 
@@ -30,11 +30,13 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
     quantity: "",
     availabilityStatus: "available",
     productDescription: "",
+    imageUrl: "",
   });
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [imagePreviewFailed, setImagePreviewFailed] = useState(false);
 
   useEffect(() => {
     if (!product) return;
@@ -49,10 +51,12 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
       quantity: toFormValue(product.quantity),
       availabilityStatus: product.availabilityStatus || "available",
       productDescription: product.description || "",
+      imageUrl: product.imageUrl || product.image || "",
     });
 
     setError("");
     setSuccessMessage("");
+    setImagePreviewFailed(false);
   }, [product]);
 
   const currentPrice = Number(form.price) || 0;
@@ -79,6 +83,10 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
 
     setError("");
     setSuccessMessage("");
+
+    if (name === "imageUrl") {
+      setImagePreviewFailed(false);
+    }
 
     setForm((prev) => ({
       ...prev,
@@ -111,6 +119,10 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
       if (Number(form.salePrice) > Number(form.price)) {
         return "Sale price should not be higher than the regular price.";
       }
+    }
+
+    if (form.imageUrl.trim() && !/^https?:\/\//i.test(form.imageUrl.trim())) {
+      return "Image URL must start with http:// or https://.";
     }
 
     return "";
@@ -146,6 +158,7 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
         quantity: Number(form.quantity),
         availabilityStatus: form.availabilityStatus,
         productDescription: form.productDescription.trim() || null,
+        imageUrl: form.imageUrl.trim() || null,
       };
 
       await updateAdminProduct(token, product.productId, payload);
@@ -167,6 +180,8 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
     }
   };
 
+  const imagePreviewUrl = form.imageUrl.trim();
+
   return (
     <div
       className="admin-product-edit-modal admin-product-edit-modal--overlay"
@@ -178,15 +193,10 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
       >
         <div className="admin-product-edit-modal__header">
           <div>
-            <p className="admin-product-edit-modal__eyebrow">
-              Edit Product
-            </p>
-            <h2 className="admin-product-edit-modal__title">
-              {product.name}
-            </h2>
+            <p className="admin-product-edit-modal__eyebrow">Edit Product</p>
+            <h2 className="admin-product-edit-modal__title">{product.name}</h2>
             <p className="admin-product-edit-modal__subtitle">
-              SKU: {product.sku || "N/A"} • Seller:{" "}
-              {product.seller?.name || product.seller?.username || "Unknown"}
+              SKU: {product.sku || "N/A"}
             </p>
           </div>
 
@@ -194,6 +204,7 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
             type="button"
             onClick={onClose}
             className="admin-product-edit-modal__close-btn"
+            aria-label="Close product editor"
           >
             <X className="admin-product-edit-modal__icon" />
           </button>
@@ -202,14 +213,14 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
         <form className="admin-product-edit-modal__form" onSubmit={handleSave}>
           {error ? (
             <div className="admin-product-edit-modal__alert admin-product-edit-modal__alert--error">
-              <AlertCircle className="mt-0.5 admin-product-edit-modal__icon shrink-0" />
+              <AlertCircle className="admin-product-edit-modal__alert-icon" />
               <span>{error}</span>
             </div>
           ) : null}
 
           {successMessage ? (
             <div className="admin-product-edit-modal__alert admin-product-edit-modal__alert--success">
-              <CheckCircle2 className="mt-0.5 admin-product-edit-modal__icon shrink-0" />
+              <CheckCircle2 className="admin-product-edit-modal__alert-icon" />
               <span>{successMessage}</span>
             </div>
           ) : null}
@@ -228,9 +239,7 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
             </div>
 
             <div>
-              <label className="admin-product-edit-modal__label">
-                Brand
-              </label>
+              <label className="admin-product-edit-modal__label">Brand</label>
               <input
                 name="brand"
                 value={form.brand}
@@ -270,7 +279,7 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
                 onChange={handleChange}
                 disabled={!form.isOnSale}
                 placeholder="Optional"
-                className="admin-product-edit-modal__input disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
+                className="admin-product-edit-modal__input"
               />
             </div>
 
@@ -291,39 +300,41 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
           </div>
 
           <div className="admin-product-edit-modal__grid admin-product-edit-modal__grid--3">
-            <label className="flex cursor-pointer items-center justify-between gap-4 admin-product-edit-modal__toggles">
-              <span>
-                <span className="block text-sm font-semibold text-slate-800">
+            <label className="admin-product-edit-modal__toggle">
+              <span className="admin-product-edit-modal__toggle-copy">
+                <span className="admin-product-edit-modal__toggle-title">
                   On Sale
                 </span>
-                <span className="block text-xs text-slate-500">
+                <span className="admin-product-edit-modal__toggle-subtitle">
                   Show sale price during checkout
                 </span>
               </span>
+
               <input
                 name="isOnSale"
                 type="checkbox"
                 checked={form.isOnSale}
                 onChange={handleChange}
-                className="h-5 w-5 accent-orange-500"
+                className="admin-product-edit-modal__checkbox"
               />
             </label>
 
-            <label className="flex cursor-pointer items-center justify-between gap-4 admin-product-edit-modal__toggles">
-              <span>
-                <span className="block text-sm font-semibold text-slate-800">
+            <label className="admin-product-edit-modal__toggle">
+              <span className="admin-product-edit-modal__toggle-copy">
+                <span className="admin-product-edit-modal__toggle-title">
                   Featured
                 </span>
-                <span className="block text-xs text-slate-500">
+                <span className="admin-product-edit-modal__toggle-subtitle">
                   Highlight item in admin/storefront
                 </span>
               </span>
+
               <input
                 name="isFeatured"
                 type="checkbox"
                 checked={form.isFeatured}
                 onChange={handleChange}
-                className="h-5 w-5 accent-orange-500"
+                className="admin-product-edit-modal__checkbox"
               />
             </label>
 
@@ -335,7 +346,7 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
                 name="availabilityStatus"
                 value={form.availabilityStatus}
                 onChange={handleChange}
-                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-orange-400 focus:ring-4 focus:ring-orange-100"
+                className="admin-product-edit-modal__select"
               >
                 {availabilityOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -352,6 +363,46 @@ function AdminProductEditModal({ product, onClose, onUpdated }) {
               {salePreview.percentage.toFixed(0)}% off).
             </div>
           ) : null}
+
+          <div className="admin-product-edit-modal__image-section">
+            <div>
+              <label className="admin-product-edit-modal__label">
+                Image URL
+              </label>
+              <input
+                name="imageUrl"
+                type="url"
+                value={form.imageUrl}
+                onChange={handleChange}
+                placeholder="https://example.com/product-image.jpg"
+                className="admin-product-edit-modal__input"
+              />
+              <p className="admin-product-edit-modal__help-text">
+                Paste a direct image URL. This image appears on product cards and
+                product details.
+              </p>
+            </div>
+
+            <div className="admin-product-edit-modal__image-preview">
+              {imagePreviewUrl && !imagePreviewFailed ? (
+                <img
+                  src={imagePreviewUrl}
+                  alt={`${form.productName || "Product"} preview`}
+                  className="admin-product-edit-modal__image"
+                  onError={() => setImagePreviewFailed(true)}
+                />
+              ) : (
+                <div className="admin-product-edit-modal__image-placeholder">
+                  <ImageIcon className="admin-product-edit-modal__image-placeholder-icon" />
+                  <span>
+                    {imagePreviewUrl
+                      ? "Image preview unavailable"
+                      : "Image preview"}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
 
           <div>
             <label className="admin-product-edit-modal__label">
