@@ -2,16 +2,21 @@ import { useEffect, useMemo, useState } from "react";
 import {
   AlertCircle,
   CheckCircle2,
+  Edit,
   Plus,
   Search,
   Tags,
+  Trash2,
+  X,
 } from "lucide-react";
 import AdminLayout from "../../components/layout/AdminLayout";
 import { getStoredToken } from "../../lib/auth";
 import {
   createAdminSale,
+  deleteAdminSale,
   getAdminProducts,
   getAdminSales,
+  updateAdminSale,
 } from "../../lib/admin";
 
 const initialForm = {
@@ -48,6 +53,19 @@ function formatDateTimeForApi(value) {
     return new Date(value).toISOString();
   } catch {
     return null;
+  }
+}
+
+function formatDateTimeForInput(value) {
+  if (!value) return "";
+
+  try {
+    const date = new Date(value);
+    const offset = date.getTimezoneOffset();
+    const localDate = new Date(date.getTime() - offset * 60 * 1000);
+    return localDate.toISOString().slice(0, 16);
+  } catch {
+    return "";
   }
 }
 
@@ -101,12 +119,19 @@ function AdminSalesPage() {
   const [pageError, setPageError] = useState("");
 
   const [query, setQuery] = useState("");
-  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [showInactive, setShowInactive] = useState(false);
+  const [editingSale, setEditingSale] = useState(null);
 
   const [form, setForm] = useState(initialForm);
-  const [creating, setCreating] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [actionError, setActionError] = useState("");
+  const [actionSuccess, setActionSuccess] = useState("");
+  const [deactivatingId, setDeactivatingId] = useState(null);
+
+  const isEditing = Boolean(editingSale);
 
   const loadPageData = async () => {
     try {
@@ -149,7 +174,7 @@ function AdminSalesPage() {
 
     return Array.from(map.entries())
       .map(([categoryId, name]) => ({
-        categoryId,
+        categoryId: Number(categoryId),
         name,
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
@@ -159,6 +184,10 @@ function AdminSalesPage() {
     const normalizedQuery = query.trim().toLowerCase();
 
     return sales.filter((sale) => {
+      if (!showInactive && !sale.is_active) {
+        return false;
+      }
+
       const searchableText = [
         sale.sale_name,
         sale.description,
@@ -171,16 +200,60 @@ function AdminSalesPage() {
 
       return !normalizedQuery || searchableText.includes(normalizedQuery);
     });
-  }, [sales, query]);
+  }, [sales, query, showInactive]);
 
   const totals = useMemo(() => {
     return {
       all: sales.length,
+      visible: filteredSales.length,
       active: sales.filter((sale) => sale.is_active && !isExpired(sale)).length,
       inactive: sales.filter((sale) => !sale.is_active).length,
       expired: sales.filter((sale) => isExpired(sale)).length,
     };
-  }, [sales]);
+  }, [sales, filteredSales]);
+
+  const resetForm = () => {
+    setForm(initialForm);
+    setEditingSale(null);
+    setShowForm(false);
+    setFormError("");
+    setSuccessMessage("");
+  };
+
+  const handleOpenCreate = () => {
+    setForm(initialForm);
+    setEditingSale(null);
+    setShowForm((prev) => !prev);
+    setFormError("");
+    setSuccessMessage("");
+    setActionError("");
+    setActionSuccess("");
+  };
+
+  const handleOpenEdit = (sale) => {
+    setEditingSale(sale);
+    setShowForm(true);
+    setFormError("");
+    setSuccessMessage("");
+    setActionError("");
+    setActionSuccess("");
+
+    setForm({
+      saleName: sale.sale_name || "",
+      description: sale.description || "",
+      saleScope: sale.sale_scope || "site_wide",
+      discountType: sale.discount_type || "percentage",
+      discountValue:
+        sale.discount_value === null || sale.discount_value === undefined
+          ? ""
+          : String(sale.discount_value),
+      startsAt: formatDateTimeForInput(sale.starts_at),
+      endsAt: formatDateTimeForInput(sale.ends_at),
+      isActive: Boolean(sale.is_active),
+      productIds: (sale.product_ids || []).map((id) => Number(id)),
+      categoryIds: (sale.category_ids || []).map((id) => Number(id)),
+    });
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -194,18 +267,33 @@ function AdminSalesPage() {
     }));
   };
 
+  const handleScopeChange = (e) => {
+    const value = e.target.value;
+
+    setFormError("");
+    setSuccessMessage("");
+
+    setForm((prev) => ({
+      ...prev,
+      saleScope: value,
+      productIds: [],
+      categoryIds: [],
+    }));
+  };
+
   const handleProductSelection = (productId) => {
     setFormError("");
     setSuccessMessage("");
 
     setForm((prev) => {
-      const alreadySelected = prev.productIds.includes(productId);
+      const numericProductId = Number(productId);
+      const alreadySelected = prev.productIds.includes(numericProductId);
 
       return {
         ...prev,
         productIds: alreadySelected
-          ? prev.productIds.filter((id) => id !== productId)
-          : [...prev.productIds, productId],
+          ? prev.productIds.filter((id) => id !== numericProductId)
+          : [...prev.productIds, numericProductId],
       };
     });
   };
@@ -215,13 +303,14 @@ function AdminSalesPage() {
     setSuccessMessage("");
 
     setForm((prev) => {
-      const alreadySelected = prev.categoryIds.includes(categoryId);
+      const numericCategoryId = Number(categoryId);
+      const alreadySelected = prev.categoryIds.includes(numericCategoryId);
 
       return {
         ...prev,
         categoryIds: alreadySelected
-          ? prev.categoryIds.filter((id) => id !== categoryId)
-          : [...prev.categoryIds, categoryId],
+          ? prev.categoryIds.filter((id) => id !== numericCategoryId)
+          : [...prev.categoryIds, numericCategoryId],
       };
     });
   };
@@ -260,7 +349,20 @@ function AdminSalesPage() {
     }
   };
 
-  const handleCreateSale = async (e) => {
+  const buildPayload = () => ({
+    saleName: form.saleName.trim(),
+    description: form.description.trim() || null,
+    saleScope: form.saleScope,
+    discountType: form.discountType,
+    discountValue: Number(form.discountValue),
+    startsAt: formatDateTimeForApi(form.startsAt),
+    endsAt: formatDateTimeForApi(form.endsAt),
+    isActive: Boolean(form.isActive),
+    productIds: form.saleScope === "product" ? form.productIds : [],
+    categoryIds: form.saleScope === "category" ? form.categoryIds : [],
+  });
+
+  const handleSaveSale = async (e) => {
     e.preventDefault();
 
     try {
@@ -272,77 +374,92 @@ function AdminSalesPage() {
         throw new Error("You must be logged in as an admin.");
       }
 
-      setCreating(true);
+      setSaving(true);
       setFormError("");
       setSuccessMessage("");
+      setActionError("");
+      setActionSuccess("");
 
-      const payload = {
-        saleName: form.saleName.trim(),
-        description: form.description.trim() || null,
-        saleScope: form.saleScope,
-        discountType: form.discountType,
-        discountValue: Number(form.discountValue),
-        startsAt: formatDateTimeForApi(form.startsAt),
-        endsAt: formatDateTimeForApi(form.endsAt),
-        isActive: Boolean(form.isActive),
-        productIds: form.saleScope === "product" ? form.productIds : [],
-        categoryIds: form.saleScope === "category" ? form.categoryIds : [],
-      };
+      const payload = buildPayload();
 
-      await createAdminSale(token, payload);
-
-      setSuccessMessage("Sale created successfully.");
-      setForm(initialForm);
+      if (isEditing) {
+        await updateAdminSale(token, editingSale.sale_id, payload);
+        setSuccessMessage("Sale updated successfully.");
+      } else {
+        await createAdminSale(token, payload);
+        setSuccessMessage("Sale created successfully.");
+      }
 
       await loadPageData();
 
       setTimeout(() => {
-        setShowCreateForm(false);
-        setSuccessMessage("");
+        resetForm();
       }, 700);
     } catch (err) {
       console.error(err);
-      setFormError(err.message || "Failed to create sale.");
+      setFormError(err.message || `Failed to ${isEditing ? "update" : "create"} sale.`);
     } finally {
-      setCreating(false);
+      setSaving(false);
+    }
+  };
+
+  const handleDeactivateSale = async (sale) => {
+    const confirmed = window.confirm(
+      `Deactivate sale "${sale.sale_name}"? It will no longer affect storefront pricing.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const token = getStoredToken();
+
+      if (!token) {
+        throw new Error("You must be logged in as an admin.");
+      }
+
+      setDeactivatingId(sale.sale_id);
+      setActionError("");
+      setActionSuccess("");
+
+      await deleteAdminSale(token, sale.sale_id);
+
+      setActionSuccess(`Sale "${sale.sale_name}" deactivated.`);
+      await loadPageData();
+    } catch (err) {
+      console.error(err);
+      setActionError(err.message || "Failed to deactivate sale.");
+    } finally {
+      setDeactivatingId(null);
     }
   };
 
   return (
     <AdminLayout
       title="Sales"
-      subtitle="Create and review sale campaigns for products, categories, or the full marketplace."
+      subtitle="Create, edit, and deactivate sale campaigns for products, categories, or the full marketplace."
     >
       <div className="admin-sales__stats-grid">
-        <div className="admin-sales__sale-card">
-          <p className="admin-sales__stat-label">
-            Total Sales
-          </p>
+        <div className="admin-sales__stat-card">
+          <p className="admin-sales__stat-label">Total Sales</p>
           <p className="admin-sales__stat-value">{totals.all}</p>
         </div>
 
         <div className="admin-sales__stat-card">
-          <p className="admin-sales__stat-label">
-            Active
-          </p>
+          <p className="admin-sales__stat-label">Active</p>
           <p className="admin-sales__stat-value admin-sales__stat-value--green">
             {totals.active}
           </p>
         </div>
 
         <div className="admin-sales__stat-card">
-          <p className="admin-sales__stat-label">
-            Inactive
-          </p>
+          <p className="admin-sales__stat-label">Inactive</p>
           <p className="admin-sales__stat-value admin-sales__stat-value--muted">
             {totals.inactive}
           </p>
         </div>
 
         <div className="admin-sales__stat-card">
-          <p className="admin-sales__stat-label">
-            Expired
-          </p>
+          <p className="admin-sales__stat-label">Expired</p>
           <p className="admin-sales__stat-value admin-sales__stat-value--red">
             {totals.expired}
           </p>
@@ -361,32 +478,63 @@ function AdminSalesPage() {
             />
           </div>
 
-          <button
-            onClick={() => {
-              setShowCreateForm((prev) => !prev);
-              setFormError("");
-              setSuccessMessage("");
-            }}
-            className="admin-sales__create-btn btn-primary"
-          >
+          <label className="admin-sales__toggle-filter">
+            <input
+              type="checkbox"
+              checked={showInactive}
+              onChange={(e) => setShowInactive(e.target.checked)}
+              className="admin-sales__checkbox"
+            />
+            Show inactive sales
+          </label>
+
+          <button onClick={handleOpenCreate} className="admin-sales__create-btn btn-primary">
             <Plus className="admin-sales__icon" />
-            {showCreateForm ? "Close Form" : "Create Sale"}
+            {showForm && !isEditing ? "Close Form" : "Create Sale"}
           </button>
         </div>
       </div>
 
-      {showCreateForm ? (
+      {actionError ? (
+        <div className="admin-sales__alert admin-sales__alert--error admin-sales__alert--spaced">
+          <AlertCircle className="admin-sales__alert-icon" />
+          <span>{actionError}</span>
+        </div>
+      ) : null}
+
+      {actionSuccess ? (
+        <div className="admin-sales__alert admin-sales__alert--success admin-sales__alert--spaced">
+          <CheckCircle2 className="admin-sales__alert-icon" />
+          <span>{actionSuccess}</span>
+        </div>
+      ) : null}
+
+      {showForm ? (
         <div className="admin-sales__create-card">
-          <div className="admin-sales__create-header">
-            <p className="admin-sales__eyebrow">
-              New Sale
-            </p>
-            <h2 className="admin-sales__section-title">
-              Create Sale Campaign
-            </h2>
-            <p className="admin-sales__section-subtitle">
-              These sale campaigns are validated during checkout and can apply to the whole store, categories, or selected products.
-            </p>
+          <div className="admin-sales__create-header admin-sales__create-header--split">
+            <div>
+              <p className="admin-sales__eyebrow">
+                {isEditing ? "Edit Sale" : "New Sale"}
+              </p>
+              <h2 className="admin-sales__section-title">
+                {isEditing ? "Edit Sale Campaign" : "Create Sale Campaign"}
+              </h2>
+              <p className="admin-sales__section-subtitle">
+                These sale campaigns are validated during checkout and can apply
+                to the whole store, categories, or selected products.
+              </p>
+            </div>
+
+            {isEditing ? (
+              <button
+                type="button"
+                onClick={resetForm}
+                className="admin-sales__icon-btn"
+                aria-label="Close editor"
+              >
+                <X className="admin-sales__icon" />
+              </button>
+            ) : null}
           </div>
 
           {formError ? (
@@ -403,12 +551,10 @@ function AdminSalesPage() {
             </div>
           ) : null}
 
-          <form className="admin-sales__form" onSubmit={handleCreateSale}>
+          <form className="admin-sales__form" onSubmit={handleSaveSale}>
             <div className="admin-sales__grid admin-sales__grid--2">
               <div>
-                <label className="admin-sales__label">
-                  Sale Name
-                </label>
+                <label className="admin-sales__label">Sale Name</label>
                 <input
                   name="saleName"
                   value={form.saleName}
@@ -420,9 +566,7 @@ function AdminSalesPage() {
               </div>
 
               <div>
-                <label className="admin-sales__label">
-                  Description
-                </label>
+                <label className="admin-sales__label">Description</label>
                 <input
                   name="description"
                   value={form.description}
@@ -435,23 +579,11 @@ function AdminSalesPage() {
 
             <div className="admin-sales__grid admin-sales__grid--4">
               <div>
-                <label className="admin-sales__label">
-                  Sale Scope
-                </label>
+                <label className="admin-sales__label">Sale Scope</label>
                 <select
                   name="saleScope"
                   value={form.saleScope}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setFormError("");
-                    setSuccessMessage("");
-                    setForm((prev) => ({
-                      ...prev,
-                      saleScope: value,
-                      productIds: [],
-                      categoryIds: [],
-                    }));
-                  }}
+                  onChange={handleScopeChange}
                   className="admin-sales__input"
                 >
                   <option value="site_wide">Site-wide</option>
@@ -461,9 +593,7 @@ function AdminSalesPage() {
               </div>
 
               <div>
-                <label className="admin-sales__label">
-                  Discount Type
-                </label>
+                <label className="admin-sales__label">Discount Type</label>
                 <select
                   name="discountType"
                   value={form.discountType}
@@ -476,9 +606,7 @@ function AdminSalesPage() {
               </div>
 
               <div>
-                <label className="admin-sales__label">
-                  Discount Value
-                </label>
+                <label className="admin-sales__label">Discount Value</label>
                 <input
                   name="discountValue"
                   type="number"
@@ -486,7 +614,7 @@ function AdminSalesPage() {
                   step="0.01"
                   value={form.discountValue}
                   onChange={handleChange}
-                  placeholder={form.discountType === "percentage" ? "20" : "25.00"}
+                  placeholder={form.discountType === "percentage" ? "20" : "50.00"}
                   className="admin-sales__input"
                   required
                 />
@@ -504,78 +632,9 @@ function AdminSalesPage() {
               </label>
             </div>
 
-            {form.saleScope === "category" ? (
-              <div>
-                <label className="admin-sales__label admin-sales__label--spaced">
-                  Select Categories
-                </label>
-
-                <div className="admin-sales__selection-grid">
-                  {categories.map((category) => {
-                    const selected = form.categoryIds.includes(category.categoryId);
-
-                    return (
-                      <button
-                        key={category.categoryId}
-                        type="button"
-                        onClick={() => handleCategorySelection(category.categoryId)}
-                        className={`admin-sales__selection-btn ${
-                          selected
-                            ? "admin-sales__selection-btn--selected"
-                            : ""
-                        }`}
-                      >
-                        {category.name}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ) : null}
-
-            {form.saleScope === "product" ? (
-              <div>
-                <label className="admin-sales__label admin-sales__label--spaced">
-                  Select Products
-                </label>
-
-                <div className="admin-sales__selection-list">
-                  {products.map((product) => {
-                    const selected = form.productIds.includes(product.productId);
-
-                    return (
-                      <button
-                        key={product.productId}
-                        type="button"
-                        onClick={() => handleProductSelection(product.productId)}
-                        className={`admin-sales__selection-row ${
-                          selected
-                            ? "admin-sales__selection-btn--selected"
-                            : ""
-                        }`}
-                      >
-                        <span>
-                          <span className="font-semibold">{product.name}</span>
-                          <span className="admin-sales__selection-sub">
-                            {product.brand || "No brand"} • {product.category?.name || "N/A"}
-                          </span>
-                        </span>
-
-                        <span className="admin-sales__selection-meta">
-                          {selected ? "Selected" : formatMoney(product.price)}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ) : null}
-
             <div className="admin-sales__grid admin-sales__grid--2">
               <div>
-                <label className="admin-sales__label">
-                  Starts At
-                </label>
+                <label className="admin-sales__label">Starts At</label>
                 <input
                   name="startsAt"
                   type="datetime-local"
@@ -586,9 +645,7 @@ function AdminSalesPage() {
               </div>
 
               <div>
-                <label className="admin-sales__label">
-                  Ends At
-                </label>
+                <label className="admin-sales__label">Ends At</label>
                 <input
                   name="endsAt"
                   type="datetime-local"
@@ -599,15 +656,54 @@ function AdminSalesPage() {
               </div>
             </div>
 
+            {form.saleScope === "category" ? (
+              <div className="admin-sales__selector-card">
+                <p className="admin-sales__selector-title">Select Categories</p>
+                <div className="admin-sales__selector-grid">
+                  {categories.map((category) => (
+                    <label key={category.categoryId} className="admin-sales__selector-option">
+                      <input
+                        type="checkbox"
+                        checked={form.categoryIds.includes(category.categoryId)}
+                        onChange={() => handleCategorySelection(category.categoryId)}
+                        className="admin-sales__checkbox"
+                      />
+                      {category.name}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {form.saleScope === "product" ? (
+              <div className="admin-sales__selector-card">
+                <p className="admin-sales__selector-title">Select Products</p>
+                <div className="admin-sales__product-selector">
+                  {products.map((product) => (
+                    <label key={product.productId} className="admin-sales__selector-option">
+                      <input
+                        type="checkbox"
+                        checked={form.productIds.includes(Number(product.productId))}
+                        onChange={() => handleProductSelection(product.productId)}
+                        className="admin-sales__checkbox"
+                      />
+                      <span>
+                        {product.name}
+                        <span className="admin-sales__selector-muted">
+                          {" "}
+                          ({product.sku})
+                        </span>
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
             <div className="admin-sales__actions">
               <button
                 type="button"
-                onClick={() => {
-                  setShowCreateForm(false);
-                  setForm(initialForm);
-                  setFormError("");
-                  setSuccessMessage("");
-                }}
+                onClick={resetForm}
                 className="admin-sales__btn admin-sales__btn--secondary"
               >
                 Cancel
@@ -615,10 +711,16 @@ function AdminSalesPage() {
 
               <button
                 type="submit"
-                disabled={creating}
+                disabled={saving}
                 className="admin-sales__btn admin-sales__btn--primary"
               >
-                {creating ? "Creating..." : "Create Sale"}
+                {saving
+                  ? isEditing
+                    ? "Saving..."
+                    : "Creating..."
+                  : isEditing
+                    ? "Save Changes"
+                    : "Create Sale"}
               </button>
             </div>
           </form>
@@ -627,15 +729,13 @@ function AdminSalesPage() {
 
       {loading ? (
         <div className="admin-sales__state-card">
-          <h2 className="admin-sales__state-title">
-            Loading sales...
-          </h2>
-          <p className="admin-sales__state-message">Fetching admin sale data.</p>
+          <h2 className="admin-sales__state-title">Loading sales...</h2>
+          <p className="admin-sales__state-message">
+            Fetching sale campaigns and eligible products.
+          </p>
         </div>
       ) : pageError ? (
-        <div className="admin-sales__error">
-          {pageError}
-        </div>
+        <div className="admin-sales__error">{pageError}</div>
       ) : filteredSales.length === 0 ? (
         <div className="admin-sales__state-card admin-sales__state-card--empty">
           <Tags className="admin-sales__empty-icon" />
@@ -643,97 +743,98 @@ function AdminSalesPage() {
             No sales found
           </h2>
           <p className="admin-sales__state-message">
-            Create a sale campaign to start testing promotional pricing.
+            {showInactive
+              ? "No sale campaigns match your current search."
+              : "No active sales match your current view. Turn on inactive sales to view deactivated campaigns."}
           </p>
         </div>
       ) : (
-        <div className="admin-sales__table-card">
-          <div className="admin-sales__table-wrap">
-            <table className="admin-sales__table">
-              <thead className="admin-sales__thead">
-                <tr>
-                  <th className="admin-sales__th">
-                    Sale
-                  </th>
-                  <th className="admin-sales__th">
-                    Scope
-                  </th>
-                  <th className="admin-sales__th">
-                    Discount
-                  </th>
-                  <th className="admin-sales__th">
-                    Dates
-                  </th>
-                  <th className="admin-sales__th">
-                    Status
-                  </th>
-                </tr>
-              </thead>
+        <div className="admin-sales__list">
+          {filteredSales.map((sale) => (
+            <div key={sale.sale_id} className="admin-sales__sale-card">
+              <div className="admin-sales__sale-card-header">
+                <div>
+                  <div className="admin-sales__sale-title-row">
+                    <h3 className="admin-sales__sale-title">{sale.sale_name}</h3>
+                    <span className={statusClass(sale)}>{statusLabel(sale)}</span>
+                  </div>
 
-              <tbody className="admin-sales__tbody">
-                {filteredSales.map((sale) => (
-                  <tr key={sale.sale_id} className="admin-sales__tr">
-                    <td className="admin-sales__td admin-sales__td--primary">
-                      <div className="admin-sales__entity">
-                        <div className="admin-sales__entity-icon-wrap">
-                          <Tags className="admin-sales__icon" />
-                        </div>
+                  <p className="admin-sales__sale-description">
+                    {sale.description || "No description"}
+                  </p>
+                </div>
 
-                        <div>
-                          <p className="admin-sales__text-strong">
-                            {sale.sale_name}
-                          </p>
-                          <p className="admin-sales__text-sub">
-                            {sale.description || "No description"}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
+                <div className="admin-sales__row-actions">
+                  <button
+                    type="button"
+                    onClick={() => handleOpenEdit(sale)}
+                    className="admin-sales__action-btn"
+                  >
+                    <Edit className="admin-sales__action-icon" />
+                    Edit
+                  </button>
 
-                    <td className="admin-sales__td">
-                      <p className="admin-sales__text-sm-strong">
-                        {scopeLabel(sale.sale_scope)}
-                      </p>
-                    </td>
+                  <button
+                    type="button"
+                    onClick={() => handleDeactivateSale(sale)}
+                    disabled={!sale.is_active || deactivatingId === sale.sale_id}
+                    className="admin-sales__action-btn admin-sales__action-btn--danger"
+                  >
+                    <Trash2 className="admin-sales__action-icon" />
+                    {deactivatingId === sale.sale_id
+                      ? "Deactivating..."
+                      : "Deactivate"}
+                  </button>
+                </div>
+              </div>
 
-                    <td className="admin-sales__td">
-                      <p className="admin-sales__text-sm-strong">
-                        {saleDiscountLabel(sale)}
-                      </p>
-                      <p className="admin-sales__text-sub">
-                        {sale.discount_type}
-                      </p>
-                    </td>
+              <div className="admin-sales__meta-grid">
+                <div>
+                  <p className="admin-sales__meta-label">Scope</p>
+                  <p className="admin-sales__meta-value">
+                    {scopeLabel(sale.sale_scope)}
+                  </p>
+                </div>
 
-                    <td className="admin-sales__td">
-                      <p className="admin-sales__text-xs">
-                        Starts:{" "}
-                        <span className="admin-sales__meta-value">
-                          {formatDate(sale.starts_at)}
-                        </span>
-                      </p>
-                      <p className="admin-sales__text-sub">
-                        Ends:{" "}
-                        <span className="admin-sales__meta-value">
-                          {formatDate(sale.ends_at)}
-                        </span>
-                      </p>
-                    </td>
+                <div>
+                  <p className="admin-sales__meta-label">Discount</p>
+                  <p className="admin-sales__meta-value">
+                    {saleDiscountLabel(sale)}
+                  </p>
+                </div>
 
-                    <td className="admin-sales__td">
-                      <span
-                        className={`admin-sales__badge ${statusClass(
-                          sale
-                        )}`}
-                      >
-                        {statusLabel(sale)}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                <div>
+                  <p className="admin-sales__meta-label">Starts</p>
+                  <p className="admin-sales__meta-value">
+                    {formatDate(sale.starts_at)}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="admin-sales__meta-label">Ends</p>
+                  <p className="admin-sales__meta-value">
+                    {formatDate(sale.ends_at)}
+                  </p>
+                </div>
+              </div>
+
+              <div className="admin-sales__association-row">
+                {sale.sale_scope === "product" ? (
+                  <span>
+                    Applies to {(sale.product_ids || []).length} product
+                    {(sale.product_ids || []).length === 1 ? "" : "s"}
+                  </span>
+                ) : sale.sale_scope === "category" ? (
+                  <span>
+                    Applies to {(sale.category_ids || []).length} categor
+                    {(sale.category_ids || []).length === 1 ? "y" : "ies"}
+                  </span>
+                ) : (
+                  <span>Applies to the full marketplace</span>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </AdminLayout>

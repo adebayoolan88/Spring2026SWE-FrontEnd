@@ -157,6 +157,36 @@ export async function createAdminDiscountCode(token, payload) {
   return handleResponse(response);
 }
 
+export async function updateAdminDiscountCode(token, discountCodeId, payload) {
+  const response = await fetch(
+    `${API_BASE_URL}/admin/discount-codes/${discountCodeId}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    }
+  );
+
+  return handleResponse(response);
+}
+
+export async function deleteAdminDiscountCode(token, discountCodeId) {
+  const response = await fetch(
+    `${API_BASE_URL}/admin/discount-codes/${discountCodeId}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return handleResponse(response);
+}
+
 export async function getAdminSales(token) {
   const response = await fetch(`${API_BASE_URL}/admin/sales`, {
     method: "GET",
@@ -176,6 +206,30 @@ export async function createAdminSale(token, payload) {
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(payload),
+  });
+
+  return handleResponse(response);
+}
+
+export async function updateAdminSale(token, saleId, payload) {
+  const response = await fetch(`${API_BASE_URL}/admin/sales/${saleId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  return handleResponse(response);
+}
+
+export async function deleteAdminSale(token, saleId) {
+  const response = await fetch(`${API_BASE_URL}/admin/sales/${saleId}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
 
   return handleResponse(response);

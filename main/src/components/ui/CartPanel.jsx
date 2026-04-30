@@ -31,6 +31,26 @@ function getDisplayPricing(item) {
   };
 }
 
+function getSaleLabel(item) {
+  if (!item.saleName) return "Sale";
+
+  if (item.saleSource === "sales_table") {
+    if (item.saleScope === "site_wide") {
+      return `${item.saleName} • Site-wide`;
+    }
+
+    if (item.saleScope === "category") {
+      return `${item.saleName} • Category`;
+    }
+
+    if (item.saleScope === "product") {
+      return `${item.saleName} • Product`;
+    }
+  }
+
+  return item.saleName;
+}
+
 function CartPanel({
   isOpen,
   onClose,
@@ -101,6 +121,7 @@ function CartPanel({
           <button
             onClick={onClose}
             className="cart-panel__close-btn"
+            aria-label="Close cart"
           >
             <X className="cart-panel__tiny-icon" />
           </button>
@@ -175,11 +196,10 @@ function CartPanel({
                     savings,
                   } = getDisplayPricing(item);
 
+                  const saleLabel = getSaleLabel(item);
+
                   return (
-                    <div
-                      key={item.id}
-                      className="cart-panel__item"
-                    >
+                    <div key={item.id} className="cart-panel__item">
                       <div className="cart-panel__item-row">
                         <img
                           src={item.image}
@@ -207,12 +227,12 @@ function CartPanel({
                                 {item.name}
                               </h3>
 
-                              <div className="mt-1 cart-panel__chips">
+                              <div className="cart-panel__price-row">
                                 <p
-                                  className={`text-sm font-semibold ${
+                                  className={`cart-panel__unit-price ${
                                     hasValidSalePrice
-                                      ? "text-emerald-700"
-                                      : "cart-panel__muted"
+                                      ? "cart-panel__unit-price--sale"
+                                      : ""
                                   }`}
                                 >
                                   {formatMoney(displayPrice)}
@@ -220,21 +240,29 @@ function CartPanel({
 
                                 {hasValidSalePrice ? (
                                   <>
-                                    <p className="text-xs text-slate-400 line-through">
+                                    <p className="cart-panel__unit-price-original">
                                       {formatMoney(price)}
                                     </p>
-                                    <p className="text-xs font-medium text-emerald-700">
+                                    <p className="cart-panel__unit-savings">
                                       Save {formatMoney(savings)}
                                     </p>
                                   </>
                                 ) : null}
                               </div>
+
+                              {hasValidSalePrice ? (
+                                <div className="cart-panel__sale-note">
+                                  <Tag className="cart-panel__chip-icon" />
+                                  <span>{saleLabel}</span>
+                                </div>
+                              ) : null}
                             </div>
 
                             <button
                               onClick={() => onRemoveItem(item.id)}
                               className="cart-panel__remove-btn"
                               title="Remove item"
+                              aria-label={`Remove ${item.name}`}
                             >
                               <Trash2 className="cart-panel__tiny-icon" />
                             </button>
@@ -245,6 +273,7 @@ function CartPanel({
                               <button
                                 onClick={() => onDecreaseQuantity(item.id)}
                                 className="cart-panel__qty-btn"
+                                aria-label={`Decrease quantity for ${item.name}`}
                               >
                                 <Minus className="cart-panel__tiny-icon" />
                               </button>
@@ -256,18 +285,19 @@ function CartPanel({
                               <button
                                 onClick={() => onIncreaseQuantity(item.id)}
                                 className="cart-panel__qty-btn"
+                                aria-label={`Increase quantity for ${item.name}`}
                               >
                                 <Plus className="cart-panel__tiny-icon" />
                               </button>
                             </div>
 
                             <div className="cart-panel__item-total">
-                              <p className="text-sm cart-panel__value">
+                              <p className="cart-panel__value">
                                 {formatMoney(displayPrice * item.cartQuantity)}
                               </p>
 
                               {hasValidSalePrice && salePrice !== null ? (
-                                <p className="text-xs text-slate-400">
+                                <p className="cart-panel__muted-small">
                                   {item.cartQuantity} × {formatMoney(salePrice)}
                                 </p>
                               ) : null}
@@ -281,15 +311,13 @@ function CartPanel({
               </div>
 
               {checkoutError ? (
-                <div className="cart-panel__error">
-                  {checkoutError}
-                </div>
+                <div className="cart-panel__error">{checkoutError}</div>
               ) : null}
 
               <div className="cart-panel__summary">
                 <div className="cart-panel__discount-box">
                   <label className="cart-panel__discount-label">
-                    <TicketPercent className="cart-panel__tiny-icon text-orange-500" />
+                    <TicketPercent className="cart-panel__tiny-icon" />
                     Discount Code
                   </label>
 
@@ -372,7 +400,7 @@ function CartPanel({
                 <button
                   onClick={onCheckout}
                   disabled={checkoutLoading}
-                  className="w-full cart-panel__apply-btn"
+                  className="cart-panel__checkout-btn"
                 >
                   {checkoutLoading ? "Redirecting to Checkout..." : "Checkout"}
                 </button>

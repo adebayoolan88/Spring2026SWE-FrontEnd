@@ -2,16 +2,21 @@ import { useEffect, useMemo, useState } from "react";
 import {
   AlertCircle,
   CheckCircle2,
+  Edit,
   Percent,
   Plus,
   Search,
   TicketPercent,
+  Trash2,
+  X,
 } from "lucide-react";
 import AdminLayout from "../../components/layout/AdminLayout";
 import { getStoredToken } from "../../lib/auth";
 import {
   createAdminDiscountCode,
+  deleteAdminDiscountCode,
   getAdminDiscountCodes,
+  updateAdminDiscountCode,
 } from "../../lib/admin";
 
 const initialForm = {
@@ -47,6 +52,19 @@ function formatDateTimeForApi(value) {
     return new Date(value).toISOString();
   } catch {
     return null;
+  }
+}
+
+function formatDateTimeForInput(value) {
+  if (!value) return "";
+
+  try {
+    const date = new Date(value);
+    const offset = date.getTimezoneOffset();
+    const localDate = new Date(date.getTime() - offset * 60 * 1000);
+    return localDate.toISOString().slice(0, 16);
+  } catch {
+    return "";
   }
 }
 
@@ -91,12 +109,19 @@ function AdminDiscountCodesPage() {
   const [pageError, setPageError] = useState("");
 
   const [query, setQuery] = useState("");
-  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [showInactive, setShowInactive] = useState(false);
+  const [editingCode, setEditingCode] = useState(null);
 
   const [form, setForm] = useState(initialForm);
-  const [creating, setCreating] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [actionError, setActionError] = useState("");
+  const [actionSuccess, setActionSuccess] = useState("");
+  const [deactivatingId, setDeactivatingId] = useState(null);
+
+  const isEditing = Boolean(editingCode);
 
   const loadDiscountCodes = async () => {
     try {
@@ -127,6 +152,10 @@ function AdminDiscountCodesPage() {
     const normalizedQuery = query.trim().toLowerCase();
 
     return discountCodes.filter((code) => {
+      if (!showInactive && !code.is_active) {
+        return false;
+      }
+
       const searchableText = [
         code.code,
         code.description,
@@ -139,16 +168,67 @@ function AdminDiscountCodesPage() {
 
       return !normalizedQuery || searchableText.includes(normalizedQuery);
     });
-  }, [discountCodes, query]);
+  }, [discountCodes, query, showInactive]);
 
   const totals = useMemo(() => {
     return {
       all: discountCodes.length,
-      active: discountCodes.filter((code) => code.is_active && !isExpired(code)).length,
+      visible: filteredCodes.length,
+      active: discountCodes.filter((code) => code.is_active && !isExpired(code))
+        .length,
       inactive: discountCodes.filter((code) => !code.is_active).length,
       expired: discountCodes.filter((code) => isExpired(code)).length,
     };
-  }, [discountCodes]);
+  }, [discountCodes, filteredCodes]);
+
+  const resetForm = () => {
+    setForm(initialForm);
+    setEditingCode(null);
+    setShowForm(false);
+    setFormError("");
+    setSuccessMessage("");
+  };
+
+  const handleOpenCreate = () => {
+    setForm(initialForm);
+    setEditingCode(null);
+    setShowForm((prev) => !prev);
+    setFormError("");
+    setSuccessMessage("");
+    setActionError("");
+    setActionSuccess("");
+  };
+
+  const handleOpenEdit = (code) => {
+    setEditingCode(code);
+    setShowForm(true);
+    setFormError("");
+    setSuccessMessage("");
+    setActionError("");
+    setActionSuccess("");
+
+    setForm({
+      code: code.code || "",
+      description: code.description || "",
+      discountType: code.discount_type || "percentage",
+      discountValue:
+        code.discount_value === null || code.discount_value === undefined
+          ? ""
+          : String(code.discount_value),
+      minimumOrderAmount:
+        code.minimum_order_amount === null ||
+        code.minimum_order_amount === undefined
+          ? "0"
+          : String(code.minimum_order_amount),
+      maxUses:
+        code.max_uses === null || code.max_uses === undefined
+          ? ""
+          : String(code.max_uses),
+      startsAt: formatDateTimeForInput(code.starts_at),
+      expiresAt: formatDateTimeForInput(code.expires_at),
+      isActive: Boolean(code.is_active),
+    });
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -202,7 +282,19 @@ function AdminDiscountCodesPage() {
     }
   };
 
-  const handleCreateDiscountCode = async (e) => {
+  const buildPayload = () => ({
+    code: form.code.trim().toUpperCase(),
+    description: form.description.trim() || null,
+    discountType: form.discountType,
+    discountValue: Number(form.discountValue),
+    minimumOrderAmount: Number(form.minimumOrderAmount || 0),
+    maxUses: form.maxUses === "" ? null : Number(form.maxUses),
+    startsAt: formatDateTimeForApi(form.startsAt),
+    expiresAt: formatDateTimeForApi(form.expiresAt),
+    isActive: Boolean(form.isActive),
+  });
+
+  const handleSaveDiscountCode = async (e) => {
     e.preventDefault();
 
     try {
@@ -214,73 +306,102 @@ function AdminDiscountCodesPage() {
         throw new Error("You must be logged in as an admin.");
       }
 
-      setCreating(true);
+      setSaving(true);
       setFormError("");
       setSuccessMessage("");
+      setActionError("");
+      setActionSuccess("");
 
-      const payload = {
-        code: form.code.trim().toUpperCase(),
-        description: form.description.trim() || null,
-        discountType: form.discountType,
-        discountValue: Number(form.discountValue),
-        minimumOrderAmount: Number(form.minimumOrderAmount || 0),
-        maxUses: form.maxUses === "" ? null : Number(form.maxUses),
-        startsAt: formatDateTimeForApi(form.startsAt),
-        expiresAt: formatDateTimeForApi(form.expiresAt),
-        isActive: Boolean(form.isActive),
-      };
+      const payload = buildPayload();
 
-      await createAdminDiscountCode(token, payload);
-
-      setSuccessMessage("Discount code created successfully.");
-      setForm(initialForm);
+      if (isEditing) {
+        await updateAdminDiscountCode(
+          token,
+          editingCode.discount_code_id,
+          payload
+        );
+        setSuccessMessage("Discount code updated successfully.");
+      } else {
+        await createAdminDiscountCode(token, payload);
+        setSuccessMessage("Discount code created successfully.");
+      }
 
       await loadDiscountCodes();
 
       setTimeout(() => {
-        setShowCreateForm(false);
-        setSuccessMessage("");
+        resetForm();
       }, 700);
     } catch (err) {
       console.error(err);
-      setFormError(err.message || "Failed to create discount code.");
+      setFormError(
+        err.message ||
+          `Failed to ${isEditing ? "update" : "create"} discount code.`
+      );
     } finally {
-      setCreating(false);
+      setSaving(false);
+    }
+  };
+
+  const handleDeactivateDiscountCode = async (code) => {
+    const confirmed = window.confirm(
+      `Deactivate discount code "${code.code}"? It will no longer be usable at checkout.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const token = getStoredToken();
+
+      if (!token) {
+        throw new Error("You must be logged in as an admin.");
+      }
+
+      setDeactivatingId(code.discount_code_id);
+      setActionError("");
+      setActionSuccess("");
+
+      await deleteAdminDiscountCode(token, code.discount_code_id);
+
+      setActionSuccess(`Discount code "${code.code}" deactivated.`);
+      await loadDiscountCodes();
+    } catch (err) {
+      console.error(err);
+      setActionError(err.message || "Failed to deactivate discount code.");
+    } finally {
+      setDeactivatingId(null);
     }
   };
 
   return (
     <AdminLayout
       title="Discount Codes"
-      subtitle="Create and review discount codes that can be applied during checkout."
+      subtitle="Create, edit, and deactivate discount codes that can be applied during checkout."
     >
       <div className="admin-discount-codes__stats-grid">
         <div className="admin-discount-codes__stat-card">
-          <p className="admin-discount-codes__stat-label">
-            Total Codes
-          </p>
+          <p className="admin-discount-codes__stat-label">Total Codes</p>
           <p className="admin-discount-codes__stat-value">{totals.all}</p>
         </div>
 
         <div className="admin-discount-codes__stat-card">
-          <p className="admin-discount-codes__stat-label">
-            Active
+          <p className="admin-discount-codes__stat-label">Active</p>
+          <p className="admin-discount-codes__stat-value admin-discount-codes__stat-value--green">
+            {totals.active}
           </p>
-          <p className="admin-discount-codes__stat-value admin-discount-codes__stat-value--green">{totals.active}</p>
         </div>
 
         <div className="admin-discount-codes__stat-card">
-          <p className="admin-discount-codes__stat-label">
-            Inactive
+          <p className="admin-discount-codes__stat-label">Inactive</p>
+          <p className="admin-discount-codes__stat-value admin-discount-codes__stat-value--muted">
+            {totals.inactive}
           </p>
-          <p className="admin-discount-codes__stat-value admin-discount-codes__stat-value--muted">{totals.inactive}</p>
         </div>
 
         <div className="admin-discount-codes__stat-card">
-          <p className="admin-discount-codes__stat-label">
-            Expired
+          <p className="admin-discount-codes__stat-label">Expired</p>
+          <p className="admin-discount-codes__stat-value admin-discount-codes__stat-value--red">
+            {totals.expired}
           </p>
-          <p className="admin-discount-codes__stat-value admin-discount-codes__stat-value--red">{totals.expired}</p>
         </div>
       </div>
 
@@ -296,32 +417,67 @@ function AdminDiscountCodesPage() {
             />
           </div>
 
+          <label className="admin-discount-codes__toggle-filter">
+            <input
+              type="checkbox"
+              checked={showInactive}
+              onChange={(e) => setShowInactive(e.target.checked)}
+              className="admin-discount-codes__checkbox"
+            />
+            Show inactive codes
+          </label>
+
           <button
-            onClick={() => {
-              setShowCreateForm((prev) => !prev);
-              setFormError("");
-              setSuccessMessage("");
-            }}
+            onClick={handleOpenCreate}
             className="admin-discount-codes__create-btn btn-primary"
           >
             <Plus className="admin-discount-codes__icon" />
-            {showCreateForm ? "Close Form" : "Create Code"}
+            {showForm && !isEditing ? "Close Form" : "Create Code"}
           </button>
         </div>
       </div>
 
-      {showCreateForm ? (
+      {actionError ? (
+        <div className="admin-discount-codes__alert admin-discount-codes__alert--error admin-discount-codes__alert--spaced">
+          <AlertCircle className="admin-discount-codes__alert-icon" />
+          <span>{actionError}</span>
+        </div>
+      ) : null}
+
+      {actionSuccess ? (
+        <div className="admin-discount-codes__alert admin-discount-codes__alert--success admin-discount-codes__alert--spaced">
+          <CheckCircle2 className="admin-discount-codes__alert-icon" />
+          <span>{actionSuccess}</span>
+        </div>
+      ) : null}
+
+      {showForm ? (
         <div className="admin-discount-codes__create-card">
-          <div className="admin-discount-codes__create-header">
-            <p className="admin-discount-codes__eyebrow">
-              New Discount
-            </p>
-            <h2 className="admin-discount-codes__section-title">
-              Create Discount Code
-            </h2>
-            <p className="admin-discount-codes__section-subtitle">
-              This code will be validated by the backend during checkout.
-            </p>
+          <div className="admin-discount-codes__create-header admin-discount-codes__create-header--split">
+            <div>
+              <p className="admin-discount-codes__eyebrow">
+                {isEditing ? "Edit Discount" : "New Discount"}
+              </p>
+              <h2 className="admin-discount-codes__section-title">
+                {isEditing ? "Edit Discount Code" : "Create Discount Code"}
+              </h2>
+              <p className="admin-discount-codes__section-subtitle">
+                {isEditing
+                  ? "Update this discount code's value, status, limits, or dates."
+                  : "This code will be validated by the backend during checkout."}
+              </p>
+            </div>
+
+            {isEditing ? (
+              <button
+                type="button"
+                onClick={resetForm}
+                className="admin-discount-codes__icon-btn"
+                aria-label="Close editor"
+              >
+                <X className="admin-discount-codes__icon" />
+              </button>
+            ) : null}
           </div>
 
           {formError ? (
@@ -338,12 +494,13 @@ function AdminDiscountCodesPage() {
             </div>
           ) : null}
 
-          <form className="admin-discount-codes__form" onSubmit={handleCreateDiscountCode}>
+          <form
+            className="admin-discount-codes__form"
+            onSubmit={handleSaveDiscountCode}
+          >
             <div className="admin-discount-codes__grid admin-discount-codes__grid--2">
               <div>
-                <label className="admin-discount-codes__label">
-                  Code
-                </label>
+                <label className="admin-discount-codes__label">Code</label>
                 <input
                   name="code"
                   value={form.code}
@@ -417,9 +574,7 @@ function AdminDiscountCodesPage() {
               </div>
 
               <div>
-                <label className="admin-discount-codes__label">
-                  Max Uses
-                </label>
+                <label className="admin-discount-codes__label">Max Uses</label>
                 <input
                   name="maxUses"
                   type="number"
@@ -469,18 +624,13 @@ function AdminDiscountCodesPage() {
                 onChange={handleChange}
                 className="admin-discount-codes__checkbox"
               />
-              Active immediately
+              Active
             </label>
 
             <div className="admin-discount-codes__actions">
               <button
                 type="button"
-                onClick={() => {
-                  setShowCreateForm(false);
-                  setForm(initialForm);
-                  setFormError("");
-                  setSuccessMessage("");
-                }}
+                onClick={resetForm}
                 className="admin-discount-codes__btn admin-discount-codes__btn--secondary"
               >
                 Cancel
@@ -488,10 +638,16 @@ function AdminDiscountCodesPage() {
 
               <button
                 type="submit"
-                disabled={creating}
+                disabled={saving}
                 className="admin-discount-codes__btn admin-discount-codes__btn--primary"
               >
-                {creating ? "Creating..." : "Create Discount Code"}
+                {saving
+                  ? isEditing
+                    ? "Saving..."
+                    : "Creating..."
+                  : isEditing
+                    ? "Save Changes"
+                    : "Create Discount Code"}
               </button>
             </div>
           </form>
@@ -503,12 +659,12 @@ function AdminDiscountCodesPage() {
           <h2 className="admin-discount-codes__state-title">
             Loading discount codes...
           </h2>
-          <p className="admin-discount-codes__state-message">Fetching admin discount data.</p>
+          <p className="admin-discount-codes__state-message">
+            Fetching admin discount data.
+          </p>
         </div>
       ) : pageError ? (
-        <div className="admin-discount-codes__error">
-          {pageError}
-        </div>
+        <div className="admin-discount-codes__error">{pageError}</div>
       ) : filteredCodes.length === 0 ? (
         <div className="admin-discount-codes__state-card admin-discount-codes__state-card--empty">
           <TicketPercent className="admin-discount-codes__empty-icon" />
@@ -516,7 +672,9 @@ function AdminDiscountCodesPage() {
             No discount codes found
           </h2>
           <p className="admin-discount-codes__state-message">
-            Create your first discount code to start testing checkout promotions.
+            {showInactive
+              ? "No discount codes match your current search."
+              : "No active discount codes match your current view. Turn on inactive codes to view deactivated codes."}
           </p>
         </div>
       ) : (
@@ -525,39 +683,34 @@ function AdminDiscountCodesPage() {
             <table className="admin-discount-codes__table">
               <thead className="admin-discount-codes__thead">
                 <tr>
-                  <th className="admin-discount-codes__th">
-                    Code
-                  </th>
-                  <th className="admin-discount-codes__th">
-                    Discount
-                  </th>
-                  <th className="admin-discount-codes__th">
-                    Minimum
-                  </th>
-                  <th className="admin-discount-codes__th">
-                    Uses
-                  </th>
-                  <th className="admin-discount-codes__th">
-                    Dates
-                  </th>
-                  <th className="admin-discount-codes__th">
-                    Status
+                  <th className="admin-discount-codes__th">Code</th>
+                  <th className="admin-discount-codes__th">Discount</th>
+                  <th className="admin-discount-codes__th">Minimum</th>
+                  <th className="admin-discount-codes__th">Uses</th>
+                  <th className="admin-discount-codes__th">Dates</th>
+                  <th className="admin-discount-codes__th">Status</th>
+                  <th className="admin-discount-codes__th admin-discount-codes__th--right">
+                    Actions
                   </th>
                 </tr>
               </thead>
 
               <tbody className="admin-discount-codes__tbody">
                 {filteredCodes.map((code) => (
-                  <tr key={code.discount_code_id} className="admin-discount-codes__tr">
+                  <tr
+                    key={code.discount_code_id}
+                    className="admin-discount-codes__tr"
+                  >
                     <td className="admin-discount-codes__td admin-discount-codes__td--primary">
                       <div className="admin-discount-codes__entity">
                         <div className="admin-discount-codes__entity-icon-wrap">
                           <Percent className="admin-discount-codes__icon" />
                         </div>
-
                         <div>
-                          <p className="admin-discount-codes__text-strong">{code.code}</p>
-                          <p className="admin-discount-codes__text-sub">
+                          <p className="admin-discount-codes__code">
+                            {code.code}
+                          </p>
+                          <p className="admin-discount-codes__muted">
                             {code.description || "No description"}
                           </p>
                         </div>
@@ -565,51 +718,61 @@ function AdminDiscountCodesPage() {
                     </td>
 
                     <td className="admin-discount-codes__td">
-                      <p className="admin-discount-codes__text-sm-strong">
+                      <p className="admin-discount-codes__strong">
                         {discountLabel(code)}
                       </p>
-                      <p className="admin-discount-codes__text-sub">
+                      <p className="admin-discount-codes__muted">
                         {code.discount_type}
                       </p>
                     </td>
 
-                    <td className="admin-discount-codes__td admin-discount-codes__text-sm-strong">
+                    <td className="admin-discount-codes__td">
                       {formatMoney(code.minimum_order_amount)}
                     </td>
 
                     <td className="admin-discount-codes__td">
-                      <p className="admin-discount-codes__text-sm-strong">
-                        {Number(code.uses_count || 0)}
-                        {code.max_uses ? ` / ${code.max_uses}` : ""}
+                      {code.uses_count || 0}
+                      {code.max_uses ? ` / ${code.max_uses}` : " / unlimited"}
+                    </td>
+
+                    <td className="admin-discount-codes__td">
+                      <p className="admin-discount-codes__muted">
+                        Starts: {formatDate(code.starts_at)}
                       </p>
-                      <p className="admin-discount-codes__text-sub">
-                        {code.max_uses ? "limited" : "unlimited"}
+                      <p className="admin-discount-codes__muted">
+                        Ends: {formatDate(code.expires_at)}
                       </p>
                     </td>
 
                     <td className="admin-discount-codes__td">
-                      <p className="admin-discount-codes__text-xs">
-                        Starts:{" "}
-                        <span className="admin-discount-codes__meta-value">
-                          {formatDate(code.starts_at)}
-                        </span>
-                      </p>
-                      <p className="admin-discount-codes__text-sub">
-                        Expires:{" "}
-                        <span className="admin-discount-codes__meta-value">
-                          {formatDate(code.expires_at)}
-                        </span>
-                      </p>
-                    </td>
-
-                    <td className="admin-discount-codes__td">
-                      <span
-                        className={`admin-discount-codes__badge ${statusClass(
-                          code
-                        )}`}
-                      >
+                      <span className={statusClass(code)}>
                         {statusLabel(code)}
                       </span>
+                    </td>
+
+                    <td className="admin-discount-codes__td admin-discount-codes__td--right">
+                      <div className="admin-discount-codes__row-actions">
+                        <button
+                          type="button"
+                          onClick={() => handleOpenEdit(code)}
+                          className="admin-discount-codes__action-btn"
+                        >
+                          <Edit className="admin-discount-codes__action-icon" />
+                          Edit
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDeactivateDiscountCode(code)}
+                          disabled={!code.is_active || deactivatingId === code.discount_code_id}
+                          className="admin-discount-codes__action-btn admin-discount-codes__action-btn--danger"
+                        >
+                          <Trash2 className="admin-discount-codes__action-icon" />
+                          {deactivatingId === code.discount_code_id
+                            ? "Deactivating..."
+                            : "Deactivate"}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

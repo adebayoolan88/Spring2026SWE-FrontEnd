@@ -180,6 +180,41 @@
   background: #1e293b;
 }
 
+.item-card--sale {
+  border-color: #fed7aa;
+}
+
+.item-card__sale-banner {
+  display: grid;
+  gap: 0.25rem;
+  border: 1px solid #fed7aa;
+  border-radius: 1rem;
+  background: #fff7ed;
+  color: #9a3412;
+  padding: 0.75rem;
+}
+
+.item-card__sale-banner-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.item-card__sale-banner-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
+}
+
+.item-card__sale-banner-text {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #c2410c;
+}
+
 .item-card button:focus-visible,
 .item-card a:focus-visible,
 .item-card input:focus-visible,

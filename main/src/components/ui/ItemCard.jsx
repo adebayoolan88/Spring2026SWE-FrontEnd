@@ -19,15 +19,38 @@ function getDisplayPricing(item) {
     salePrice,
     hasValidSalePrice,
     displayPrice: hasValidSalePrice ? salePrice : price,
+    savings: hasValidSalePrice ? price - salePrice : 0,
   };
 }
 
+function getSaleLabel(item) {
+  if (!item.saleName) return "Sale";
+
+  if (item.saleSource === "sales_table") {
+    if (item.saleScope === "site_wide") {
+      return `${item.saleName} • Site-wide sale`;
+    }
+
+    if (item.saleScope === "category") {
+      return `${item.saleName} • Category sale`;
+    }
+
+    if (item.saleScope === "product") {
+      return `${item.saleName} • Product sale`;
+    }
+  }
+
+  return item.saleName;
+}
+
 function ItemCard({ item, onViewItem }) {
-  const { price, salePrice, hasValidSalePrice, displayPrice } =
+  const { price, hasValidSalePrice, displayPrice, savings } =
     getDisplayPricing(item);
 
+  const saleLabel = getSaleLabel(item);
+
   return (
-    <div className="item-card">
+    <div className={`item-card ${hasValidSalePrice ? "item-card--sale" : ""}`}>
       <div className="item-card__media">
         <img
           src={item.image}
@@ -63,12 +86,9 @@ function ItemCard({ item, onViewItem }) {
       <div className="item-card__content">
         <div className="item-card__header">
           <div>
-            <p className="item-card__category">
-              {item.category}
-            </p>
-            <h3 className="item-card__name">
-              {item.name}
-            </h3>
+            <p className="item-card__category">{item.category}</p>
+
+            <h3 className="item-card__name">{item.name}</h3>
           </div>
 
           <div className="item-card__pricing">
@@ -88,16 +108,23 @@ function ItemCard({ item, onViewItem }) {
           </div>
         </div>
 
+        {hasValidSalePrice ? (
+          <div className="item-card__sale-banner">
+            <div className="item-card__sale-banner-top">
+              <Tag className="item-card__sale-banner-icon" />
+              <span>{saleLabel}</span>
+            </div>
+
+            <p className="item-card__sale-banner-text">
+              Save {formatMoney(savings)}
+            </p>
+          </div>
+        ) : null}
+
         <div className="item-card__meta">
           <p className="item-card__condition">
             Condition: {item.condition || "N/A"}
           </p>
-
-          {hasValidSalePrice && salePrice !== null ? (
-            <span className="item-card__savings">
-              Save {formatMoney(price - salePrice)}
-            </span>
-          ) : null}
         </div>
 
         <button

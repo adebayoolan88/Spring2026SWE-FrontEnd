@@ -29,14 +29,58 @@ function getDisplayPricing(item) {
     salePrice,
     hasValidSalePrice,
     displayPrice: hasValidSalePrice ? salePrice : price,
+    savings: hasValidSalePrice ? price - salePrice : 0,
   };
+}
+
+function getSaleLabel(item) {
+  if (!item.saleName) return "Sale";
+
+  if (item.saleSource === "sales_table") {
+    if (item.saleScope === "site_wide") {
+      return `${item.saleName} • Site-wide sale`;
+    }
+
+    if (item.saleScope === "category") {
+      return `${item.saleName} • Category sale`;
+    }
+
+    if (item.saleScope === "product") {
+      return `${item.saleName} • Product sale`;
+    }
+  }
+
+  return item.saleName;
+}
+
+function getSaleDescription(item) {
+  if (!item.saleSource || item.saleSource === "product_sale_price") {
+    return "This item has been individually marked down.";
+  }
+
+  if (item.saleScope === "site_wide") {
+    return "This discount is part of an active site-wide sale campaign.";
+  }
+
+  if (item.saleScope === "category") {
+    return `This discount applies to items in the ${item.category || "selected"} category.`;
+  }
+
+  if (item.saleScope === "product") {
+    return "This discount is part of an active product-specific sale campaign.";
+  }
+
+  return "This item is currently discounted.";
 }
 
 function ProductDetailsModal({ item, onClose, onAddToCart }) {
   if (!item) return null;
 
-  const { price, salePrice, hasValidSalePrice, displayPrice } =
+  const { price, salePrice, hasValidSalePrice, displayPrice, savings } =
     getDisplayPricing(item);
+
+  const saleLabel = getSaleLabel(item);
+  const saleDescription = getSaleDescription(item);
 
   return (
     <div
@@ -69,14 +113,13 @@ function ProductDetailsModal({ item, onClose, onAddToCart }) {
               ) : null}
             </div>
 
-            <h2 className="product-details-modal__title">
-              {item.name}
-            </h2>
+            <h2 className="product-details-modal__title">{item.name}</h2>
           </div>
 
           <button
             onClick={onClose}
             className="product-details-modal__close-btn"
+            aria-label="Close product details"
           >
             <X className="product-details-modal__icon" />
           </button>
@@ -108,6 +151,28 @@ function ProductDetailsModal({ item, onClose, onAddToCart }) {
               </div>
             </div>
 
+            {hasValidSalePrice ? (
+              <div className="product-details-modal__sale-callout">
+                <div className="product-details-modal__sale-callout-top">
+                  <Tag className="product-details-modal__sale-callout-icon" />
+                  <div>
+                    <p className="product-details-modal__sale-callout-title">
+                      {saleLabel}
+                    </p>
+                    <p className="product-details-modal__sale-callout-text">
+                      {saleDescription}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="product-details-modal__sale-callout-bottom">
+                  <span>Original: {formatMoney(price)}</span>
+                  <span>Now: {formatMoney(displayPrice)}</span>
+                  <span>Save {formatMoney(savings)}</span>
+                </div>
+              </div>
+            ) : null}
+
             <div className="product-details-modal__description">
               <h3 className="product-details-modal__section-title">
                 Description
@@ -122,7 +187,9 @@ function ProductDetailsModal({ item, onClose, onAddToCart }) {
             <div className="product-details-modal__card">
               <p
                 className={`product-details-modal__price ${
-                  hasValidSalePrice ? "product-details-modal__price--sale" : "product-details-modal__price--default"
+                  hasValidSalePrice
+                    ? "product-details-modal__price--sale"
+                    : "product-details-modal__price--default"
                 }`}
               >
                 {formatMoney(displayPrice)}
@@ -135,11 +202,37 @@ function ProductDetailsModal({ item, onClose, onAddToCart }) {
                   </p>
 
                   <span className="product-details-modal__savings">
-                    Save {formatMoney(price - salePrice)}
+                    Save {formatMoney(savings)}
                   </span>
                 </div>
               ) : null}
             </div>
+
+            {hasValidSalePrice ? (
+              <div className="product-details-modal__card product-details-modal__card--sale">
+                <h3 className="product-details-modal__section-title">
+                  Active Sale
+                </h3>
+
+                <div className="product-details-modal__sale-summary">
+                  <p className="product-details-modal__sale-summary-title">
+                    {saleLabel}
+                  </p>
+                  <p className="product-details-modal__sale-summary-text">
+                    {saleDescription}
+                  </p>
+
+                  {item.saleDiscountType && item.saleDiscountValue !== null ? (
+                    <p className="product-details-modal__sale-summary-meta">
+                      Discount:{" "}
+                      {item.saleDiscountType === "percentage"
+                        ? `${Number(item.saleDiscountValue || 0)}% off`
+                        : `${formatMoney(item.saleDiscountValue)} off`}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+            ) : null}
 
             <div className="product-details-modal__card">
               <h3 className="product-details-modal__section-title">
@@ -209,10 +302,14 @@ function ProductDetailsModal({ item, onClose, onAddToCart }) {
 
             <button
               onClick={() => onAddToCart(item)}
-              disabled={item.availabilityStatus !== "available" || Number(item.quantity) <= 0}
+              disabled={
+                item.availabilityStatus !== "available" ||
+                Number(item.quantity) <= 0
+              }
               className="product-details-modal__add-btn"
             >
-              {item.availabilityStatus !== "available" || Number(item.quantity) <= 0
+              {item.availabilityStatus !== "available" ||
+              Number(item.quantity) <= 0
                 ? "Unavailable"
                 : "Add to Cart"}
             </button>
