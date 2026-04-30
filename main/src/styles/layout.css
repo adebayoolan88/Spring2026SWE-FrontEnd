@@ -4,3 +4,20 @@
 .l-grid { display: grid; gap: 1rem; }
 .l-grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .l-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+
+.l-page-section {
+  width: min(100% - (2 * var(--layout-padding-x)), var(--layout-max-width));
+  margin-inline: auto;
+  padding-block: var(--layout-section-space);
+}
+
+.l-page-section--narrow {
+  max-width: var(--layout-max-width-narrow);
+}
+
+@media (min-width: 768px) {
+  .l-page-section {
+    width: min(100% - (2 * var(--layout-padding-x-wide)), var(--layout-max-width));
+  }
+}
